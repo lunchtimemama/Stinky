@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 using Stinky.Compiler.Syntax;
 
@@ -47,9 +48,14 @@ namespace Stinky.Compiler.Parser
 			return new ExpressionParser(new NumberLiteral(number, location), Consumer, this);
 		}
 		
-		public override Parser ParseStringLiteral (string @string, Location location)
+		public override Parser ParseStringLiteral(string @string, Location location)
 		{
 			return new ExpressionParser(new StringLiteral(@string, location), Consumer, this);
+		}
+		
+		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
+		{
+			return new ExpressionParser(new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, this);
 		}
 	}
 }

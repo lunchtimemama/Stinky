@@ -33,15 +33,15 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public class LineTokenizer : Tokenizer
 	{
-		readonly RootTokenizer rootTokenizer;
+		readonly Action consumer;
 		
 		Parser parser;
 		Tokenizer tokenizer;
 		
-		public LineTokenizer(RootTokenizer rootTokenizer, Parser parser)
+		public LineTokenizer(Parser parser, Action consumer)
 		{
-			this.rootTokenizer = rootTokenizer;
 			this.parser = parser;
+			this.consumer = consumer;
 		}
 
 		public override void OnCharacter(Character character)
@@ -57,6 +57,12 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					switch(@char) {
 					case '+':
 						OnToken(parser => parser.ParsePlus(location));
+						break;
+					case '{':
+						OnToken(parser => parser.ParseLeftCurlyBracket(location));
+						break;
+					case '}':
+						OnToken(parser => parser.ParseRightCurlyBracket(location));
 						break;
 					case '(':
 						//OnToken(parser => parser.ParseOpenParentheses(location));
@@ -101,7 +107,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				tokenizer.OnDone();
 			}
 			parser.OnDone();
-			rootTokenizer.OnLine();
+			consumer();
 		}
 
 		public void OnToken(Func<Parser, Parser> token)

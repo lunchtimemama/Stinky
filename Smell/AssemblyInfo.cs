@@ -1,10 +1,10 @@
 // 
-// RootTokenizer.cs
+// AssemblyInfo.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-using System;
-using System.Collections.Generic;
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-using Stinky.Compiler.Syntax;
+[assembly: AssemblyTitle("Smell")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
-namespace Stinky.Compiler.Parser.Tokenizer
-{
-	public class RootTokenizer : Tokenizer
-	{
-		readonly Action<int, Expression> consumer;
-		
-		Tokenizer tokenizer;
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-		public RootTokenizer(Action<int, Expression> consumer)
-		{
-			this.consumer = consumer;
-			this.tokenizer = new IndentationTokenizer(this);
-		}
+[assembly: AssemblyVersion("1.0.*")]
 
-		public override void OnCharacter(Character character)
-		{
-			tokenizer.OnCharacter(character);
-		}
-		
-		public void OnIndentation(int indentation)
-		{
-			tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
-		}
-		
-		public void OnLine()
-		{
-			tokenizer = new IndentationTokenizer(this);
-		}
-		
-		public override void OnDone()
-		{
-			tokenizer.OnDone();
-		}
-	}
-}
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]
+

@@ -82,6 +82,21 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
+		public void TestTwoPlusOperators()
+		{
+			var expressions = Compile("1+2+3");
+			Assert.AreEqual(
+				new PlusOperator(
+					new NumberLiteral(1, Nowhere),
+					new PlusOperator(
+						new NumberLiteral(2, Nowhere),
+						new NumberLiteral(3, Nowhere),
+						Nowhere),
+					Nowhere),
+				expressions[0]);
+		}
+		
+		[Test]
 		public void TestPlusOperatorWithWhitespace()
 		{
 			var expressions = Compile("1 + 2");
@@ -121,6 +136,84 @@ namespace Stinky.Compiler.Tests
 		{
 			var expressions = Compile(@"""\""\n\t\\""");
 			Assert.AreEqual(new StringLiteral("\"\n\t\\", Nowhere), expressions[0]);
+		}
+		
+		[Test]
+		public void TestUninterpolatedStringLiteral()
+		{
+			var expressions = Compile(@"""foo {{bar}} bat""");
+			Assert.AreEqual(new StringLiteral(@"foo {bar} bat", Nowhere), expressions[0]);
+		}
+		
+		[Test, ExpectedException(typeof(TokenizationException))]
+		public void TestUninterpolatedStringLiteralFailure()
+		{
+			var expressions = Compile(@"""foo {{bar} bat""");
+		}
+		
+		[Test, ExpectedException(typeof(TokenizationException))]
+		public void TestTerminalUninterpolatedStringLiteralFailure()
+		{
+			var expressions = Compile(@"""foo {{bar}""");
+		}
+		
+		[Test, ExpectedException(typeof(TokenizationException))]
+		public void TestInterpolatedStringLiteralFailure()
+		{
+			var expressions = Compile(@"""foo { """);
+		}
+		
+		[Test, ExpectedException(typeof(TokenizationException))]
+		public void TestTerminalInterpolatedStringLiteralFailure()
+		{
+			var expressions = Compile(@"""foo {""");
+		}
+		
+		[Test]
+		public void TestInterpolatedStringLiteral()
+		{
+			var expressions = Compile(@"""foo {bar} bat""");
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo ", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral(" bat", Nowhere)
+				}, Nowhere),
+				expressions[0]
+			);
+		}
+		
+		[Test]
+		public void TestTerminalInterpolatedStringLiteral()
+		{
+			var expressions = Compile(@"""foo {bar}""");
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo ", Nowhere),
+					new Reference("bar", Nowhere)
+				}, Nowhere),
+				expressions[0]
+			);
+		}
+		
+		[Test]
+		public void TestComplexInterpolatedStringLiteral()
+		{
+			var expressions = Compile(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""");
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral(@"{foo}: ", Nowhere),
+					new PlusOperator(
+						new Reference("bar", Nowhere),
+						new PlusOperator(
+							new NumberLiteral(42, Nowhere),
+							new StringLiteral("%", Nowhere), Nowhere),
+						Nowhere),
+					new StringLiteral(", ", Nowhere),
+					new Reference("bat", Nowhere)
+				}, Nowhere),
+				expressions[0]
+			);
 		}
 		
 		public static List<Expression> Compile(string source)

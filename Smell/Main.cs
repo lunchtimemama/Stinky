@@ -1,10 +1,10 @@
 // 
-// RootTokenizer.cs
+// Main.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,34 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 
+using Stinky.Compiler;
+using Stinky.Compiler.Parser;
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Smell
 {
-	public class RootTokenizer : Tokenizer
+	class MainClass
 	{
-		readonly Action<int, Expression> consumer;
-		
-		Tokenizer tokenizer;
-
-		public RootTokenizer(Action<int, Expression> consumer)
+		public static void Main(string[] args)
 		{
-			this.consumer = consumer;
-			this.tokenizer = new IndentationTokenizer(this);
-		}
-
-		public override void OnCharacter(Character character)
-		{
-			tokenizer.OnCharacter(character);
+			var expressions = Compile(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""");
+			Console.WriteLine(expressions);
 		}
 		
-		public void OnIndentation(int indentation)
+		public static List<Expression> Compile(string source)
 		{
-			tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
-		}
-		
-		public void OnLine()
-		{
-			tokenizer = new IndentationTokenizer(this);
-		}
-		
-		public override void OnDone()
-		{
+			var expressions = new List<Expression>();
+			var tokenizer = new RootTokenizer((indentation, expression) => expressions.Add(expression));
+			foreach(var character in source) {
+				tokenizer.OnCharacter(new Character(character, new Location(null, 0, 0)));
+			}
 			tokenizer.OnDone();
+			return expressions;
 		}
 	}
 }
+

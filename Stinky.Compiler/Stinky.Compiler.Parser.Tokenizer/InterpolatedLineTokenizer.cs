@@ -1,10 +1,10 @@
 // 
-// RootTokenizer.cs
+// InterpolatedLineTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,42 +25,24 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-
-using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class RootTokenizer : Tokenizer
+	public class InterpolatedLineTokenizer : LineTokenizer
 	{
-		readonly Action<int, Expression> consumer;
-		
-		Tokenizer tokenizer;
-
-		public RootTokenizer(Action<int, Expression> consumer)
+		public InterpolatedLineTokenizer(Parser parser, Action consumer)
+			: base(parser, consumer)
 		{
-			this.consumer = consumer;
-			this.tokenizer = new IndentationTokenizer(this);
 		}
-
+		
 		public override void OnCharacter(Character character)
 		{
-			tokenizer.OnCharacter(character);
-		}
-		
-		public void OnIndentation(int indentation)
-		{
-			tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
-		}
-		
-		public void OnLine()
-		{
-			tokenizer = new IndentationTokenizer(this);
-		}
-		
-		public override void OnDone()
-		{
-			tokenizer.OnDone();
+			if(character.Char == '}') {
+				OnDone();
+			} else {
+				base.OnCharacter(character);
+			}
 		}
 	}
 }
+

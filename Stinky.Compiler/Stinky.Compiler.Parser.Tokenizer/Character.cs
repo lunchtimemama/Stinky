@@ -56,14 +56,19 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			return this == character;
 		}
 		
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
 			return obj is Character && Equals((Character)obj);
 		}
 
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
 			return Location.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return Char.ToString();
 		}
 	}
 }

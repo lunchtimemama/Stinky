@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 using Stinky.Compiler.Syntax;
 
@@ -81,11 +82,38 @@ namespace Stinky.Compiler.Parser
 				throw new ParseException(Error, location);
 			}
 		}
+		
+		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
 
 		public virtual Parser ParsePlus(Location location)
 		{
 			if(NextParser != null) {
 				return NextParser.ParsePlus(location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
+		
+		public virtual Parser ParseLeftCurlyBracket(Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseLeftCurlyBracket(location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
+		
+		public virtual Parser ParseRightCurlyBracket(Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseRightCurlyBracket(location);
 			} else {
 				throw new ParseException(Error, location);
 			}

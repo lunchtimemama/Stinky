@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,6 +38,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		readonly Location location;
 		
 		StringBuilder stringBuilder = new StringBuilder();
+		List<Expression> interpolatedExpressions;
+		LineTokenizer interpolationTokenizer;
+		bool potentiallyInterpolated;
+		bool potentiallyUninterpolated;
 		bool escaped;
 		
 		public StringLiteralTokenizer(LineTokenizer lineTokenizer, Location location)
@@ -47,7 +52,31 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		
 		public override void OnCharacter(Character character)
 		{
-			if(escaped) {
+			if(interpolationTokenizer != null) {
+				interpolationTokenizer.OnCharacter(character);
+			} else if(potentiallyInterpolated) {
+				if(character.Char == '{') {
+					stringBuilder.Append('{');
+				} else {
+					if(interpolatedExpressions == null) {
+						interpolatedExpressions = new List<Expression>();
+					}
+					interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
+					stringBuilder.Remove(0, stringBuilder.Length);
+					interpolationTokenizer = new InterpolatedLineTokenizer(
+						new RootParser(expression => interpolatedExpressions.Add(expression)),
+						() => interpolationTokenizer = null);
+					interpolationTokenizer.OnCharacter(character);
+				}
+				potentiallyInterpolated = false;
+			} else if(potentiallyUninterpolated) {
+				if(character.Char == '}') {
+					stringBuilder.Append('}');
+				} else {
+					throw new TokenizationException(character.Location);
+				}
+				potentiallyUninterpolated = false;
+			} else if(escaped) {
 				switch(character.Char) {
 				case '"':
 					stringBuilder.Append('"');
@@ -67,6 +96,12 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				escaped = false;
 			} else {
 				switch(character.Char) {
+				case '{':
+					potentiallyInterpolated = true;
+					break;
+				case '}':
+					potentiallyUninterpolated = true;
+					break;
 				case '"':
 					OnDone();
 					break;
@@ -85,8 +120,16 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		
 		public override void OnDone ()
 		{
-			var @string = stringBuilder.ToString();
-			lineTokenizer.OnToken(parser => parser.ParseStringLiteral(@string, location));
+			if(potentiallyInterpolated || potentiallyUninterpolated || interpolationTokenizer != null) {
+				throw new TokenizationException(location);
+			} else if(interpolatedExpressions != null) {
+				if(stringBuilder.Length > 0) {
+					interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
+				}
+				lineTokenizer.OnToken(parser => parser.ParseInterpolatedStringLiteral(interpolatedExpressions, location));
+			} else {
+				lineTokenizer.OnToken(parser => parser.ParseStringLiteral(stringBuilder.ToString(), location));
+			}
 		}
 	}
 }

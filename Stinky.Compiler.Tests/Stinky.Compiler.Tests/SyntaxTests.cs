@@ -74,5 +74,76 @@ namespace Stinky.Compiler.Tests
 			Assert.AreEqual(typeof(string), barDefinition.Type);
 			Assert.AreEqual(typeof(string), reference.Type);
 		}
+		
+		[Test]
+		public void TestInterpolatedStringLiteralEqualityLogic()
+		{
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere)
+				}, Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("bar", Nowhere),
+					new Reference("foo", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere),
+					new Reference("bar", Nowhere),
+					new StringLiteral("bat", Nowhere)
+				}, Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("bar", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere)
+				}, Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere)
+				}, Nowhere),
+				new InterpolatedStringLiteral(new Expression[0], Nowhere)
+			);
+			Assert.AreNotEqual(
+				new InterpolatedStringLiteral(new Expression[0], Nowhere),
+				new InterpolatedStringLiteral(new Expression[] {
+					new StringLiteral("foo", Nowhere)
+				}, Nowhere)
+			);
+		}
 	}
 }

@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stinky.Compiler", "Stinky.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stinky.Compiler.Tests", "Stinky.Compiler.Tests\Stinky.Compiler.Tests.csproj", "{9E1A3CD8-539F-45E0-8CB5-06E07E677543}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smell", "Smell\Smell.csproj", "{C8D99AB0-4BB6-4EB1-A9D9-993720859554}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,13 +20,19 @@ Global
 		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Default|Any CPU.Build.0 = Debug|Any CPU
 		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8D99AB0-4BB6-4EB1-A9D9-993720859554}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Stinky.Compiler\Stinky.Compiler.csproj
+		StartupItem = Smell\Smell.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = Flat
