@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stinky.Compiler", "Stinky.Compiler\Stinky.Compiler.csproj", "{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stinky.Compiler.Tests", "Stinky.Compiler.Tests\Stinky.Compiler.Tests.csproj", "{9E1A3CD8-539F-45E0-8CB5-06E07E677543}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Default|Any CPU = Default|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1A3CD8-539F-45E0-8CB5-06E07E677543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Stinky.Compiler\Stinky.Compiler.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = Flat
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $3
+		$3.BeforeMethodCallParentheses = False
+		$3.BeforeMethodDeclarationParentheses = False
+		$3.BeforeConstructorDeclarationParentheses = False
+		$3.BeforeDelegateDeclarationParentheses = False
+		$3.NewParentheses = False
+		$3.IfParentheses = False
+		$3.WhileParentheses = False
+		$3.ForParentheses = False
+		$3.ForeachParentheses = False
+		$3.CatchParentheses = False
+		$3.SwitchParentheses = False
+		$3.LockParentheses = False
+		$3.UsingParentheses = False
+		$3.inheritsSet = Mono
+		$3.inheritsScope = text/x-csharp
+		$3.scope = text/x-csharp
+		$0.StandardHeader = $4
+		$4.inheritsSet = MITX11License
+		$0.VersionControlPolicy = $5
+		$5.inheritsSet = Mono
+		$0.ChangeLogPolicy = $6
+		$6.UpdateMode = None
+		$6.MessageStyle = $7
+		$7.LineAlign = 0
+		$6.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal

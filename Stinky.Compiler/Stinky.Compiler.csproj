@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FE8EFD96-A98A-4E8A-B232-AAC4C912361A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Stinky.Compiler</RootNamespace>
+    <AssemblyName>Stinky.Compiler</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Stinky.Compiler.Parser\Parser.cs" />
+    <Compile Include="Stinky.Compiler\Location.cs" />
+    <Compile Include="Stinky.Compiler.Parser\ParseError.cs" />
+    <Compile Include="Stinky.Compiler.Parser\ParseException.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Expression.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Reference.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\BinaryOperator.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\PlusOperator.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\NumberLiteral.cs" />
+    <Compile Include="Stinky.Compiler.Parser\ReferenceOrDefinitionParser.cs" />
+    <Compile Include="Stinky.Compiler.Parser\ExpressionParser.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\Character.cs" />
+    <Compile Include="Stinky.Compiler.Parser\RootParser.cs" />
+    <Compile Include="Stinky.Compiler.Parser\LineParser.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\AlphaNumericTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\DotTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\IndentationTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\Keywords.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\LineTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\NumberLiteralTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\RootTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\StringLiteralTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationException.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\Tokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Definition.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\StringLiteral.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\IScope.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Stinky.Compiler.Parser\" />
+    <Folder Include="Stinky.Compiler\" />
+    <Folder Include="Stinky.Compiler.Parser.Tokenizer\" />
+    <Folder Include="Stinky.Compiler.Syntax\" />
+  </ItemGroup>
+</Project>
