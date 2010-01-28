@@ -55,6 +55,11 @@ namespace Stinky.Compiler.Syntax
 			return new PlusOperator(leftOperand, rightOperand, Location, type);
 		}
 		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitPlusOperator(this);
+		}
+		
 		public override bool Equals(object obj)
 		{
 			PlusOperator plusOperator = obj as PlusOperator;
@@ -71,7 +76,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override string ToString ()
 		{
-			return string.Format("{0} + {1}", LeftOperand, RightOperand);
+			return string.Format("({0} + {1})", LeftOperand, RightOperand);
 		}
 	}
 }

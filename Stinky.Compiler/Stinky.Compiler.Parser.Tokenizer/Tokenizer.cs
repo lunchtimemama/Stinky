@@ -28,10 +28,11 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public abstract class Tokenizer
 	{
-		public abstract void OnCharacter(Character character);
+		public abstract TokenizationException OnCharacter(Character character);
 
-		public virtual void OnDone()
+		public virtual TokenizationException OnDone()
 		{
+			return null;
 		}
 	}
 }

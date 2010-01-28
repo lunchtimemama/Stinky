@@ -101,24 +101,6 @@ namespace Stinky.Compiler.Parser
 			}
 		}
 		
-		public virtual Parser ParseLeftCurlyBracket(Location location)
-		{
-			if(NextParser != null) {
-				return NextParser.ParseLeftCurlyBracket(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
-		}
-		
-		public virtual Parser ParseRightCurlyBracket(Location location)
-		{
-			if(NextParser != null) {
-				return NextParser.ParseRightCurlyBracket(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
-		}
-		
 		protected virtual ParseError Error {
 			get { return ParseError.UnknownError; }
 		}

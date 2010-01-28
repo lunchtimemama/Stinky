@@ -32,12 +32,26 @@ namespace Stinky.Compiler.Syntax
 {
 	public class InterpolatedStringLiteral : Expression
 	{
-		readonly IEnumerable<Expression> interpolatedExpressions;
+		public readonly IEnumerable<Expression> InterpolatedExpressions;
 		
 		public InterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
 			: base(location, typeof(string))
 		{
-			this.interpolatedExpressions = interpolatedExpressions;
+			InterpolatedExpressions = interpolatedExpressions;
+		}
+		
+		public override Expression Resolve(IScope scope)
+		{
+			var interpolatedExpressions = new List<Expression>();
+			foreach(var interpolatedExpression in InterpolatedExpressions) {
+				interpolatedExpressions.Add(interpolatedExpression.Resolve(scope));
+			}
+			return new InterpolatedStringLiteral(interpolatedExpressions, Location);
+		}
+		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitInterpolatedStringLiteral(this);
 		}
 		
 		public override bool Equals(object obj)
@@ -46,8 +60,8 @@ namespace Stinky.Compiler.Syntax
 			if(interpolatedStringLiteral == null || interpolatedStringLiteral.Location != Location) {
 				return false;
 			}
-			var thisEnumerator = interpolatedExpressions.GetEnumerator();
-			var thatEnumerator = interpolatedStringLiteral.interpolatedExpressions.GetEnumerator();
+			var thisEnumerator = InterpolatedExpressions.GetEnumerator();
+			var thatEnumerator = interpolatedStringLiteral.InterpolatedExpressions.GetEnumerator();
 			if(thisEnumerator.MoveNext()) {
 				do {
 					if(!thatEnumerator.MoveNext()) {
@@ -68,7 +82,7 @@ namespace Stinky.Compiler.Syntax
 		public override int GetHashCode()
 		{
 			var hashCode = Location.GetHashCode();
-			foreach(var expression in interpolatedExpressions) {
+			foreach(var expression in InterpolatedExpressions) {
 				hashCode ^= expression.GetHashCode();
 			}
 			return hashCode;
@@ -78,7 +92,7 @@ namespace Stinky.Compiler.Syntax
 		{
 			var stringBuilder = new StringBuilder();
 			var first = true;
-			foreach(var expression in interpolatedExpressions) {
+			foreach(var expression in InterpolatedExpressions) {
 				if(!first) {
 					stringBuilder.Append(" + ");
 				} else {

@@ -1,10 +1,10 @@
 // 
-// DotTokenizer.cs
+// EvaluationWidget.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,46 +26,42 @@
 
 using System;
 
+using Gtk;
+
+using Stinky.Compiler;
+using Stinky.Compiler.Parser;
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace MonoDevelop.Stinky
 {
-	public class DotTokenizer : Tokenizer
+	public class EvaluationWidget : VBox
 	{
-		readonly LineTokenizer lineTokenizer;
-		readonly Location location;
+		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
 		
-		bool doubleDot;
-
-		public DotTokenizer(LineTokenizer lineTokenizer, Location location)
+		public EvaluationWidget()
 		{
-			this.lineTokenizer = lineTokenizer;
-			this.location = location;
-		}
-
-		public override TokenizationException OnCharacter(Character character)
-		{
-			if(character.Char == '.') {
-				if(doubleDot) {
-					return new TokenizationException(TokenizationError.UnknownError, character.Location, Environment.StackTrace);
-				} else {
-					doubleDot = true;
-					return null;
+			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
+			var scope = new Scope();
+			var rootTokenizer = new RootTokenizer((indentation, expression) => {
+				scope.OnExpression(expression = expression.Resolve(scope));
+				if(expression.Type != typeof(void)) {
+					expression.Visit(interpreter);
 				}
-			} else {
-				OnDone();
-				return lineTokenizer.OnCharacter(character);
-			}
-		}
-
-		public override TokenizationException OnDone()
-		{
-			if(doubleDot) {
-				//lineTokenizer.OnToken(parser => parser.ParseDot(location));
-			} else {
-				//lineTokenizer.OnToken(parser => parser.ParseDoubleDot(location));
-			}
-			return null;
+			});
+			var scrolledWindow = new ScrolledWindow();
+			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
+				var column = 0;
+				foreach(var character in text) {
+					rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
+					column++;
+				}
+				rootTokenizer.OnCharacter(new Character('\n', new Location(null, 0, column)));
+			});
+			scrolledWindow.Add(readEvalPrintLoopView);
+			PackStart(scrolledWindow);
+			ShowAll();
 		}
 	}
 }
+

@@ -43,22 +43,24 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.location = location;
 		}
 		
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
 			var @char = character.Char;
 			if((@char >= '0' && @char <= '9') || @char == '.') {
 				stringBuilder.Append(@char);
+				return null;
 			} else {
 				OnDone();
-				lineTokenizer.OnCharacter(character);
+				return lineTokenizer.OnCharacter(character);
 			}
 		}
 		
-		public override void OnDone ()
+		public override TokenizationException OnDone ()
 		{
 			// TODO handle failed parsing
 			var literal = double.Parse(stringBuilder.ToString());
 			lineTokenizer.OnToken(parser => parser.ParseNumberLiteral(literal, location));
+			return null;
 		}
 	}
 }

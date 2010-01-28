@@ -42,15 +42,15 @@ namespace Stinky.Compiler.Parser
 			this.expression = expression;
 		}
 		
-		public override Parser ParsePlus (Location location)
+		public override Parser ParsePlus(Location location)
 		{
 			return new RootParser(rightOperand => Consumer(new PlusOperator(expression, rightOperand, location)));
 		}
 		
-		public override void OnDone ()
+		public override void OnDone()
 		{
 			Consumer(expression);
-			base.OnDone ();
+			base.OnDone();
 		}
 	}
 }

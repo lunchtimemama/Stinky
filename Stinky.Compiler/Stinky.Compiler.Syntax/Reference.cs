@@ -31,23 +31,30 @@ namespace Stinky.Compiler.Syntax
 	public class Reference : Expression
 	{
 		public readonly string Identifier;
+		public readonly Expression Expression;
 		
 		public Reference(string identifier, Location location)
-			: this(identifier, location, null)
+			: this(identifier, null, location, null)
 		{
 		}
 		
-		public Reference(string identifier, Location location, Type type)
+		public Reference(string identifier, Expression expression, Location location, Type type)
 			: base(location, type)
 		{
 			Identifier = identifier;
+			Expression = expression;
 		}
 		
 		public override Expression Resolve(IScope scope)
 		{
 			// TODO test null
 			var definition = scope.GetDefinition(this);
-			return new Reference(Identifier, Location, definition.Type);
+			return new Reference(Identifier, definition.Expression, Location, definition.Type);
+		}
+		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitReference(this);
 		}
 		
 		public override bool Equals(object obj)

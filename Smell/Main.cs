@@ -35,10 +35,27 @@ namespace Smell
 {
 	class MainClass
 	{
+		static readonly Location Nowhere = new Location(null, 0, 0);
 		public static void Main(string[] args)
 		{
-			var expressions = Compile(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""");
-			Console.WriteLine(expressions);
+			var expressions = Compile(@"""{1+1 + "" is the lonliest number, {name}!} < she said it""");
+			var eq = expressions[0].Equals(new InterpolatedStringLiteral(
+					new Expression[] {
+						new PlusOperator(
+							new NumberLiteral(1, Nowhere),
+							new PlusOperator(
+								new NumberLiteral(1, Nowhere),
+				                new InterpolatedStringLiteral(
+									new Expression[] {
+										new StringLiteral(" is the lonliest number, ", Nowhere),
+										new Reference("name", Nowhere),
+										new StringLiteral("!", Nowhere)
+									}, Nowhere),
+								Nowhere),
+							Nowhere),
+						new StringLiteral(" < she said it", Nowhere),
+					}, Nowhere));
+			Console.WriteLine(eq);
 		}
 		
 		public static List<Expression> Compile(string source)

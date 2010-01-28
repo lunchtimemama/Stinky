@@ -170,6 +170,18 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
+		public void TestSimpleInterpolatedStringLiteral()
+		{
+			var expressions = Compile(@"""{foo}""");
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(new Expression[] {
+					new Reference("foo", Nowhere)
+				}, Nowhere),
+				expressions[0]
+			);
+		}
+		
+		[Test]
 		public void TestInterpolatedStringLiteral()
 		{
 			var expressions = Compile(@"""foo {bar} bat""");
@@ -216,14 +228,71 @@ namespace Stinky.Compiler.Tests
 			);
 		}
 		
+		[Test]
+		public void TestNestedInterpolatedStringLiterals()
+		{
+			var expressions = Compile(@"""{""{foo}""}""");
+			Assert.AreEqual(new InterpolatedStringLiteral(new Expression[] {
+				new InterpolatedStringLiteral(new Expression[] {
+					new Reference("foo", Nowhere)
+				}, Nowhere),
+			}, Nowhere),
+			expressions[0]);
+		}
+		
+		[Test]
+		public void TestNestedInterpolatedStringLiteralsWithTrailingString()
+		{
+			var expressions = Compile(@"""{""{foo}""} bar""");
+			Assert.AreEqual(new InterpolatedStringLiteral(new Expression[] {
+				new InterpolatedStringLiteral(new Expression[] {
+					new Reference("foo", Nowhere)
+				}, Nowhere),
+				new StringLiteral(" bar", Nowhere)
+			}, Nowhere),
+			expressions[0]);
+		}
+		
+		[Test]
+		public void TestComplexNestedInterpolatedStringLiterals()
+		{
+			var expressions = Compile(@"""{1+1 + "" is the lonliest number, {name}!""} < she said it""");
+			Assert.AreEqual(
+				new InterpolatedStringLiteral(
+					new Expression[] {
+						new PlusOperator(
+							new NumberLiteral(1, Nowhere),
+							new PlusOperator(
+								new NumberLiteral(1, Nowhere),
+				                new InterpolatedStringLiteral(
+									new Expression[] {
+										new StringLiteral(" is the lonliest number, ", Nowhere),
+										new Reference("name", Nowhere),
+										new StringLiteral("!", Nowhere)
+									}, Nowhere),
+								Nowhere),
+							Nowhere),
+						new StringLiteral(" < she said it", Nowhere),
+					}, Nowhere),
+				expressions[0]);
+				
+		}
+		
 		public static List<Expression> Compile(string source)
 		{
 			var expressions = new List<Expression>();
 			var tokenizer = new RootTokenizer((indentation, expression) => expressions.Add(expression));
 			foreach(var character in source) {
-				tokenizer.OnCharacter(new Character(character, Nowhere));
+				var exception = tokenizer.OnCharacter(new Character(character, Nowhere));
+				if(exception != null) {
+					Console.WriteLine(exception.StackTrace);
+					throw exception;
+				}
 			}
-			tokenizer.OnDone();
+			var error = tokenizer.OnDone();
+			if(error != null) {
+				throw error;
+			}
 			return expressions;
 		}
 	}

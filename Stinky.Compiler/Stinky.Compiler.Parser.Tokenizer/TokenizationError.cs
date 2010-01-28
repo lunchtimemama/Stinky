@@ -1,10 +1,10 @@
 // 
-// DotTokenizer.cs
+// TokenizationError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,46 +26,12 @@
 
 using System;
 
-using Stinky.Compiler.Syntax;
-
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class DotTokenizer : Tokenizer
+	public enum TokenizationError
 	{
-		readonly LineTokenizer lineTokenizer;
-		readonly Location location;
-		
-		bool doubleDot;
-
-		public DotTokenizer(LineTokenizer lineTokenizer, Location location)
-		{
-			this.lineTokenizer = lineTokenizer;
-			this.location = location;
-		}
-
-		public override TokenizationException OnCharacter(Character character)
-		{
-			if(character.Char == '.') {
-				if(doubleDot) {
-					return new TokenizationException(TokenizationError.UnknownError, character.Location, Environment.StackTrace);
-				} else {
-					doubleDot = true;
-					return null;
-				}
-			} else {
-				OnDone();
-				return lineTokenizer.OnCharacter(character);
-			}
-		}
-
-		public override TokenizationException OnDone()
-		{
-			if(doubleDot) {
-				//lineTokenizer.OnToken(parser => parser.ParseDot(location));
-			} else {
-				//lineTokenizer.OnToken(parser => parser.ParseDoubleDot(location));
-			}
-			return null;
-		}
+		UnknownError,
+		UnexpectedRightCurlyBracket
 	}
 }
+

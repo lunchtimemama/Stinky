@@ -28,7 +28,7 @@ using System;
 
 namespace Stinky.Compiler.Syntax
 {
-	public class Expression
+	public abstract class Expression
 	{
 		public readonly Location Location;
 		public readonly Type Type;
@@ -43,5 +43,7 @@ namespace Stinky.Compiler.Syntax
 		{
 			return this;
 		}
+		
+		public abstract void Visit(Visitor visitor);
 	}
 }

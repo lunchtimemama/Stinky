@@ -51,6 +51,11 @@ namespace Stinky.Compiler.Syntax
 			return new Definition(Reference, expression, Location, expression.Type);
 		}
 		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitDefinition(this);
+		}
+		
 		public override bool Equals(object obj)
 		{
 			Definition definition = obj as Definition;

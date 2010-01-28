@@ -36,13 +36,14 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.rootTokenizer = rootTokenizer;
 		}
 
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
 			if(character.Char == '\t') {
 				indentation++;
+				return null;
 			} else {
 				rootTokenizer.OnIndentation(indentation);
-				rootTokenizer.OnCharacter(character);
+				return rootTokenizer.OnCharacter(character);
 			}
 		}
 	}

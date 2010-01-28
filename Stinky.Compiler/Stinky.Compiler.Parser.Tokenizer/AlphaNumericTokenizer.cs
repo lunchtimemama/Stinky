@@ -44,18 +44,19 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.location = location;
 		}
 
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
 			var @char = character.Char;
 			if((@char >= '0' && @char <= '9') || (@char >= 'A' && @char <= 'z') || @char == '#' || @char == '_') {
 				stringBuilder.Append(@char);
+				return null;
 			} else {
 				OnDone();
-				lineTokenizer.OnCharacter(character);
+				return lineTokenizer.OnCharacter(character);
 			}
 		}
 
-		public override void OnDone()
+		public override TokenizationException OnDone()
 		{
 			var tokenString = stringBuilder.ToString();
 			var keywordToken = Keywords.GetToken(tokenString);
@@ -66,6 +67,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				token = parser => parser.ParseIdentifier(tokenString, location);
 			}
 			lineTokenizer.OnToken(token);
+			return null;
 		}
 	}
 }

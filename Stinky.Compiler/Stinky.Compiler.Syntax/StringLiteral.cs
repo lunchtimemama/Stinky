@@ -36,6 +36,11 @@ namespace Stinky.Compiler.Syntax
 			String = @string;
 		}
 		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitStringLiteral(this);
+		}
+		
 		public override bool Equals(object obj)
 		{
 			StringLiteral stringLiteral = obj as StringLiteral;

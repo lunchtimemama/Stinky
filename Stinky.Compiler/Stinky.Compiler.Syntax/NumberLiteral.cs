@@ -28,30 +28,35 @@ namespace Stinky.Compiler.Syntax
 {
 	public class NumberLiteral : Expression
 	{
-		readonly double number;
+		public readonly double Number;
 		
 		public NumberLiteral(double number, Location location)
 			: base(location, typeof(double))
 		{
-			this.number = number;
+			this.Number = number;
+		}
+		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitNumberLiteral(this);
 		}
 		
 		public override bool Equals(object obj)
 		{
 			NumberLiteral numberLiteral = obj as NumberLiteral;
 			return numberLiteral != null
-				&& numberLiteral.number == number
+				&& numberLiteral.Number == Number
 				&& numberLiteral.Location == Location;
 		}
 
 		public override int GetHashCode()
 		{
-			return number.GetHashCode() ^ Location.GetHashCode();
+			return Number.GetHashCode() ^ Location.GetHashCode();
 		}
 
 		public override string ToString ()
 		{
-			return number.ToString();
+			return Number.ToString();
 		}
 
 	}

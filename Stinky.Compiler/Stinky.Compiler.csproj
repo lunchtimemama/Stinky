@@ -65,6 +65,9 @@
     <Compile Include="Stinky.Compiler.Syntax\IScope.cs" />
     <Compile Include="Stinky.Compiler.Syntax\InterpolatedStringLiteral.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedLineTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Visitor.cs" />
+    <Compile Include="Stinky.Compiler\Interpreter.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationError.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

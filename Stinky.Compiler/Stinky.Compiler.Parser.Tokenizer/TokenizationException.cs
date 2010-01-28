@@ -32,15 +32,15 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public sealed class TokenizationException : Exception
 	{
-		readonly Location location;
+		public readonly TokenizationError Error;
+		public readonly Location Location;
+		public readonly string StackTrace;
 
-		public TokenizationException(Location location)
+		public TokenizationException(TokenizationError error, Location location, string stackTrace)
 		{
-			this.location = location;
-		}
-
-		public Location Location {
-			get { return location; }
+			Error = error;
+			Location = location;
+			StackTrace = stackTrace;
 		}
 	}
 }

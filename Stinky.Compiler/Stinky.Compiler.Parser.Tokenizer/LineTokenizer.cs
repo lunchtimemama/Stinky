@@ -44,70 +44,72 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.consumer = consumer;
 		}
 
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
 			var @char = character.Char;
 			if(@char == '\n') {
 				OnDone();
+				return null;
 			} else {
 				if(tokenizer != null) {
-					tokenizer.OnCharacter(character);
+					return tokenizer.OnCharacter(character);
 				} else {
 					Location location = character.Location;
 					switch(@char) {
 					case '+':
 						OnToken(parser => parser.ParsePlus(location));
-						break;
-					case '{':
-						OnToken(parser => parser.ParseLeftCurlyBracket(location));
-						break;
+						return null;
 					case '}':
-						OnToken(parser => parser.ParseRightCurlyBracket(location));
-						break;
+						return new TokenizationException(TokenizationError.UnexpectedRightCurlyBracket, location, Environment.StackTrace);
 					case '(':
 						//OnToken(parser => parser.ParseOpenParentheses(location));
-						break;
+						return null;
 					case ')':
 						//OnToken(parser => parser.ParseCloseParentheses(location));
-						break;
+						return null;
 					case '.':
 						//tokenizer = new DotTokenizer(this, location);
-						break;
+						return null;
 					case ',':
 						//OnToken(parser => parser.ParseComma(location));
-						break;
+						return null;
 					case ':':
 						OnToken(parser => parser.ParseColon(location));
-						break;
+						return null;
 					case '&':
 						//OnToken(parser => parser.ParseAmpersand(location));
-						break;
+						return null;
 					case '"':
 						tokenizer = new StringLiteralTokenizer(this, location);
-						break;
+						return null;
 					default:
 						if((@char >= 'A' && @char <= 'z') || @char == '_') {
 							tokenizer = new AlphanumericTokenizer(this, location);
-							tokenizer.OnCharacter(character);
+							return tokenizer.OnCharacter(character);
 						} else if(@char >= '0' && @char <= '9') {
 							tokenizer = new NumberLiteralTokenizer(this, location);
-							tokenizer.OnCharacter(character);
+							return tokenizer.OnCharacter(character);
 						} else if(@char != ' ') {
-							throw new TokenizationException(location);
+							return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);
+						} else {
+							return null;
 						}
-						break;
 					}
 				}
 			}
 		}
 
-		public override void OnDone()
+		public override TokenizationException OnDone()
 		{
 			if(tokenizer != null) {
-				tokenizer.OnDone();
+				var error = tokenizer.OnDone();
+				if(error != null) {
+					return error;
+				}
 			}
 			parser.OnDone();
 			consumer();
+			return null;
 		}
 
 		public void OnToken(Func<Parser, Parser> token)

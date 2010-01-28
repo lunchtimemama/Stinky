@@ -1,0 +1,26 @@
+<Addin id          = "Stinky"
+       namespace   = "MonoDevelop"
+       name        = "Stinky Language Binding"
+       author      = "Scott Thomas"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com/"
+       description = "Support for editing, compiling, and running Stinky code."
+       category    = "Language bindings"
+       version     = "2.2">
+	
+	<Dependencies>
+		<Addin id="Ide" version="2.2"/>
+	</Dependencies>
+	
+	<Runtime>
+		<Import assembly="Stinky.Compiler.dll"/>
+	</Runtime>
+
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Pad id="MonoDevelop.Stinky.EvaluationPad" _label="Stinky Evaluator" class="MonoDevelop.Stinky.EvaluationPad" defaultPlacement = "Bottom"/>
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
+		<ContextPad id = "MonoDevelop.Stinky.EvaluationPad" />
+	</Extension>
+</Addin>
+

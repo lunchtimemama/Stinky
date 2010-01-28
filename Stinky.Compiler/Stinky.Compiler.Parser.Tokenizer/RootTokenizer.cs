@@ -43,9 +43,9 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.tokenizer = new IndentationTokenizer(this);
 		}
 
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
-			tokenizer.OnCharacter(character);
+			return tokenizer.OnCharacter(character);
 		}
 		
 		public void OnIndentation(int indentation)
@@ -58,9 +58,9 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			tokenizer = new IndentationTokenizer(this);
 		}
 		
-		public override void OnDone()
+		public override TokenizationException OnDone()
 		{
-			tokenizer.OnDone();
+			return tokenizer.OnDone();
 		}
 	}
 }

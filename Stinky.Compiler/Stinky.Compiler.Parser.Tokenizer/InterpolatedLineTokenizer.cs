@@ -35,12 +35,13 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		{
 		}
 		
-		public override void OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
-			if(character.Char == '}') {
-				OnDone();
+			var exception = base.OnCharacter(character);
+			if(exception != null && exception.Error == TokenizationError.UnexpectedRightCurlyBracket) {
+				return OnDone();
 			} else {
-				base.OnCharacter(character);
+				return exception;
 			}
 		}
 	}
