@@ -40,21 +40,6 @@ namespace Stinky.Compiler.Syntax
 		{
 		}
 		
-		public override Expression Resolve(IScope scope)
-		{
-			var leftOperand = LeftOperand.Resolve(scope);
-			var rightOperand = RightOperand.Resolve(scope);
-			
-			Type type;
-			if(leftOperand.Type == typeof(string) || rightOperand.Type == typeof(string)) {
-				type = typeof(string);
-			} else {
-				type = leftOperand.Type;
-			}
-			
-			return new PlusOperator(leftOperand, rightOperand, Location, type);
-		}
-		
 		public override void Visit(Visitor visitor)
 		{
 			visitor.VisitPlusOperator(this);

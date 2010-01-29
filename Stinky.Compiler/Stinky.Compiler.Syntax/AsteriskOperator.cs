@@ -1,5 +1,5 @@
 // 
-// IScope.cs
+// AsteriskOperator.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -24,10 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Stinky.Compiler.Syntax
 {
-	public interface IScope
+	public class AsteriskOperator : BinaryOperator
 	{
-		Definition GetDefinition(Reference reference);
+		public AsteriskOperator(Expression leftOperand, Expression rightOperand, Location location)
+			: this(leftOperand, rightOperand, location, null)
+		{
+		}
+		
+		public AsteriskOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
+			: base(leftOperand, rightOperand, location, type)
+		{
+		}
+		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitAsteriskOperator(this);
+		}
+		
+		public override bool Equals(object obj)
+		{
+			var asteriskOperator = obj as AsteriskOperator;
+			return asteriskOperator != null && EqualsOther(asteriskOperator);
+		}
+		
+		public override int GetHashCode()
+		{
+			// TODO class-specific entropy
+			return Location.GetHashCode() ^ LeftOperand.GetHashCode() ^ RightOperand.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("({0} * {1})", LeftOperand, RightOperand);
+		}
 	}
 }
+

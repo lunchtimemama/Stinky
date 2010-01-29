@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace Stinky.Compiler.Syntax
 {
-	public class Scope : IScope
+	public class Scope
 	{
 		readonly Scope parentScope;
 		

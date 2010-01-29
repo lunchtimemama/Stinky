@@ -38,41 +38,38 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestStringDefinitionTypeResolution()
 		{
-			var definition = new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
-				.Resolve(new Scope());
-			Assert.AreEqual(typeof(string), definition.Type);
+			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(
+				new Resolver(new Scope(), definition => Assert.AreEqual(typeof(string), definition.Type)));
 		}
 		
 		[Test]
 		public void TestStringDefinitionAndReferenceTypeResolution()
 		{
 			var scope = new Scope();
-			var definition = new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
-				.Resolve(scope);
-			scope.OnExpression(definition);
-			var reference = new Reference("foo", Nowhere)
-				.Resolve(scope);
-			scope.OnExpression(reference);
-			Assert.AreEqual(typeof(string), definition.Type);
-			Assert.AreEqual(typeof(string), reference.Type);
+			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(new Resolver(scope, definition => {
+				scope.OnExpression(definition);
+				new Reference("foo", Nowhere).Visit(new Resolver(scope, reference => {
+					Assert.AreEqual(typeof(string), definition.Type);
+					Assert.AreEqual(typeof(string), reference.Type);
+				}));
+			}));
 		}
 		
 		[Test]
 		public void TestTransitiveStringDefinitionAndReferenceTypeResolution()
 		{
 			var scope = new Scope();
-			var fooDefinition = new Definition(new Reference("foo", Nowhere), new StringLiteral("", Nowhere), Nowhere)
-				.Resolve(scope);
-			scope.OnExpression(fooDefinition);
-			var barDefinition = new Definition(new Reference("bar", Nowhere), new Reference("foo", Nowhere), Nowhere)
-				.Resolve(scope);
-			scope.OnExpression(barDefinition);
-			var reference = new Reference("bar", Nowhere)
-				.Resolve(scope);
-			scope.OnExpression(reference);
-			Assert.AreEqual(typeof(string), fooDefinition.Type);
-			Assert.AreEqual(typeof(string), barDefinition.Type);
-			Assert.AreEqual(typeof(string), reference.Type);
+			new Definition(new Reference("foo", Nowhere), new StringLiteral("", Nowhere), Nowhere).Visit(new Resolver(scope, fooDefinition => {
+				scope.OnExpression(fooDefinition);
+				new Definition(new Reference("bar", Nowhere), new Reference("foo", Nowhere), Nowhere).Visit(new Resolver(scope, barDefinition => {
+					scope.OnExpression(barDefinition);
+					new Reference("bar", Nowhere).Visit(new Resolver(scope, reference => {
+						Assert.AreEqual(typeof(string), fooDefinition.Type);
+						Assert.AreEqual(typeof(string), barDefinition.Type);
+						Assert.AreEqual(typeof(string), reference.Type);
+					}));
+				}));
+			}));
 		}
 		
 		[Test]
@@ -149,25 +146,22 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestPlusOperatorStringConcatinationWithTwoStrings()
 		{
-			var plusOperator = new PlusOperator(new StringLiteral("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
-				.Resolve(new Scope());
-			Assert.AreEqual(typeof(string), plusOperator.Type);
+			new PlusOperator(new StringLiteral("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
+				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(string), plusOperator.Type)));
 		}
 		
 		[Test]
 		public void TestPlusOperatorStringConcatinationWithOneString()
 		{
-			var plusOperator = new PlusOperator(new StringLiteral("foo", Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
-				.Resolve(new Scope());
-			Assert.AreEqual(typeof(string), plusOperator.Type);
+			new PlusOperator(new StringLiteral("foo", Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
+				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(string), plusOperator.Type)));
 		}
 		
 		[Test]
 		public void TestPLusOperatorAddition()
 		{
-			var plusOperator = new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
-				.Resolve(new Scope());
-			Assert.AreEqual(typeof(double), plusOperator.Type);
+			new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
+				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(double), plusOperator.Type)));
 		}
 	}
 }

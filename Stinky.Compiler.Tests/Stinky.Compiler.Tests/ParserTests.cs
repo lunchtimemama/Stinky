@@ -125,6 +125,24 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
+		public void TestArithmeticOrderOfOperations()
+		{
+			var expressions = Compile("1*2+3/4");
+			Assert.AreEqual(
+				new PlusOperator(
+					new AsteriskOperator(
+						new NumberLiteral(1, Nowhere),
+						new NumberLiteral(2, Nowhere),
+						Nowhere),
+					new ForwardSlashOperator(
+						new NumberLiteral(3, Nowhere),
+						new NumberLiteral(4, Nowhere),
+						Nowhere),
+					Nowhere),
+				expressions[0]);
+		}
+		
+		[Test]
 		public void TestDefinition()
 		{
 			var expressions = Compile("foo:42");

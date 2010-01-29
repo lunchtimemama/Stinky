@@ -45,13 +45,6 @@ namespace Stinky.Compiler.Syntax
 			Expression = expression;
 		}
 		
-		public override Expression Resolve(IScope scope)
-		{
-			// TODO test null
-			var definition = scope.GetDefinition(this);
-			return new Reference(Identifier, definition.Expression, Location, definition.Type);
-		}
-		
 		public override void Visit(Visitor visitor)
 		{
 			visitor.VisitReference(this);

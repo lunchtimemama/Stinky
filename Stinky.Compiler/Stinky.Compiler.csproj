@@ -62,7 +62,6 @@
     <Compile Include="Stinky.Compiler.Syntax\Definition.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
     <Compile Include="Stinky.Compiler.Syntax\StringLiteral.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\IScope.cs" />
     <Compile Include="Stinky.Compiler.Syntax\InterpolatedStringLiteral.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedLineTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Visitor.cs" />
@@ -71,6 +70,7 @@
     <Compile Include="Stinky.Compiler.Syntax\MinusOperator.cs" />
     <Compile Include="Stinky.Compiler.Syntax\ForwardSlashOperator.cs" />
     <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
+    <Compile Include="Stinky.Compiler\Resolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

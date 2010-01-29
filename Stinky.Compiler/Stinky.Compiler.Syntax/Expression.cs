@@ -39,11 +39,6 @@ namespace Stinky.Compiler.Syntax
 			Type = type;
 		}
 		
-		public virtual Expression Resolve(IScope scope)
-		{
-			return this;
-		}
-		
 		public abstract void Visit(Visitor visitor);
 	}
 }

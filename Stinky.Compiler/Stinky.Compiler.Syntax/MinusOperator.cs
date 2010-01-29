@@ -1,5 +1,5 @@
 // 
-// EvaluationWidget.cs
+// MinusOperator.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,43 +26,40 @@
 
 using System;
 
-using Gtk;
-
-using Stinky.Compiler;
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
-namespace MonoDevelop.Stinky
+namespace Stinky.Compiler.Syntax
 {
-	public class EvaluationWidget : VBox
+	public class MinusOperator : BinaryOperator
 	{
-		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
-		
-		public EvaluationWidget()
+		public MinusOperator(Expression leftOperand, Expression rightOperand, Location location)
+			: this(leftOperand, rightOperand, location, null)
 		{
-			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
-			var scope = new Scope();
-			var rootTokenizer = new RootTokenizer((indentation, expression) => {
-				expression.Visit(new Resolver(scope, e => {
-					scope.OnExpression(e);
-					if(e.Type != typeof(void)) {
-						e.Visit(interpreter);
-					}
-				}));
-			});
-			var scrolledWindow = new ScrolledWindow();
-			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
-				var column = 0;
-				foreach(var character in text) {
-					rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
-					column++;
-				}
-				rootTokenizer.OnCharacter(new Character('\n', new Location(null, 0, column)));
-			});
-			scrolledWindow.Add(readEvalPrintLoopView);
-			PackStart(scrolledWindow);
-			ShowAll();
+		}
+		
+		public MinusOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
+			: base(leftOperand, rightOperand, location, type)
+		{
+		}
+		
+		public override void Visit(Visitor visitor)
+		{
+			visitor.VisitMinusOperator(this);
+		}
+		
+		public override bool Equals(object obj)
+		{
+			var minusOperator = obj as MinusOperator;
+			return minusOperator != null && EqualsOther(minusOperator);
+		}
+		
+		public override int GetHashCode()
+		{
+			// TODO class-specific entropy
+			return Location.GetHashCode() ^ LeftOperand.GetHashCode() ^ RightOperand.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("({0} - {1})", LeftOperand, RightOperand);
 		}
 	}
 }

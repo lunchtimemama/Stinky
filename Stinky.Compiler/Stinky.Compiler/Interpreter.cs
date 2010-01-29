@@ -114,7 +114,7 @@ namespace Stinky.Compiler
 		void CheckExpressionType(Expression expression)
 		{
 			if(expression.Type == null) {
-				throw new InvalidOperationException("You cannot evaluate an unresolved expression.");
+				throw new InvalidOperationException("You cannot evaluate an expression without a type. Consider using the Resolver first.");
 			}
 		}
 	}

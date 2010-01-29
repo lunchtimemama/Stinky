@@ -40,15 +40,6 @@ namespace Stinky.Compiler.Syntax
 			InterpolatedExpressions = interpolatedExpressions;
 		}
 		
-		public override Expression Resolve(IScope scope)
-		{
-			var interpolatedExpressions = new List<Expression>();
-			foreach(var interpolatedExpression in InterpolatedExpressions) {
-				interpolatedExpressions.Add(interpolatedExpression.Resolve(scope));
-			}
-			return new InterpolatedStringLiteral(interpolatedExpressions, Location);
-		}
-		
 		public override void Visit(Visitor visitor)
 		{
 			visitor.VisitInterpolatedStringLiteral(this);

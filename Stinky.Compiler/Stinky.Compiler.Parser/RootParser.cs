@@ -43,6 +43,8 @@ namespace Stinky.Compiler.Parser
 		public RootParser(Func<Expression, Action<Expression>, Parser, Parser> expressionParserProvider, Action<Expression> consumer)
 			: base(consumer)
 		{
+			if(expressionParserProvider == null) throw new ArgumentNullException("expressionParserProvider");
+			
 			this.expressionParserProvider = expressionParserProvider;
 		}
 		
