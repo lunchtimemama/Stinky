@@ -33,23 +33,67 @@ namespace Stinky.Compiler.Parser
 	public class ExpressionParser : Parser
 	{
 		readonly Expression expression;
+		readonly Func<Expression, Expression> @operator;
 		
 		public ExpressionParser(Expression expression, Action<Expression> consumer, Parser nextParser)
+			: this(expression, null, consumer, nextParser)
+		{
+		}
+		
+		public ExpressionParser(Expression expression,
+		                        Func<Expression, Expression> @operator,
+		                        Action<Expression> consumer,
+		                        Parser nextParser)
 			: base(consumer, nextParser)
 		{
 			if(expression == null) throw new ArgumentNullException("expression");
 			
 			this.expression = expression;
+			this.@operator = @operator;
 		}
 		
 		public override Parser ParsePlus(Location location)
 		{
-			return new RootParser(rightOperand => Consumer(new PlusOperator(expression, rightOperand, location)));
+			return ParseBinaryOperator(location, (left, right, loc) => new PlusOperator(left, right, loc));
+		}
+		
+		public override Parser ParseMinus(Location location)
+		{
+			return ParseBinaryOperator(location, (left, right, loc) => new MinusOperator(left, right, loc));
+		}
+		
+		public override Parser ParseForwardSlash(Location location)
+		{
+			return ParseBinaryOperator(location, (left, right, loc) => new ForwardSlashOperator(left, right, loc));
+		}
+		
+		public override Parser ParseAsterisk(Location location)
+		{
+			return ParseBinaryOperator(location, (left, right, loc) => new AsteriskOperator(left, right, loc));
+		}
+		
+		Parser ParseBinaryOperator(Location location, Func<Expression, Expression, Location, Expression> binaryOperator)
+		{
+			return new RootParser(
+				(e, c, p) => new ExpressionParser(e, rightOperand => {
+					if(@operator != null) {
+						return binaryOperator(@operator(expression), rightOperand, location);
+					} else {
+						return binaryOperator(expression, rightOperand, location);
+					}
+				}, c, p),
+				operation => {
+					Consumer(operation);
+				});
 		}
 		
 		public override void OnDone()
 		{
-			Consumer(expression);
+			if(@operator!= null) {
+				Consumer(@operator(expression));
+			} else {
+				Consumer(expression);
+			}
 			base.OnDone();
 		}
 	}

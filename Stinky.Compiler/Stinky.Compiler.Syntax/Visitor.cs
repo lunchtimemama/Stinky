@@ -44,6 +44,18 @@ namespace Stinky.Compiler.Syntax
 		{
 		}
 		
+		public virtual void VisitMinusOperator(MinusOperator minusOperator)
+		{
+		}
+		
+		public virtual void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
+		{
+		}
+		
+		public virtual void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
+		{
+		}
+		
 		public virtual void VisitReference(Reference reference)
 		{
 		}

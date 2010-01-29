@@ -87,11 +87,11 @@ namespace Stinky.Compiler.Tests
 			var expressions = Compile("1+2+3");
 			Assert.AreEqual(
 				new PlusOperator(
-					new NumberLiteral(1, Nowhere),
 					new PlusOperator(
+						new NumberLiteral(1, Nowhere),
 						new NumberLiteral(2, Nowhere),
-						new NumberLiteral(3, Nowhere),
 						Nowhere),
+					new NumberLiteral(3, Nowhere),
 					Nowhere),
 				expressions[0]);
 		}
@@ -101,6 +101,27 @@ namespace Stinky.Compiler.Tests
 		{
 			var expressions = Compile("1 + 2");
 			Assert.AreEqual(new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+		}
+		
+		[Test]
+		public void TestMinusOperator()
+		{
+			var expressions = Compile("1-2");
+			Assert.AreEqual(new MinusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+		}
+		
+		[Test]
+		public void TestForwardSlashOperator()
+		{
+			var expressions = Compile("1/2");
+			Assert.AreEqual(new ForwardSlashOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+		}
+		
+		[Test]
+		public void TestAsteriskOperator()
+		{
+			var expressions = Compile("1*2");
+			Assert.AreEqual(new AsteriskOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
 		}
 		
 		[Test]
@@ -216,10 +237,10 @@ namespace Stinky.Compiler.Tests
 				new InterpolatedStringLiteral(new Expression[] {
 					new StringLiteral(@"{foo}: ", Nowhere),
 					new PlusOperator(
-						new Reference("bar", Nowhere),
 						new PlusOperator(
-							new NumberLiteral(42, Nowhere),
-							new StringLiteral("%", Nowhere), Nowhere),
+							new Reference("bar", Nowhere),
+							new NumberLiteral(42, Nowhere), Nowhere),
+						new StringLiteral("%", Nowhere),
 						Nowhere),
 					new StringLiteral(", ", Nowhere),
 					new Reference("bat", Nowhere)
@@ -261,16 +282,15 @@ namespace Stinky.Compiler.Tests
 				new InterpolatedStringLiteral(
 					new Expression[] {
 						new PlusOperator(
-							new NumberLiteral(1, Nowhere),
 							new PlusOperator(
 								new NumberLiteral(1, Nowhere),
-				                new InterpolatedStringLiteral(
-									new Expression[] {
-										new StringLiteral(" is the lonliest number, ", Nowhere),
-										new Reference("name", Nowhere),
-										new StringLiteral("!", Nowhere)
-									}, Nowhere),
-								Nowhere),
+								new NumberLiteral(1, Nowhere), Nowhere),
+			                new InterpolatedStringLiteral(
+								new Expression[] {
+									new StringLiteral(" is the lonliest number, ", Nowhere),
+									new Reference("name", Nowhere),
+									new StringLiteral("!", Nowhere)
+								}, Nowhere),
 							Nowhere),
 						new StringLiteral(" < she said it", Nowhere),
 					}, Nowhere),

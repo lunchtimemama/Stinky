@@ -145,5 +145,29 @@ namespace Stinky.Compiler.Tests
 				}, Nowhere)
 			);
 		}
+		
+		[Test]
+		public void TestPlusOperatorStringConcatinationWithTwoStrings()
+		{
+			var plusOperator = new PlusOperator(new StringLiteral("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
+				.Resolve(new Scope());
+			Assert.AreEqual(typeof(string), plusOperator.Type);
+		}
+		
+		[Test]
+		public void TestPlusOperatorStringConcatinationWithOneString()
+		{
+			var plusOperator = new PlusOperator(new StringLiteral("foo", Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
+				.Resolve(new Scope());
+			Assert.AreEqual(typeof(string), plusOperator.Type);
+		}
+		
+		[Test]
+		public void TestPLusOperatorAddition()
+		{
+			var plusOperator = new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
+				.Resolve(new Scope());
+			Assert.AreEqual(typeof(double), plusOperator.Type);
+		}
 	}
 }

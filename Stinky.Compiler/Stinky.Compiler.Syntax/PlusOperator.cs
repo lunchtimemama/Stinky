@@ -63,10 +63,7 @@ namespace Stinky.Compiler.Syntax
 		public override bool Equals(object obj)
 		{
 			PlusOperator plusOperator = obj as PlusOperator;
-			return plusOperator != null
-				&& plusOperator.LeftOperand.Equals(LeftOperand)
-				&& plusOperator.RightOperand.Equals(RightOperand)
-				&& plusOperator.Location == Location;
+			return plusOperator != null && EqualsOther(plusOperator);
 		}
 		
 		public override int GetHashCode ()

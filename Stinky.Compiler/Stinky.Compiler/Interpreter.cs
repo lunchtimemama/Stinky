@@ -65,35 +65,57 @@ namespace Stinky.Compiler
 		
 		public override void VisitPlusOperator(PlusOperator plusOperator)
 		{
-			if(plusOperator.Type == null) {
-				throw new InvalidOperationException("You cannot evaluate an unresolved expression.");
-			} else if(plusOperator.Type == typeof(string)) {
-				plusOperator.LeftOperand.Visit(new Interpreter(left => {
-					plusOperator.RightOperand.Visit(new Interpreter(right => {
-						consumer(left.ToString() + right.ToString());
-					}));
-				}));
+			CheckExpressionType(plusOperator);
+			if(plusOperator.Type == typeof(string)) {
+				VisitBinaryOperation<string>((left, right) => left + right, plusOperator);
 			} else {
-				plusOperator.LeftOperand.Visit(new Interpreter(left => {
-					plusOperator.RightOperand.Visit(new Interpreter(right => {
-						consumer((double)left + (double)right);
-					}));
-				}));;
+				VisitBinaryOperation<double>((left, right) => left + right, plusOperator);
 			}
+		}
+		
+		public override void VisitMinusOperator(MinusOperator minusOperator)
+		{
+			CheckExpressionType(minusOperator);
+			VisitBinaryOperation<double>((left, right) => left - right, minusOperator);
+		}
+		
+		public override void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
+		{
+			CheckExpressionType(forwardSlashOperator);
+			VisitBinaryOperation<double>((left, right) => left / right, forwardSlashOperator);
+		}
+		
+		public override void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
+		{
+			CheckExpressionType(asteriskOperator);
+			VisitBinaryOperation<double>((left, right) => left * right, asteriskOperator);
+		}
+		
+		void VisitBinaryOperation<T>(Func<T, T, object> operation, BinaryOperator binaryOperator)
+		{
+			binaryOperator.LeftOperand.Visit(new Interpreter(left => {
+				binaryOperator.RightOperand.Visit(new Interpreter(right => {
+					consumer(operation((T)left, (T)right));
+				}));
+			}));
 		}
 		
 		public override void VisitReference(Reference reference)
 		{
-			if(reference.Expression == null) {
-				throw new InvalidOperationException("You cannot evaluate an unresolved expression.");
-			} else {
-				reference.Expression.Visit(this);
-			}
+			CheckExpressionType(reference);
+			reference.Expression.Visit(this);
 		}
 		
 		public override void VisitStringLiteral(StringLiteral stringLiteral)
 		{
 			consumer(stringLiteral.String);
+		}
+		
+		void CheckExpressionType(Expression expression)
+		{
+			if(expression.Type == null) {
+				throw new InvalidOperationException("You cannot evaluate an unresolved expression.");
+			}
 		}
 	}
 }

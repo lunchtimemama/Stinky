@@ -39,5 +39,12 @@ namespace Stinky.Compiler.Syntax
 			LeftOperand = leftOperand;
 			RightOperand = rightOperand;
 		}
+		
+		protected bool EqualsOther(BinaryOperator binaryOperator)
+		{
+			return Location == binaryOperator.Location
+				&& LeftOperand.Equals(binaryOperator.LeftOperand)
+				&& RightOperand.Equals(binaryOperator.RightOperand);
+		}
 	}
 }

@@ -101,6 +101,33 @@ namespace Stinky.Compiler.Parser
 			}
 		}
 		
+		public virtual Parser ParseMinus(Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseMinus(location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
+		
+		public virtual Parser ParseForwardSlash(Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseForwardSlash(location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
+		
+		public virtual Parser ParseAsterisk(Location location)
+		{
+			if(NextParser != null) {
+				return NextParser.ParseAsterisk(location);
+			} else {
+				throw new ParseException(Error, location);
+			}
+		}
+		
 		protected virtual ParseError Error {
 			get { return ParseError.UnknownError; }
 		}

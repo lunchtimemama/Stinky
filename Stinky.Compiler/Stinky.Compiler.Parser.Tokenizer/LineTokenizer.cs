@@ -59,6 +59,15 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					case '+':
 						OnToken(parser => parser.ParsePlus(location));
 						return null;
+					case '-':
+						OnToken(parser => parser.ParseMinus(location));
+						return null;
+					case '/':
+						OnToken(parser => parser.ParseForwardSlash(location));
+						return null;
+					case '*':
+						OnToken(parser => parser.ParseAsterisk(location));
+						return null;
 					case '}':
 						return new TokenizationException(TokenizationError.UnexpectedRightCurlyBracket, location, Environment.StackTrace);
 					case '(':

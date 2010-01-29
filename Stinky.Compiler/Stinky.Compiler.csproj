@@ -68,6 +68,9 @@
     <Compile Include="Stinky.Compiler.Syntax\Visitor.cs" />
     <Compile Include="Stinky.Compiler\Interpreter.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationError.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\MinusOperator.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\ForwardSlashOperator.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
