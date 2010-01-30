@@ -43,14 +43,14 @@ namespace MonoDevelop.Stinky
 		{
 			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
 			var scope = new Scope();
-			var rootTokenizer = new RootTokenizer((indentation, expression) => {
-				expression.Visit(new Resolver(scope, e => {
-					scope.OnExpression(e);
-					if(e.Type != typeof(void)) {
-						e.Visit(interpreter);
-					}
-				}));
+			var resolver = new Resolver(scope, value => {
+				scope.OnExpression(value);
+				if(value.Type != typeof(void)) {
+					value.Visit(interpreter);
+				}
 			});
+			var thing = "hello i'm pink";
+			var rootTokenizer = new RootTokenizer((indentation, expression) => expression.Visit(resolver));
 			var scrolledWindow = new ScrolledWindow();
 			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
 				var column = 0;
