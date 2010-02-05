@@ -27,8 +27,6 @@
 using System;
 using System.Text;
 
-using Stinky.Compiler.Syntax;
-
 namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public class AlphanumericTokenizer : SubTokenizer

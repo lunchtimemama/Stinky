@@ -26,8 +26,6 @@
 
 using System;
 
-using Stinky.Compiler.Syntax;
-
 namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public struct Character : IEquatable<Character>
