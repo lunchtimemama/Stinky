@@ -51,8 +51,6 @@
     <Compile Include="Stinky.Compiler.Parser\LineParser.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\AlphaNumericTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\DotTokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\IndentationTokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\Keywords.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\LineTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\NumberLiteralTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\RootTokenizer.cs" />
@@ -71,6 +69,7 @@
     <Compile Include="Stinky.Compiler.Syntax\ForwardSlashOperator.cs" />
     <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
     <Compile Include="Stinky.Compiler\Resolver.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -120,6 +120,15 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			consumer();
 			return null;
 		}
+		
+		public override Func<Parser, Parser> GetCurrentToken()
+		{
+			if(tokenizer != null) {
+				return tokenizer.GetCurrentToken();
+			} else {
+				return null;
+			}
+		}
 
 		public void OnToken(Func<Parser, Parser> token)
 		{

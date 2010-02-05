@@ -30,17 +30,14 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class DotTokenizer : Tokenizer
+	public class DotTokenizer : SubTokenizer
 	{
-		readonly LineTokenizer lineTokenizer;
-		readonly Location location;
-		
 		bool doubleDot;
 
 		public DotTokenizer(LineTokenizer lineTokenizer, Location location)
+			: base(lineTokenizer)
 		{
-			this.lineTokenizer = lineTokenizer;
-			this.location = location;
+			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
 		}
 
 		public override TokenizationException OnCharacter(Character character)
@@ -54,18 +51,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				}
 			} else {
 				OnDone();
-				return lineTokenizer.OnCharacter(character);
+				return base.OnCharacter(character);
 			}
-		}
-
-		public override TokenizationException OnDone()
-		{
-			if(doubleDot) {
-				//lineTokenizer.OnToken(parser => parser.ParseDot(location));
-			} else {
-				//lineTokenizer.OnToken(parser => parser.ParseDoubleDot(location));
-			}
-			return null;
 		}
 	}
 }

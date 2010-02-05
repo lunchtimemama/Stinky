@@ -24,23 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Text;
 
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class NumberLiteralTokenizer : Tokenizer
+	public class NumberLiteralTokenizer : SubTokenizer
 	{
-		readonly LineTokenizer lineTokenizer;
-		readonly Location location;
-		
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		public NumberLiteralTokenizer(LineTokenizer lineTokenizer, Location location)
+			: base(lineTokenizer)
 		{
-			this.lineTokenizer = lineTokenizer;
-			this.location = location;
+			Token = parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location);
 		}
 		
 		public override TokenizationException OnCharacter(Character character)
@@ -51,16 +49,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				return null;
 			} else {
 				OnDone();
-				return lineTokenizer.OnCharacter(character);
+				return base.OnCharacter(character);
 			}
-		}
-		
-		public override TokenizationException OnDone ()
-		{
-			// TODO handle failed parsing
-			var literal = double.Parse(stringBuilder.ToString());
-			lineTokenizer.OnToken(parser => parser.ParseNumberLiteral(literal, location));
-			return null;
 		}
 	}
 }

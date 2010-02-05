@@ -32,9 +32,8 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class StringLiteralTokenizer : Tokenizer
+	public class StringLiteralTokenizer : SubTokenizer
 	{
-		readonly LineTokenizer lineTokenizer;
 		readonly Location location;
 		
 		StringBuilder stringBuilder = new StringBuilder();
@@ -45,9 +44,12 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		bool escaped;
 		
 		public StringLiteralTokenizer(LineTokenizer lineTokenizer, Location location)
+			: base (lineTokenizer)
 		{
-			this.lineTokenizer = lineTokenizer;
 			this.location = location;
+			Token = parser => interpolatedExpressions != null
+				? parser.ParseInterpolatedStringLiteral(interpolatedExpressions, location)
+				: parser.ParseStringLiteral(stringBuilder.ToString(), location);
 		}
 		
 		public override TokenizationException OnCharacter(Character character)
@@ -132,11 +134,9 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				if(stringBuilder.Length > 0) {
 					interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 				}
-				lineTokenizer.OnToken(parser => parser.ParseInterpolatedStringLiteral(interpolatedExpressions, location));
-				return null;
+				return base.OnDone();
 			} else {
-				lineTokenizer.OnToken(parser => parser.ParseStringLiteral(stringBuilder.ToString(), location));
-				return null;
+				return base.OnDone();
 			}
 		}
 	}

@@ -31,36 +31,44 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class RootTokenizer : Tokenizer
+	public class RootTokenizer
 	{
 		readonly Action<int, Expression> consumer;
 		
+		int indentation;
 		Tokenizer tokenizer;
 
 		public RootTokenizer(Action<int, Expression> consumer)
 		{
 			this.consumer = consumer;
-			this.tokenizer = new IndentationTokenizer(this);
 		}
 
-		public override TokenizationException OnCharacter(Character character)
+		public TokenizationException OnCharacter(Character character)
 		{
-			return tokenizer.OnCharacter(character);
+			if(tokenizer != null) {
+				return tokenizer.OnCharacter(character);
+			} else if(character.Char == '\t') {
+				indentation = indentation + 1;
+				return null;
+			} else {
+				tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
+				return tokenizer.OnCharacter(character);
+			}
 		}
 		
-		public void OnIndentation(int indentation)
+		void OnLine()
 		{
-			tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
+			tokenizer = null;
+			indentation = 0;
 		}
 		
-		public void OnLine()
+		public TokenizationException OnDone()
 		{
-			tokenizer = new IndentationTokenizer(this);
-		}
-		
-		public override TokenizationException OnDone()
-		{
-			return tokenizer.OnDone();
+			if(tokenizer != null) {
+				return tokenizer.OnDone();
+			} else {
+				return null;
+			}
 		}
 	}
 }

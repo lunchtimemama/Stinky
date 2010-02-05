@@ -31,17 +31,14 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class AlphanumericTokenizer : Tokenizer
+	public class AlphanumericTokenizer : SubTokenizer
 	{
-		readonly LineTokenizer lineTokenizer;
-		readonly Location location;
-		
 		StringBuilder stringBuilder = new StringBuilder();
 
 		public AlphanumericTokenizer(LineTokenizer lineTokenizer, Location location)
+			: base(lineTokenizer)
 		{
- 			this.lineTokenizer = lineTokenizer;
-			this.location = location;
+			Token = parser => parser.ParseIdentifier(stringBuilder.ToString(), location);
 		}
 
 		public override TokenizationException OnCharacter(Character character)
@@ -52,14 +49,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				return null;
 			} else {
 				OnDone();
-				return lineTokenizer.OnCharacter(character);
+				return base.OnCharacter(character);
 			}
-		}
-
-		public override TokenizationException OnDone()
-		{
-			lineTokenizer.OnToken(parser => parser.ParseIdentifier(stringBuilder.ToString(), location));
-			return null;
 		}
 	}
 }

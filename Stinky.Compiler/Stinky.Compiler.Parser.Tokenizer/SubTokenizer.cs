@@ -1,10 +1,10 @@
 // 
-// IndentationTokenizer.cs
+// SubTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class IndentationTokenizer : Tokenizer
+	public abstract class SubTokenizer : Tokenizer
 	{
-		readonly RootTokenizer rootTokenizer;
-		int indentation;
-
-		public IndentationTokenizer(RootTokenizer rootTokenizer)
+		readonly LineTokenizer lineTokenizer;
+		
+		protected SubTokenizer(LineTokenizer lineTokenizer)
 		{
-			this.rootTokenizer = rootTokenizer;
+			this.lineTokenizer = lineTokenizer;
 		}
-
+		
+		protected Func<Parser, Parser> Token { get; set; }
+		
 		public override TokenizationException OnCharacter(Character character)
 		{
-			if(character.Char == '\t') {
-				indentation++;
-				return null;
-			} else {
-				rootTokenizer.OnIndentation(indentation);
-				return rootTokenizer.OnCharacter(character);
-			}
+			return lineTokenizer.OnCharacter(character);
+		}
+		
+		public sealed override Func<Parser, Parser> GetCurrentToken()
+		{
+			return Token;
+		}
+		
+		public override TokenizationException OnDone()
+		{
+			lineTokenizer.OnToken(Token);
+			return null;
 		}
 	}
 }
+

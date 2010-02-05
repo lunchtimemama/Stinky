@@ -24,11 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public abstract class Tokenizer
 	{
 		public abstract TokenizationException OnCharacter(Character character);
+		
+		public abstract Func<Parser, Parser> GetCurrentToken();
 
 		public virtual TokenizationException OnDone()
 		{
