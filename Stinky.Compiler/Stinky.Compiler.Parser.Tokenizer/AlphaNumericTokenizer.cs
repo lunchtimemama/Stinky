@@ -58,15 +58,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 
 		public override TokenizationException OnDone()
 		{
-			var tokenString = stringBuilder.ToString();
-			var keywordToken = Keywords.GetToken(tokenString);
-			Func<Parser, Parser> token;
-			if(keywordToken != null) {
-				token = keywordToken(location);
-			} else {
-				token = parser => parser.ParseIdentifier(tokenString, location);
-			}
-			lineTokenizer.OnToken(token);
+			lineTokenizer.OnToken(parser => parser.ParseIdentifier(stringBuilder.ToString(), location));
 			return null;
 		}
 	}
