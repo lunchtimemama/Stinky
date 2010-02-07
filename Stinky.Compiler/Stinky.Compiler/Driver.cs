@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
