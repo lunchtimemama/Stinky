@@ -42,9 +42,31 @@ namespace Stinky.Compiler.Syntax
 		
 		protected bool EqualsOther(BinaryOperator binaryOperator)
 		{
-			return Location == binaryOperator.Location
-				&& LeftOperand.Equals(binaryOperator.LeftOperand)
-				&& RightOperand.Equals(binaryOperator.RightOperand);
+			if(Location != binaryOperator.Location) {
+				return false;
+			}
+			
+			if(LeftOperand != null) {
+				if(!LeftOperand.Equals(binaryOperator.LeftOperand)) {
+					return false;
+				}
+			} else {
+				if(binaryOperator.LeftOperand != null) {
+					return false;
+				}
+			}
+			
+			if(RightOperand != null) {
+				if(!RightOperand.Equals(binaryOperator.RightOperand)) {
+					return false;
+				}
+			} else {
+				if(binaryOperator.RightOperand != null) {
+					return false;
+				}
+			}
+			
+			return true;
 		}
 	}
 }

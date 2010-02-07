@@ -158,10 +158,134 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
-		public void TestPLusOperatorAddition()
+		public void TestPlusOperatorAddition()
 		{
 			new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
 				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(double), plusOperator.Type)));
+		}
+		
+		[Test]
+		public void TestPlusOperatorEquality()
+		{
+			Assert.AreEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreEqual(
+				new PlusOperator(
+					null,
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					null,
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					null,
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					null,
+					Nowhere));
+			
+			Assert.AreEqual(
+				new PlusOperator(
+					null,
+					null,
+					Nowhere),
+				new PlusOperator(
+					null,
+					null,
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(1, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(1, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(1, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(1, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					null,
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					null,
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					null,
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere));
+			
+			Assert.AreNotEqual(
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					new NumberLiteral(0, Nowhere),
+					Nowhere),
+				new PlusOperator(
+					new NumberLiteral(0, Nowhere),
+					null,
+					Nowhere));
 		}
 	}
 }

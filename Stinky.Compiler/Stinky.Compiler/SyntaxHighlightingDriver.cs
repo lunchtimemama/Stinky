@@ -43,11 +43,14 @@ namespace Stinky.Compiler
 		StinkyParser parser;
 		Expression expression;
 		
-		public SyntaxHighlightingDriver()
+		public SyntaxHighlightingDriver(Action<Expression> consumer)
 		{
-			parser = new LineParser(expression => this.expression = expression);
+			parser = new LineParser(expression => {
+				expression.Visit(new SyntaxHighlighter(this.expression, consumer));
+				this.expression = expression;
+			});
 			rootTokenizer = new RootTokenizer(
-				token => token(parser).OnDone(),
+				token => this.token = token,
 				() => parser = token(parser),
 				() => {}
 			);
@@ -55,7 +58,9 @@ namespace Stinky.Compiler
 		
 		public TokenizationException OnCharacter(Character character)
 		{
-			return rootTokenizer.OnCharacter(character);
+			var result = rootTokenizer.OnCharacter(character);
+			token(parser).OnDone();
+			return result;
 		}
 	}
 }

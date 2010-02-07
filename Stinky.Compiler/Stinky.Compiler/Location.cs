@@ -63,9 +63,14 @@ namespace Stinky.Compiler
 			return obj is Location && Equals((Location)obj);
 		}
 
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
 			return Source.GetHashCode() ^ Line ^ Column;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0} line:{1} column:{2}", Source, Line, Column);
 		}
 	}
 }

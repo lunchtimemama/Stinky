@@ -35,27 +35,30 @@ namespace Smell
 {
 	class MainClass
 	{
-		static readonly Location Nowhere = new Location(null, 0, 0);
 		public static void Main(string[] args)
 		{
-			var expressions = Compile("1+1");
-			var eq = expressions[0].Equals(new InterpolatedStringLiteral(
-					new Expression[] {
-						new PlusOperator(
-							new NumberLiteral(1, Nowhere),
-							new PlusOperator(
-								new NumberLiteral(1, Nowhere),
-				                new InterpolatedStringLiteral(
-									new Expression[] {
-										new StringLiteral(" is the lonliest number, ", Nowhere),
-										new Reference("name", Nowhere),
-										new StringLiteral("!", Nowhere)
-									}, Nowhere),
-								Nowhere),
-							Nowhere),
-						new StringLiteral(" < she said it", Nowhere),
-					}, Nowhere));
-			Console.WriteLine(eq);
+			var code = "foo+bar";
+			var locations = new[] { 0, 0, 0, 0, 4, 4, 4 };
+			var i = 0;
+			var correctCount = 0;
+			var driver = new SyntaxHighlightingDriver(expression => {
+				if(expression.Location == Location(locations[i])) {
+					correctCount = correctCount + 1;
+				} else {
+					Console.WriteLine(expression.Location);
+				}
+			});
+			for(; i < code.Length; i++) {
+				try {
+					driver.OnCharacter(new Character(code[i], Location(i)));
+				} catch {
+				}
+			}
+		}
+		
+		static Location Location(int location)
+		{
+			return new Location(null, 0, location);
 		}
 		
 		public static List<Expression> Compile(string source)

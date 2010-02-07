@@ -29,6 +29,7 @@ using System;
 using NUnit.Framework;
 
 using Stinky.Compiler;
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Tests
@@ -36,7 +37,7 @@ namespace Stinky.Compiler.Tests
 	[TestFixture]
 	public class SyntaxHighlightingTests
 	{
-		Location Location(int location)
+		static Location Location(int location)
 		{
 			return new Location(null, 0, location);
 		}
@@ -68,6 +69,30 @@ namespace Stinky.Compiler.Tests
 						Location(3)),
 					expression => correct = expression.Location == Location(4)));
 			Assert.IsTrue(correct);
+		}
+		
+		[Test]
+		public void TestSyntaxHighlightingDriverWithStringConcatination()
+		{
+			var code = "foo+bar";
+			var locations = new[] { 0, 0, 0, 0, 3, 4, 4 };
+			var i = 0;
+			var correctCount = 0;
+			var driver = new SyntaxHighlightingDriver(expression => {
+				if(expression.Location == Location(locations[i])) {
+					correctCount = correctCount + 1;
+				} else {
+					Console.WriteLine(expression.Location);
+					Assert.Fail();
+				}
+			});
+			for(; i < code.Length; i++) {
+				try {
+					driver.OnCharacter(new Character(code[i], Location(i)));
+				} catch {
+				}
+			}
+			Assert.AreEqual(6, correctCount);
 		}
 	}
 }
