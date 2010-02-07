@@ -37,28 +37,29 @@ namespace Stinky.Compiler
 	public class Driver
 	{
 		readonly Action<int, Expression> consumer;
+		readonly ErrorConsumer errorConsumer;
 		
 		int indentation;
 		Tokenizer tokenizer;
 		Func<StinkyParser, StinkyParser> token;
 		StinkyParser parser;
 
-		public Driver(Action<int, Expression> consumer)
+		public Driver(Action<int, Expression> consumer, ErrorConsumer errorConsumer)
 		{
 			this.consumer = consumer;
+			this.errorConsumer = errorConsumer;
 		}
 
-		public TokenizationException OnCharacter(Character character)
+		public void OnCharacter(Character character)
 		{
 			if(tokenizer != null) {
-				return tokenizer.OnCharacter(character);
+				tokenizer.OnCharacter(character);
 			} else if(character.Char == '\t') {
 				indentation = indentation + 1;
-				return null;
 			} else {
-				parser = new LineParser(expression => consumer(indentation, expression));
-				tokenizer = new RootTokenizer(token => this.token = token, () => parser = token(parser), OnLine);
-				return tokenizer.OnCharacter(character);
+				parser = new LineParser(expression => consumer(indentation, expression), errorConsumer.ParseErrorConsumer);
+				tokenizer = new RootTokenizer(token => this.token = token, () => parser = token(parser), OnLine, errorConsumer);
+				tokenizer.OnCharacter(character);
 			}
 		}
 		
@@ -69,12 +70,10 @@ namespace Stinky.Compiler
 			parser.OnDone();
 		}
 		
-		public TokenizationException OnDone()
+		public void OnDone()
 		{
 			if(tokenizer != null) {
-				return tokenizer.OnDone();
-			} else {
-				return null;
+				tokenizer.OnDone();
 			}
 		}
 	}

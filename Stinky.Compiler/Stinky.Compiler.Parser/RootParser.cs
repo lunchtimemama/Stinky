@@ -33,15 +33,17 @@ namespace Stinky.Compiler.Parser
 {
 	public class RootParser : Parser
 	{
-		readonly Func<Expression, Action<Expression>, Parser, Parser> expressionParserProvider;
+		readonly Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser> expressionParserProvider;
 		
-		public RootParser(Action<Expression> consumer)
-			: this((e, c, p) => new ExpressionParser(e, c, p), consumer)
+		public RootParser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
+			: this((e, c, ec, p) => new ExpressionParser(e, c, ec, p), consumer, errorConsumer)
 		{
 		}
 		
-		public RootParser(Func<Expression, Action<Expression>, Parser, Parser> expressionParserProvider, Action<Expression> consumer)
-			: base(consumer)
+		public RootParser(Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser> expressionParserProvider,
+		                  Action<Expression> consumer,
+		                  Action<CompilationError<ParseError>> errorConsumer)
+			: base(consumer, errorConsumer)
 		{
 			if(expressionParserProvider == null) throw new ArgumentNullException("expressionParserProvider");
 			
@@ -50,22 +52,22 @@ namespace Stinky.Compiler.Parser
 		
 		public override Parser ParseIdentifier(string identifier, Location location)
 		{
-			return expressionParserProvider(new Reference(identifier, location), Consumer, this);
+			return expressionParserProvider(new Reference(identifier, location), Consumer, ErrorConsumer, this);
 		}
 		
 		public override Parser ParseNumberLiteral(double number, Location location)
 		{
-			return expressionParserProvider(new NumberLiteral(number, location), Consumer, this);
+			return expressionParserProvider(new NumberLiteral(number, location), Consumer, ErrorConsumer, this);
 		}
 		
 		public override Parser ParseStringLiteral(string @string, Location location)
 		{
-			return expressionParserProvider(new StringLiteral(@string, location), Consumer, this);
+			return expressionParserProvider(new StringLiteral(@string, location), Consumer, ErrorConsumer, this);
 		}
 		
 		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
 		{
-			return expressionParserProvider(new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, this);
+			return expressionParserProvider(new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, ErrorConsumer, this);
 		}
 	}
 }

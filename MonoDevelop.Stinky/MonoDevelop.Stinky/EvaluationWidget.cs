@@ -49,8 +49,7 @@ namespace MonoDevelop.Stinky
 					value.Visit(interpreter);
 				}
 			});
-			var thing = "hello i'm pink";
-			var rootTokenizer = new Driver((indentation, expression) => expression.Visit(resolver));
+			var rootTokenizer = new Driver((indentation, expression) => expression.Visit(resolver), new ErrorConsumer(null, null));
 			var scrolledWindow = new ScrolledWindow();
 			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
 				var column = 0;

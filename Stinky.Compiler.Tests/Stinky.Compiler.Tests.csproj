@@ -19,6 +19,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -26,6 +27,7 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,6 +42,8 @@
     <Compile Include="Stinky.Compiler.Tests\SyntaxTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\CompilerTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\SyntaxHighlightingTests.cs" />
+    <Compile Include="Stinky.Compiler.Tests\ParseException.cs" />
+    <Compile Include="Stinky.Compiler.Tests\TokenizationException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">

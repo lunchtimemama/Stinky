@@ -60,17 +60,6 @@ namespace Smell
 		{
 			return new Location(null, 0, location);
 		}
-		
-		public static List<Expression> Compile(string source)
-		{
-			var expressions = new List<Expression>();
-			var driver = new Driver((indentation, expression) => expressions.Add(expression));
-			foreach(var character in source) {
-				driver.OnCharacter(new Character(character, new Location(null, 0, 0)));
-			}
-			driver.OnDone();
-			return expressions;
-		}
 	}
 }
 

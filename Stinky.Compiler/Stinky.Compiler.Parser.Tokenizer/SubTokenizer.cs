@@ -37,15 +37,29 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.rootTokenizer = rootTokenizer;
 		}
 		
-		public override TokenizationException OnCharacter(Character character)
+		public override void OnCharacter(Character character)
 		{
-			return rootTokenizer.OnCharacter(character);
+			rootTokenizer.OnCharacter(character);
 		}
 		
-		public override TokenizationException OnDone()
+		public override void OnDone()
 		{
 			rootTokenizer.OnTokenReady();
-			return null;
+		}
+		
+		protected void OnError(Location location, TokenizationError error)
+		{
+			rootTokenizer.OnError(location, error);
+		}
+		
+		protected void OnError(CompilationError<TokenizationError> error)
+		{
+			rootTokenizer.OnError(error);
+		}
+		
+		protected void OnError(CompilationError<ParseError> error)
+		{
+			rootTokenizer.OnError(error);
 		}
 	}
 }

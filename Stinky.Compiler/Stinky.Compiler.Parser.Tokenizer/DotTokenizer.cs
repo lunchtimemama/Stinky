@@ -38,18 +38,17 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
 		}
 
-		public override TokenizationException OnCharacter(Character character)
+		public override void OnCharacter(Character character)
 		{
 			if(character.Char == '.') {
 				if(doubleDot) {
-					return new TokenizationException(TokenizationError.UnknownError, character.Location, Environment.StackTrace);
+					OnError(character.Location, TokenizationError.UnknownError);
 				} else {
 					doubleDot = true;
-					return null;
 				}
 			} else {
 				OnDone();
-				return base.OnCharacter(character);
+				base.OnCharacter(character);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 // 
-// InterpolatedLineTokenizer.cs
+// ParseException.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,24 +26,10 @@
 
 using System;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Tests
 {
-	public class InterpolatedRootTokenizer : RootTokenizer
+	public class ParseException : Exception
 	{
-		public InterpolatedRootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady)
-			: base(tokenConsumer, tokenReady, lineReady)
-		{
-		}
-		
-		public override TokenizationException OnCharacter(Character character)
-		{
-			var exception = base.OnCharacter(character);
-			if(exception != null && exception.Error == TokenizationError.UnexpectedRightCurlyBracket) {
-				return OnDone();
-			} else {
-				return exception;
-			}
-		}
 	}
 }
 

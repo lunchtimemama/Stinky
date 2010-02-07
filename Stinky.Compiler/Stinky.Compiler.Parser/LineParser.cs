@@ -32,14 +32,14 @@ namespace Stinky.Compiler.Parser
 {
 	public class LineParser : RootParser
 	{
-		public LineParser(Action<Expression> consumer)
-			: base(consumer)
+		public LineParser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
+			: base(consumer, errorConsumer)
 		{
 		}
 		
 		public override Parser ParseIdentifier (string identifier, Location location)
 		{
-			return new ReferenceOrDefinitionParser(identifier, location, Consumer, this);
+			return new ReferenceOrDefinitionParser(identifier, location, Consumer, ErrorConsumer, this);
 		}
 	}
 }

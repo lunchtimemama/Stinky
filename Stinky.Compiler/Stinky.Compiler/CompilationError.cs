@@ -1,5 +1,5 @@
 // 
-// ParseException.cs
+// CompilationError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,17 +26,52 @@
 
 using System;
 
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler
 {
-	public class ParseException : Exception
+	// Why don't enums implement IEquatable? THAT IS SILLY! We could be saving a box...
+	public struct CompilationError<T> : IEquatable<CompilationError<T>>
 	{
-		public readonly ParseError Error;
 		public readonly Location Location;
+		public readonly T Error;
 		
-		public ParseException(ParseError error, Location location)
+		public CompilationError(Location location, T error)
 		{
-			Error = error;
 			Location = location;
+			Error = error;
+		}
+		
+		public static bool operator==(CompilationError<T> compilationError1, CompilationError<T> compilationError2)
+		{
+			
+			return
+				compilationError1.Location == compilationError2.Location
+				&& compilationError1.Error.Equals(compilationError2.Error);
+		}
+		
+		public static bool operator!=(CompilationError<T> compilationError1, CompilationError<T> compilationError2)
+		{
+			return !(compilationError1 == compilationError2);
+		}
+		
+		public bool Equals(CompilationError<T> compilationError)
+		{
+			return this == compilationError;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			return obj is CompilationError<T> && Equals((CompilationError<T>)obj);
+		}
+		
+		public override int GetHashCode()
+		{
+			return Location.GetHashCode() ^ Error.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0} at {1}", Error, Location);
 		}
 	}
 }
+

@@ -319,18 +319,15 @@ namespace Stinky.Compiler.Tests
 		public static List<Expression> Compile(string source)
 		{
 			var expressions = new List<Expression>();
-			var driver = new Driver((indentation, expression) => expressions.Add(expression));
+			var driver = new Driver(
+				(indentation, expression) => expressions.Add(expression),
+				new ErrorConsumer(
+					error => { throw new ParseException(); },
+					error => { throw new TokenizationException(); }));
 			foreach(var character in source) {
-				var exception = driver.OnCharacter(new Character(character, Nowhere));
-				if(exception != null) {
-					Console.WriteLine(exception.StackTrace);
-					throw exception;
-				}
+				driver.OnCharacter(new Character(character, Nowhere));
 			}
-			var error = driver.OnDone();
-			if(error != null) {
-				throw error;
-			}
+			driver.OnDone();
 			return expressions;
 		}
 	}

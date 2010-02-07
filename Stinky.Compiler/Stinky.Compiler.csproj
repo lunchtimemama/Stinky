@@ -20,14 +20,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -38,7 +40,6 @@
     <Compile Include="Stinky.Compiler.Parser\Parser.cs" />
     <Compile Include="Stinky.Compiler\Location.cs" />
     <Compile Include="Stinky.Compiler.Parser\ParseError.cs" />
-    <Compile Include="Stinky.Compiler.Parser\ParseException.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Expression.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Reference.cs" />
     <Compile Include="Stinky.Compiler.Syntax\BinaryOperator.cs" />
@@ -54,7 +55,6 @@
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\NumberLiteralTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\RootTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\StringLiteralTokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationException.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\Tokenizer.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Definition.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
@@ -68,10 +68,11 @@
     <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
     <Compile Include="Stinky.Compiler\Resolver.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedRootTokenizer.cs" />
     <Compile Include="Stinky.Compiler\Driver.cs" />
     <Compile Include="Stinky.Compiler\SyntaxHighlightingDriver.cs" />
-    <Compile Include="Stinky.Compiler\ReverseEqualityVisitor.cs" />
+    <Compile Include="Stinky.Compiler\SyntaxHighlighter.cs" />
+    <Compile Include="Stinky.Compiler\CompilationError.cs" />
+    <Compile Include="Stinky.Compiler\ErrorConsumer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

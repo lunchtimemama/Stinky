@@ -36,8 +36,8 @@ namespace Stinky.Compiler.Parser
 		readonly Func<Expression, Expression> @operator;
 		readonly int operatorPriority;
 		
-		public ExpressionParser(Expression expression, Action<Expression> consumer, Parser nextParser)
-			: this(expression, null, 0, consumer, nextParser)
+		public ExpressionParser(Expression expression, Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer, Parser nextParser)
+			: this(expression, null, 0, consumer, errorConsumer, nextParser)
 		{
 		}
 		
@@ -45,8 +45,9 @@ namespace Stinky.Compiler.Parser
 		                        Func<Expression, Expression> @operator,
 		                        int operatorPriority,
 		                        Action<Expression> consumer,
+		                        Action<CompilationError<ParseError>> errorConsumer,
 		                        Parser nextParser)
-			: base(consumer, nextParser)
+			: base(consumer, errorConsumer, nextParser)
 		{
 			if(expression == null) throw new ArgumentNullException("expression");
 			
@@ -78,7 +79,7 @@ namespace Stinky.Compiler.Parser
 		Parser ParseBinaryOperator(Location location, Func<Expression, Expression, Location, Expression> binaryOperator, int operatorPriority)
 		{
 			return new RootParser(
-				(e, c, p) =>
+				(e, c, ec, p) =>
 					new ExpressionParser(e, operand => {
 						if(@operator != null) {
 							if(this.operatorPriority < operatorPriority) {
@@ -89,8 +90,9 @@ namespace Stinky.Compiler.Parser
 						} else {
 							return binaryOperator(expression, operand, location);
 						}
-					}, operatorPriority, c, p),
-				operation => Consumer(operation));
+					}, operatorPriority, c, ec, p),
+				operation => Consumer(operation),
+				ErrorConsumer);
 		}
 		
 		public override void OnDone()

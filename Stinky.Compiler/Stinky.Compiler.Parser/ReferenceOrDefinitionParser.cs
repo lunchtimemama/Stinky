@@ -34,15 +34,15 @@ namespace Stinky.Compiler.Parser
 	{
 		readonly Reference reference;
 		
-		public ReferenceOrDefinitionParser(string identifier, Location location, Action<Expression> consumer, Parser nextParser)
-			: base(new Reference(identifier, location), consumer, nextParser)
+		public ReferenceOrDefinitionParser(string identifier, Location location, Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer, Parser nextParser)
+			: base(new Reference(identifier, location), consumer, errorConsumer, nextParser)
 		{
 			reference = new Reference(identifier, location);
 		}
 		
 		public override Parser ParseColon(Location location)
 		{
-			return new RootParser(expression => Consumer(new Definition(reference, expression, location)));
+			return new RootParser(expression => Consumer(new Definition(reference, expression, location)), ErrorConsumer);
 		}
 	}
 }

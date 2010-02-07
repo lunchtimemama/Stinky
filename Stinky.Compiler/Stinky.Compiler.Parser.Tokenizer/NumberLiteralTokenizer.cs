@@ -39,15 +39,14 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			rootTokenizer.OnToken(parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location));
 		}
 		
-		public override TokenizationException OnCharacter(Character character)
+		public override void OnCharacter(Character character)
 		{
 			var @char = character.Char;
 			if((@char >= '0' && @char <= '9') || @char == '.') {
 				stringBuilder.Append(@char);
-				return null;
 			} else {
 				OnDone();
-				return base.OnCharacter(character);
+				base.OnCharacter(character);
 			}
 		}
 	}

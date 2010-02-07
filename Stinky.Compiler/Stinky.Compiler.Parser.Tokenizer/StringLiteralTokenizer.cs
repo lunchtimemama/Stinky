@@ -52,10 +52,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				: parser.ParseStringLiteral(stringBuilder.ToString(), location));
 		}
 		
-		public override TokenizationException OnCharacter(Character character)
+		public override void OnCharacter(Character character)
 		{
 			if(interpolationTokenizer != null) {
-				return interpolationTokenizer.OnCharacter(character);
+				interpolationTokenizer.OnCharacter(character);
 			} else if(potentiallyInterpolated) {
 				if(character.Char == '{') {
 					stringBuilder.Append('{');
@@ -67,82 +67,86 @@ namespace Stinky.Compiler.Parser.Tokenizer
 						interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 						stringBuilder.Remove(0, stringBuilder.Length);
 					}
-					Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression));
+					Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), error => OnError(error));
 					Func<Parser, Parser> token = null;
-					interpolationTokenizer = new InterpolatedRootTokenizer(
+					interpolationTokenizer = new RootTokenizer(
 						t => token = t,
 						() => parser = token(parser),
 						() => {
 							parser.OnDone();
 							interpolationTokenizer = null;
-						});
+						},
+						new ErrorConsumer(error => OnError(error), error => {
+							if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
+								interpolationTokenizer.OnDone();
+							} else {
+								OnError(error);
+							}
+						}));
 					interpolationTokenizer.OnCharacter(character);
 				}
 				potentiallyInterpolated = false;
-				return null;
 			} else if(potentiallyUninterpolated) {
 				if(character.Char == '}') {
 					stringBuilder.Append('}');
 					potentiallyUninterpolated = false;
-					return null;
 				} else {
-					return new TokenizationException(
-						TokenizationError.UnexpectedRightCurlyBracket,
-						character.Location, Environment.StackTrace);
+					OnError(character.Location, TokenizationError.UnexpectedRightCurlyBracket);
 				}
 			} else if(escaped) {
 				escaped = false;
 				switch(character.Char) {
 				case '"':
 					stringBuilder.Append('"');
-					return null;
+					break;
 				case '\\':
 					stringBuilder.Append('\\');
-					return null;
+					break;
 				case 'n':
 					stringBuilder.Append('\n');
-					return null;
+					break;
 				case 't':
 					stringBuilder.Append('\t');
-					return null;
+					break;
 				default:
-					return new TokenizationException(TokenizationError.UnknownError, character.Location, Environment.StackTrace);
+					OnError(character.Location, TokenizationError.UnknownError);
+					break;
 				}
 			} else {
 				switch(character.Char) {
 				case '{':
 					potentiallyInterpolated = true;
-					return null;
+					break;
 				case '}':
 					potentiallyUninterpolated = true;
-					return null;
+					break;
 				case '"':
 					OnDone();
-					return null;
-				case '\n':
-					return new TokenizationException(TokenizationError.UnknownError, character.Location, Environment.StackTrace);
 					break;
+				case '\n':
+					OnError(character.Location, TokenizationError.UnknownError);
+					 break;
 				case '\\':
 					escaped = true;
-					return null;
+					break;
 				default:
 					stringBuilder.Append(character.Char);
-					return null;
+					break;
 				}
 			}
 		}
 		
-		public override TokenizationException OnDone()
+		public override void OnDone()
 		{
 			if(potentiallyInterpolated || (interpolationTokenizer != null && !potentiallyUninterpolated)) {
-				return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);
+				OnError(location, TokenizationError.UnknownError);
 			} else if(interpolatedExpressions != null) {
 				if(stringBuilder.Length > 0) {
 					interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 				}
-				return base.OnDone();
+				base.OnDone();
 			} else {
-				return base.OnDone();
+				base.OnDone();
 			}
 		}
 	}

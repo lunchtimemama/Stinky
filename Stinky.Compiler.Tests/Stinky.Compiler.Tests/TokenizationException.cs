@@ -4,7 +4,7 @@
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,19 +26,10 @@
 
 using System;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Tests
 {
-	public sealed class TokenizationException : Exception
+	public class TokenizationException : Exception
 	{
-		public readonly TokenizationError Error;
-		public readonly Location Location;
-		public readonly string StackTrace;
-
-		public TokenizationException(TokenizationError error, Location location, string stackTrace)
-		{
-			Error = error;
-			Location = location;
-			StackTrace = stackTrace;
-		}
 	}
 }
+

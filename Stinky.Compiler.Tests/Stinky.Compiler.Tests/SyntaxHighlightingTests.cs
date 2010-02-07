@@ -71,18 +71,14 @@ namespace Stinky.Compiler.Tests
 			Assert.IsTrue(correct);
 		}
 		
-		[Test]
-		public void TestSyntaxHighlightingDriverWithStringConcatination()
+		int DriveSyntaxHighlighting(string code, int[] locations)
 		{
-			var code = "foo+bar";
-			var locations = new[] { 0, 0, 0, 0, 3, 4, 4 };
 			var i = 0;
 			var correctCount = 0;
 			var driver = new SyntaxHighlightingDriver(expression => {
 				if(expression.Location == Location(locations[i])) {
 					correctCount = correctCount + 1;
 				} else {
-					Console.WriteLine(expression.Location);
 					Assert.Fail();
 				}
 			});
@@ -92,7 +88,19 @@ namespace Stinky.Compiler.Tests
 				} catch {
 				}
 			}
-			Assert.AreEqual(6, correctCount);
+			return correctCount;
+		}
+		
+		[Test]
+		public void TestSyntaxHighlightingDriverWithStringConcatination()
+		{
+			Assert.AreEqual(6, DriveSyntaxHighlighting("foo+bar", new[] { 0, 0, 0, -1, 3, 4, 4 }));
+		}
+		
+		[Test]
+		public void TestSyntaxHighlightingDriverWithMultipleArithmeticOperators()
+		{
+			Assert.AreEqual(4, DriveSyntaxHighlighting("1*2+3*4", new[] { 0, -1, 1, -1, 3, -1, 5 }));
 		}
 	}
 }

@@ -34,98 +34,124 @@ namespace Stinky.Compiler.Parser
 	public class Parser
 	{
 		protected readonly Action<Expression> Consumer;
+		protected readonly Action<CompilationError<ParseError>> ErrorConsumer;
 		protected readonly Parser NextParser;
 		
-		public Parser(Action<Expression> consumer)
-			: this(consumer, null)
+		public Parser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
+			: this(consumer, errorConsumer, null)
 		{
 		}
 		
-		public Parser(Action<Expression> consumer, Parser nextParser)
+		public Parser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer, Parser nextParser)
 		{
 			Consumer = consumer;
+			ErrorConsumer = errorConsumer;
 			NextParser = nextParser;
 		}
 		
 		public virtual Parser ParseIdentifier(string identifier, Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseIdentifier(identifier, location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseIdentifier(identifier, location, CreateError(location));
+		}
+		
+		protected Parser ParseIdentifier(string identifier, Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseStringLiteral(identifier, location, error), error);
 		}
 		
 		public virtual Parser ParseColon(Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseColon(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseColon(location, CreateError(location));
+		}
+		
+		protected Parser ParseColon(Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseColon(location, error), error);
 		}
 
 		public virtual Parser ParseNumberLiteral(double number, Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseNumberLiteral(number, location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseNumberLiteral(number, location, CreateError(location));
+		}
+
+		protected Parser ParseNumberLiteral(double number, Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseNumberLiteral(number, location, error), error);
 		}
 		
 		public virtual Parser ParseStringLiteral(string @string, Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseStringLiteral(@string, location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseStringLiteral(@string, location, CreateError(location));
+		}
+		
+		protected Parser ParseStringLiteral(string @string, Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseStringLiteral(@string, location, error), error);
 		}
 		
 		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseInterpolatedStringLiteral(interpolatedExpressions, location, CreateError(location));
+		}
+		
+		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location, error), error);
 		}
 
 		public virtual Parser ParsePlus(Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParsePlus(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParsePlus(location, CreateError(location));
 		}
 		
+		protected Parser ParsePlus(Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParsePlus(location, error), error);
+		}
+
 		public virtual Parser ParseMinus(Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseMinus(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return ParseMinus(location, CreateError(location));
 		}
 		
+		protected Parser ParseMinus(Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseMinus(location, error), error);
+		}
+
 		public virtual Parser ParseForwardSlash(Location location)
 		{
+			return ParseForwardSlash(location, CreateError(location));
+		}
+		
+		protected Parser ParseForwardSlash(Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseForwardSlash(location, error), error);
+		}
+
+		public virtual Parser ParseAsterisk(Location location)
+		{
+			return ParseAsterisk(location, CreateError(location));
+		}
+		
+		protected Parser ParseAsterisk(Location location, CompilationError<ParseError> error)
+		{
+			return ParseToken(nextParser => nextParser.ParseAsterisk(location, error), error);
+		}
+		
+		Parser ParseToken(Func<Parser, Parser> nextParser, CompilationError<ParseError> error)
+		{
 			if(NextParser != null) {
-				return NextParser.ParseForwardSlash(location);
+				return nextParser(NextParser);
 			} else {
-				throw new ParseException(Error, location);
+				ErrorConsumer(error);
+				return null;
 			}
 		}
 		
-		public virtual Parser ParseAsterisk(Location location)
+		CompilationError<ParseError> CreateError(Location location)
 		{
-			if(NextParser != null) {
-				return NextParser.ParseAsterisk(location);
-			} else {
-				throw new ParseException(Error, location);
-			}
+			return new CompilationError<ParseError>(location, Error);
 		}
 		
 		protected virtual ParseError Error {

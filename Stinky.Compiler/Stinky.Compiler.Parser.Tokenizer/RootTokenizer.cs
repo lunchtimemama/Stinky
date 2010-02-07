@@ -34,90 +34,87 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		readonly Action<Func<Parser, Parser>> tokenConsumer;
 		readonly Action tokenReady;
 		readonly Action lineReady;
+		readonly ErrorConsumer errorConsumer;
 		
 		Tokenizer tokenizer;
 		
-		public RootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady)
+		public RootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady, ErrorConsumer errorConsumer)
 		{
 			this.tokenConsumer = tokenConsumer;
 			this.tokenReady = tokenReady;
 			this.lineReady = lineReady;
+			this.errorConsumer = errorConsumer;
 		}
 
-		public override TokenizationException OnCharacter(Character character)
+		public override void OnCharacter(Character character)
 		{
 			var @char = character.Char;
 			if(@char == '\n') {
 				OnDone();
-				return null;
 			} else {
 				if(tokenizer != null) {
-					return tokenizer.OnCharacter(character);
+					tokenizer.OnCharacter(character);
 				} else {
 					Location location = character.Location;
 					switch(@char) {
 					case '+':
 						OnTokenReady(parser => parser.ParsePlus(location));
-						return null;
+						break;
 					case '-':
 						OnTokenReady(parser => parser.ParseMinus(location));
-						return null;
+						break;
 					case '/':
 						OnTokenReady(parser => parser.ParseForwardSlash(location));
-						return null;
+						break;
 					case '*':
 						OnTokenReady(parser => parser.ParseAsterisk(location));
-						return null;
+						break;
 					case '}':
-						return new TokenizationException(TokenizationError.UnexpectedRightCurlyBracket, location, Environment.StackTrace);
+						OnError(location, TokenizationError.UnexpectedRightCurlyBracket);
+						break;
 					case '(':
 						//OnToken(parser => parser.ParseOpenParentheses(location));
-						return null;
+						break;
 					case ')':
 						//OnToken(parser => parser.ParseCloseParentheses(location));
-						return null;
+						break;
 					case '.':
 						//tokenizer = new DotTokenizer(this, location);
-						return null;
+						break;
 					case ',':
 						//OnToken(parser => parser.ParseComma(location));
-						return null;
+						break;
 					case ':':
 						OnTokenReady(parser => parser.ParseColon(location));
-						return null;
+						break;
 					case '&':
 						//OnToken(parser => parser.ParseAmpersand(location));
-						return null;
+						break;
 					case '"':
 						tokenizer = new StringLiteralTokenizer(location, this);
-						return null;
+						break;
 					default:
 						if((@char >= 'A' && @char <= 'z') || @char == '_') {
 							tokenizer = new AlphanumericTokenizer(location, this);
-							return tokenizer.OnCharacter(character);
+							tokenizer.OnCharacter(character);
 						} else if(@char >= '0' && @char <= '9') {
 							tokenizer = new NumberLiteralTokenizer(location, this);
-							return tokenizer.OnCharacter(character);
+							tokenizer.OnCharacter(character);
 						} else if(@char != ' ') {
-							return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);
-						} else {
-							return null;
+							OnError(location, TokenizationError.UnknownError);
 						}
+						break;
 					}
 				}
 			}
 		}
 
-		public override TokenizationException OnDone()
+		public override void OnDone()
 		{
 			if(tokenizer != null) {
-				var error = tokenizer.OnDone();
-				if(error != null) {
-					return error;
-				}
+				tokenizer.OnDone();
 			}
 			lineReady();
-			return null;
 		}
 		
 		void OnTokenReady(Func<Parser, Parser> token)
@@ -135,6 +132,21 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		{
 			tokenReady();
 			tokenizer = null;
+		}
+		
+		public void OnError(CompilationError<ParseError> error)
+		{
+			errorConsumer.ParseErrorConsumer(error);
+		}
+		
+		public void OnError(Location location, TokenizationError error)
+		{
+			OnError(new CompilationError<TokenizationError>(location, error));
+		}
+		
+		public void OnError(CompilationError<TokenizationError> error)
+		{
+			errorConsumer.TokenizationErrorConsumer(error);
 		}
 	}
 }
