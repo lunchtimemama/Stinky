@@ -100,28 +100,36 @@ namespace Stinky.Compiler.Tests
 		public void TestPlusOperatorWithWhitespace()
 		{
 			var expressions = Compile("1 + 2");
-			Assert.AreEqual(new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
 		public void TestMinusOperator()
 		{
 			var expressions = Compile("1-2");
-			Assert.AreEqual(new MinusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new MinusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
 		public void TestForwardSlashOperator()
 		{
 			var expressions = Compile("1/2");
-			Assert.AreEqual(new ForwardSlashOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new ForwardSlashOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
 		public void TestAsteriskOperator()
 		{
 			var expressions = Compile("1*2");
-			Assert.AreEqual(new AsteriskOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new AsteriskOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
@@ -146,21 +154,27 @@ namespace Stinky.Compiler.Tests
 		public void TestDefinition()
 		{
 			var expressions = Compile("foo:42");
-			Assert.AreEqual(new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test, ExpectedException(typeof(ParseException))]
 		public void TestDoubleDefinitionFailure()
 		{
 			var expressions = Compile("foo:42:10");
-			Assert.AreEqual(new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
 		public void TestReferenceDefinition()
 		{
 			var expressions = Compile("foo:bar");
-			Assert.AreEqual(new Definition(new Reference("foo", Nowhere), new Reference("bar", Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new Definition(new Reference("foo", Nowhere), new Reference("bar", Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
