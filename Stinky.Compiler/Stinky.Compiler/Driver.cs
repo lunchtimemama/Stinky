@@ -27,9 +27,11 @@
 using System;
 using System.Collections.Generic;
 
+using Stinky.Compiler.Parser;
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler
 {
 	public class Driver
 	{

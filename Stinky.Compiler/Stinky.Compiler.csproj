@@ -51,7 +51,6 @@
     <Compile Include="Stinky.Compiler.Parser\LineParser.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\AlphaNumericTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\DotTokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\LineTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\NumberLiteralTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\RootTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\StringLiteralTokenizer.cs" />
@@ -61,7 +60,6 @@
     <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
     <Compile Include="Stinky.Compiler.Syntax\StringLiteral.cs" />
     <Compile Include="Stinky.Compiler.Syntax\InterpolatedStringLiteral.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedLineTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Syntax\Visitor.cs" />
     <Compile Include="Stinky.Compiler\Interpreter.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationError.cs" />
@@ -70,6 +68,8 @@
     <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
     <Compile Include="Stinky.Compiler\Resolver.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedRootTokenizer.cs" />
+    <Compile Include="Stinky.Compiler\Driver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
