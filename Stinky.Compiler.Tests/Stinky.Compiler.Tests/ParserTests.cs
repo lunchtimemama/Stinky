@@ -78,7 +78,9 @@ namespace Stinky.Compiler.Tests
 		public void TestPlusOperator()
 		{
 			var expressions = Compile("1+2");
-			Assert.AreEqual(new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere), expressions[0]);
+			Assert.AreEqual(
+				new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
+				expressions[0]);
 		}
 		
 		[Test]
