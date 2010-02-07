@@ -187,25 +187,25 @@ namespace Stinky.Compiler.Tests
 		[Test, ExpectedException(typeof(TokenizationException))]
 		public void TestUninterpolatedStringLiteralFailure()
 		{
-			var expressions = Compile(@"""foo {{bar} bat""");
+			Compile(@"""foo {{bar} bat""");
 		}
 		
 		[Test, ExpectedException(typeof(TokenizationException))]
 		public void TestTerminalUninterpolatedStringLiteralFailure()
 		{
-			var expressions = Compile(@"""foo {{bar}""");
+			Compile(@"""foo {{bar}""");
 		}
 		
 		[Test, ExpectedException(typeof(TokenizationException))]
 		public void TestInterpolatedStringLiteralFailure()
 		{
-			var expressions = Compile(@"""foo { """);
+			Compile(@"""foo { """);
 		}
 		
 		[Test, ExpectedException(typeof(TokenizationException))]
 		public void TestTerminalInterpolatedStringLiteralFailure()
 		{
-			var expressions = Compile(@"""foo {""");
+			Compile(@"""foo {""");
 		}
 		
 		[Test]

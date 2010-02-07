@@ -39,6 +39,7 @@
     <Compile Include="Stinky.Compiler.Tests\ParserTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\SyntaxTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\CompilerTests.cs" />
+    <Compile Include="Stinky.Compiler.Tests\SyntaxHighlightingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">
