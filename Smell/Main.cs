@@ -61,7 +61,7 @@ namespace Smell
 		public static List<Expression> Compile(string source)
 		{
 			var expressions = new List<Expression>();
-			var tokenizer = new RootTokenizer((indentation, expression) => expressions.Add(expression));
+			var tokenizer = new Driver((indentation, expression) => expressions.Add(expression));
 			foreach(var character in source) {
 				tokenizer.OnCharacter(new Character(character, new Location(null, 0, 0)));
 			}

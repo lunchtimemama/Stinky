@@ -1,10 +1,10 @@
 // 
-// RootTokenizer.cs
+// LineTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,48 +27,111 @@
 using System;
 using System.Collections.Generic;
 
-using Stinky.Compiler.Syntax;
-
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class RootTokenizer
+	public class RootTokenizer : Tokenizer
 	{
-		readonly Action<int, Expression> consumer;
+		readonly Action consumer;
 		
-		int indentation;
+		Parser parser;
 		Tokenizer tokenizer;
-
-		public RootTokenizer(Action<int, Expression> consumer)
+		
+		public RootTokenizer(Parser parser, Action consumer)
 		{
+			this.parser = parser;
 			this.consumer = consumer;
 		}
 
-		public TokenizationException OnCharacter(Character character)
+		public override TokenizationException OnCharacter(Character character)
 		{
-			if(tokenizer != null) {
-				return tokenizer.OnCharacter(character);
-			} else if(character.Char == '\t') {
-				indentation = indentation + 1;
+			var @char = character.Char;
+			if(@char == '\n') {
+				OnDone();
 				return null;
 			} else {
-				tokenizer = new LineTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
-				return tokenizer.OnCharacter(character);
+				if(tokenizer != null) {
+					return tokenizer.OnCharacter(character);
+				} else {
+					Location location = character.Location;
+					switch(@char) {
+					case '+':
+						OnToken(parser => parser.ParsePlus(location));
+						return null;
+					case '-':
+						OnToken(parser => parser.ParseMinus(location));
+						return null;
+					case '/':
+						OnToken(parser => parser.ParseForwardSlash(location));
+						return null;
+					case '*':
+						OnToken(parser => parser.ParseAsterisk(location));
+						return null;
+					case '}':
+						return new TokenizationException(TokenizationError.UnexpectedRightCurlyBracket, location, Environment.StackTrace);
+					case '(':
+						//OnToken(parser => parser.ParseOpenParentheses(location));
+						return null;
+					case ')':
+						//OnToken(parser => parser.ParseCloseParentheses(location));
+						return null;
+					case '.':
+						//tokenizer = new DotTokenizer(this, location);
+						return null;
+					case ',':
+						//OnToken(parser => parser.ParseComma(location));
+						return null;
+					case ':':
+						OnToken(parser => parser.ParseColon(location));
+						return null;
+					case '&':
+						//OnToken(parser => parser.ParseAmpersand(location));
+						return null;
+					case '"':
+						tokenizer = new StringLiteralTokenizer(this, location);
+						return null;
+					default:
+						if((@char >= 'A' && @char <= 'z') || @char == '_') {
+							tokenizer = new AlphanumericTokenizer(this, location);
+							return tokenizer.OnCharacter(character);
+						} else if(@char >= '0' && @char <= '9') {
+							tokenizer = new NumberLiteralTokenizer(this, location);
+							return tokenizer.OnCharacter(character);
+						} else if(@char != ' ') {
+							return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);
+						} else {
+							return null;
+						}
+					}
+				}
 			}
 		}
-		
-		void OnLine()
+
+		public override TokenizationException OnDone()
 		{
+			if(tokenizer != null) {
+				var error = tokenizer.OnDone();
+				if(error != null) {
+					return error;
+				}
+			}
+			parser.OnDone();
+			consumer();
+			return null;
+		}
+		
+		public override Func<Parser, Parser> GetCurrentToken()
+		{
+			if(tokenizer != null) {
+				return tokenizer.GetCurrentToken();
+			} else {
+				return null;
+			}
+		}
+
+		public void OnToken(Func<Parser, Parser> token)
+		{
+			parser = token(parser);
 			tokenizer = null;
-			indentation = 0;
-		}
-		
-		public TokenizationException OnDone()
-		{
-			if(tokenizer != null) {
-				return tokenizer.OnDone();
-			} else {
-				return null;
-			}
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
-		public NumberLiteralTokenizer(LineTokenizer lineTokenizer, Location location)
+		public NumberLiteralTokenizer(RootTokenizer lineTokenizer, Location location)
 			: base(lineTokenizer)
 		{
 			Token = parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location);

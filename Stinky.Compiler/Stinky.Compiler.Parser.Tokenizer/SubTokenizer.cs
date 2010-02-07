@@ -30,9 +30,9 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public abstract class SubTokenizer : Tokenizer
 	{
-		readonly LineTokenizer lineTokenizer;
+		readonly RootTokenizer lineTokenizer;
 		
-		protected SubTokenizer(LineTokenizer lineTokenizer)
+		protected SubTokenizer(RootTokenizer lineTokenizer)
 		{
 			this.lineTokenizer = lineTokenizer;
 		}

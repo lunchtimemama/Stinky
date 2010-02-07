@@ -32,7 +32,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 	{
 		bool doubleDot;
 
-		public DotTokenizer(LineTokenizer lineTokenizer, Location location)
+		public DotTokenizer(RootTokenizer lineTokenizer, Location location)
 			: base(lineTokenizer)
 		{
 			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);

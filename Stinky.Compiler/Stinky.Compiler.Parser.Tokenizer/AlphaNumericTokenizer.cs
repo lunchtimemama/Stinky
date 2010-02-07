@@ -33,7 +33,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 
-		public AlphanumericTokenizer(LineTokenizer lineTokenizer, Location location)
+		public AlphanumericTokenizer(RootTokenizer lineTokenizer, Location location)
 			: base(lineTokenizer)
 		{
 			Token = parser => parser.ParseIdentifier(stringBuilder.ToString(), location);

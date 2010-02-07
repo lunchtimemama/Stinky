@@ -50,7 +50,7 @@ namespace MonoDevelop.Stinky
 				}
 			});
 			var thing = "hello i'm pink";
-			var rootTokenizer = new RootTokenizer((indentation, expression) => expression.Visit(resolver));
+			var rootTokenizer = new Driver((indentation, expression) => expression.Visit(resolver));
 			var scrolledWindow = new ScrolledWindow();
 			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
 				var column = 0;

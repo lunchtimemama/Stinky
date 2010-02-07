@@ -38,12 +38,12 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		
 		StringBuilder stringBuilder = new StringBuilder();
 		List<Expression> interpolatedExpressions;
-		LineTokenizer interpolationTokenizer;
+		RootTokenizer interpolationTokenizer;
 		bool potentiallyInterpolated;
 		bool potentiallyUninterpolated;
 		bool escaped;
 		
-		public StringLiteralTokenizer(LineTokenizer lineTokenizer, Location location)
+		public StringLiteralTokenizer(RootTokenizer lineTokenizer, Location location)
 			: base (lineTokenizer)
 		{
 			this.location = location;
