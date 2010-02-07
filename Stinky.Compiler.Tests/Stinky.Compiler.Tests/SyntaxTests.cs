@@ -46,30 +46,33 @@ namespace Stinky.Compiler.Tests
 		public void TestStringDefinitionAndReferenceTypeResolution()
 		{
 			var scope = new Scope();
-			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(new Resolver(scope, definition => {
-				scope.OnExpression(definition);
-				new Reference("foo", Nowhere).Visit(new Resolver(scope, reference => {
-					Assert.AreEqual(typeof(string), definition.Type);
-					Assert.AreEqual(typeof(string), reference.Type);
+			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(
+				new Resolver(scope, definition => {
+					scope.OnExpression(definition);
+					new Reference("foo", Nowhere).Visit(new Resolver(scope, reference => {
+						Assert.AreEqual(typeof(string), definition.Type);
+						Assert.AreEqual(typeof(string), reference.Type);
+					}));
 				}));
-			}));
 		}
 		
 		[Test]
 		public void TestTransitiveStringDefinitionAndReferenceTypeResolution()
 		{
 			var scope = new Scope();
-			new Definition(new Reference("foo", Nowhere), new StringLiteral("", Nowhere), Nowhere).Visit(new Resolver(scope, fooDefinition => {
-				scope.OnExpression(fooDefinition);
-				new Definition(new Reference("bar", Nowhere), new Reference("foo", Nowhere), Nowhere).Visit(new Resolver(scope, barDefinition => {
-					scope.OnExpression(barDefinition);
-					new Reference("bar", Nowhere).Visit(new Resolver(scope, reference => {
-						Assert.AreEqual(typeof(string), fooDefinition.Type);
-						Assert.AreEqual(typeof(string), barDefinition.Type);
-						Assert.AreEqual(typeof(string), reference.Type);
-					}));
+			new Definition(new Reference("foo", Nowhere), new StringLiteral("", Nowhere), Nowhere).Visit(
+				new Resolver(scope, fooDefinition => {
+					scope.OnExpression(fooDefinition);
+					new Definition(new Reference("bar", Nowhere), new Reference("foo", Nowhere), Nowhere).Visit(
+						new Resolver(scope, barDefinition => {
+							scope.OnExpression(barDefinition);
+							new Reference("bar", Nowhere).Visit(new Resolver(scope, reference => {
+								Assert.AreEqual(typeof(string), fooDefinition.Type);
+								Assert.AreEqual(typeof(string), barDefinition.Type);
+								Assert.AreEqual(typeof(string), reference.Type);
+							}));
+						}));
 				}));
-			}));
 		}
 		
 		[Test]
