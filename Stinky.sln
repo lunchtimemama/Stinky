@@ -74,5 +74,11 @@ Global
 		$6.MessageStyle = $7
 		$7.LineAlign = 0
 		$6.inheritsSet = Mono
+		$0.TextStylePolicy = $8
+		$8.RemoveTrailingWhitespace = True
+		$8.EolMarker = Native
+		$8.inheritsSet = Invariant
+		$8.inheritsScope = text/plain
+		$8.scope = text/plain
 	EndGlobalSection
 EndGlobal

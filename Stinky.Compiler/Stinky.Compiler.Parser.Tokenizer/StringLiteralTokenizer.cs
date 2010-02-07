@@ -86,7 +86,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 				stringBuilder.Remove(0, stringBuilder.Length);
 			}
-			Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), ErrorConsumer.ParseErrorConsumer);
+			Parser parser = new RootParser(
+				expression => interpolatedExpressions.Add(expression), ErrorConsumer.ParseErrorConsumer);
 			Func<Parser, Parser> token = null;
 			interpolationTokenizer = new RootTokenizer(
 				t => token = t,

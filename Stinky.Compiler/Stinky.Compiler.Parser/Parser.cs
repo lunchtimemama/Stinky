@@ -42,7 +42,9 @@ namespace Stinky.Compiler.Parser
 		{
 		}
 		
-		public Parser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer, Parser nextParser)
+		public Parser(Action<Expression> consumer,
+					  Action<CompilationError<ParseError>> errorConsumer,
+					  Parser nextParser)
 		{
 			Consumer = consumer;
 			ErrorConsumer = errorConsumer;
@@ -89,14 +91,19 @@ namespace Stinky.Compiler.Parser
 			return ParseToken(nextParser => nextParser.ParseStringLiteral(@string, location, error), error);
 		}
 		
-		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
+		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
+															 Location location)
 		{
 			return ParseInterpolatedStringLiteral(interpolatedExpressions, location, CreateError(location));
 		}
 		
-		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location, CompilationError<ParseError> error)
+		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
+														Location location,
+														CompilationError<ParseError> error)
 		{
-			return ParseToken(nextParser => nextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location, error), error);
+			return ParseToken(
+				nextParser => nextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location, error),
+				error);
 		}
 
 		public virtual Parser ParsePlus(Location location)

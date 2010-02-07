@@ -36,7 +36,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
 			: base(rootTokenizer)
 		{
-			rootTokenizer.OnToken(parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location));
+			rootTokenizer.OnToken(
+				parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location));
 		}
 		
 		public override void OnCharacter(Character character)

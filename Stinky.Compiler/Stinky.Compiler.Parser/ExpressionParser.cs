@@ -36,7 +36,10 @@ namespace Stinky.Compiler.Parser
 		readonly Func<Expression, Expression> @operator;
 		readonly int operatorPriority;
 		
-		public ExpressionParser(Expression expression, Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer, Parser nextParser)
+		public ExpressionParser(Expression expression,
+								Action<Expression> consumer,
+								Action<CompilationError<ParseError>> errorConsumer,
+								Parser nextParser)
 			: this(expression, null, 0, consumer, errorConsumer, nextParser)
 		{
 		}
@@ -76,7 +79,9 @@ namespace Stinky.Compiler.Parser
 			return ParseBinaryOperator(location, (left, right, loc) => new AsteriskOperator(left, right, loc), 2);
 		}
 		
-		Parser ParseBinaryOperator(Location location, Func<Expression, Expression, Location, Expression> binaryOperator, int operatorPriority)
+		Parser ParseBinaryOperator(Location location,
+								   Func<Expression, Expression, Location, Expression> binaryOperator,
+								   int operatorPriority)
 		{
 			return new RootParser(
 				(e, c, ec, p) =>

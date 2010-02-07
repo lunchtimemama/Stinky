@@ -57,8 +57,14 @@ namespace Stinky.Compiler
 			} else if(character.Char == '\t') {
 				indentation = indentation + 1;
 			} else {
-				parser = new LineParser(expression => consumer(indentation, expression), errorConsumer.ParseErrorConsumer);
-				tokenizer = new RootTokenizer(token => this.token = token, () => parser = token(parser), OnLine, errorConsumer);
+				parser = new LineParser(
+					expression => consumer(indentation, expression),
+					errorConsumer.ParseErrorConsumer);
+				tokenizer = new RootTokenizer(
+					token => this.token = token,
+					() => parser = token(parser),
+					OnLine,
+					errorConsumer);
 				tokenizer.OnCharacter(character);
 			}
 		}

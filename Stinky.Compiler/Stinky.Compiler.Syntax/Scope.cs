@@ -50,7 +50,8 @@ namespace Stinky.Compiler.Syntax
 			Definition definition = expression as Definition;
 			if(definition != null) {
 				if(definitions.ContainsKey(definition.Reference.Identifier)) {
-					throw new ArgumentException("expression", "The scope already contains a definition for " + definition.Reference.Identifier);
+					throw new ArgumentException(
+						"expression", "The scope already contains a definition for " + definition.Reference.Identifier);
 				}
 				definitions[definition.Reference.Identifier] = definition;
 			}

@@ -47,8 +47,10 @@ namespace Stinky.Compiler
 		
 		public override void VisitDefinition(Definition definition)
 		{
-			definition.Expression.Visit(new Resolver(scope,
-				expression => consumer(new Definition(definition.Reference, expression, definition.Location, expression.Type))));
+			definition.Expression.Visit(
+				new Resolver(scope,
+					expression => consumer(
+						new Definition(definition.Reference, expression, definition.Location, expression.Type))));
 		}
 		
 		public override void VisitReference(Reference reference)
@@ -95,20 +97,24 @@ namespace Stinky.Compiler
 		
 		public override void VisitMinusOperator(MinusOperator minusOperator)
 		{
-			VisitBinaryNumberOperator(minusOperator, (left, right) => new MinusOperator(left, right, minusOperator.Location, typeof(double)));
+			VisitBinaryNumberOperator(minusOperator,
+				(left, right) => new MinusOperator(left, right, minusOperator.Location, typeof(double)));
 		}
 		
 		public override void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
 		{
-			VisitBinaryNumberOperator(asteriskOperator, (left, right) => new AsteriskOperator(left, right, asteriskOperator.Location, typeof(double)));
+			VisitBinaryNumberOperator(asteriskOperator,
+				(left, right) => new AsteriskOperator(left, right, asteriskOperator.Location, typeof(double)));
 		}
 		
 		public override void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
 		{
-			VisitBinaryNumberOperator(forwardSlashOperator, (left, right) => new ForwardSlashOperator(left, right, forwardSlashOperator.Location, typeof(double)));
+			VisitBinaryNumberOperator(forwardSlashOperator,
+				(left, right) => new ForwardSlashOperator(left, right, forwardSlashOperator.Location, typeof(double)));
 		}
 		
-		void VisitBinaryNumberOperator(BinaryOperator binaryOperator, Func<Expression, Expression, Expression> binaryOperatorProvider)
+		void VisitBinaryNumberOperator(BinaryOperator binaryOperator,
+									   Func<Expression, Expression, Expression> binaryOperatorProvider)
 		{
 			binaryOperator.LeftOperand.Visit(new Resolver(scope, leftOperand => {
 				CheckType<double>(leftOperand);

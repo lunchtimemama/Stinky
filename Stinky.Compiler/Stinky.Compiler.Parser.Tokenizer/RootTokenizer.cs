@@ -38,7 +38,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		
 		Tokenizer tokenizer;
 		
-		public RootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady, ErrorConsumer errorConsumer)
+		public RootTokenizer(Action<Func<Parser, Parser>> tokenConsumer,
+							 Action tokenReady,
+							 Action lineReady,
+							 ErrorConsumer errorConsumer)
 		{
 			this.tokenConsumer = tokenConsumer;
 			this.tokenReady = tokenReady;

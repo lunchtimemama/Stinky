@@ -33,7 +33,8 @@ namespace Stinky.Compiler.Parser
 {
 	public class RootParser : Parser
 	{
-		readonly Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser> expressionParserProvider;
+		readonly Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser>
+			expressionParserProvider;
 		
 		public RootParser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
 			: this((e, c, ec, p) => new ExpressionParser(e, c, ec, p), consumer, errorConsumer)
@@ -65,9 +66,11 @@ namespace Stinky.Compiler.Parser
 			return expressionParserProvider(new StringLiteral(@string, location), Consumer, ErrorConsumer, this);
 		}
 		
-		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions, Location location)
+		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
+															  Location location)
 		{
-			return expressionParserProvider(new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, ErrorConsumer, this);
+			return expressionParserProvider(
+				new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, ErrorConsumer, this);
 		}
 	}
 }
