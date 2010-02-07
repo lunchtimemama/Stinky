@@ -31,15 +31,17 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public class RootTokenizer : Tokenizer
 	{
-		readonly Action consumer;
+		readonly Action<Func<Parser, Parser>> tokenConsumer;
+		readonly Action tokenReady;
+		readonly Action lineReady;
 		
-		Parser parser;
 		Tokenizer tokenizer;
 		
-		public RootTokenizer(Parser parser, Action consumer)
+		public RootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady)
 		{
-			this.parser = parser;
-			this.consumer = consumer;
+			this.tokenConsumer = tokenConsumer;
+			this.tokenReady = tokenReady;
+			this.lineReady = lineReady;
 		}
 
 		public override TokenizationException OnCharacter(Character character)
@@ -55,16 +57,16 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					Location location = character.Location;
 					switch(@char) {
 					case '+':
-						OnToken(parser => parser.ParsePlus(location));
+						OnTokenReady(parser => parser.ParsePlus(location));
 						return null;
 					case '-':
-						OnToken(parser => parser.ParseMinus(location));
+						OnTokenReady(parser => parser.ParseMinus(location));
 						return null;
 					case '/':
-						OnToken(parser => parser.ParseForwardSlash(location));
+						OnTokenReady(parser => parser.ParseForwardSlash(location));
 						return null;
 					case '*':
-						OnToken(parser => parser.ParseAsterisk(location));
+						OnTokenReady(parser => parser.ParseAsterisk(location));
 						return null;
 					case '}':
 						return new TokenizationException(TokenizationError.UnexpectedRightCurlyBracket, location, Environment.StackTrace);
@@ -81,20 +83,20 @@ namespace Stinky.Compiler.Parser.Tokenizer
 						//OnToken(parser => parser.ParseComma(location));
 						return null;
 					case ':':
-						OnToken(parser => parser.ParseColon(location));
+						OnTokenReady(parser => parser.ParseColon(location));
 						return null;
 					case '&':
 						//OnToken(parser => parser.ParseAmpersand(location));
 						return null;
 					case '"':
-						tokenizer = new StringLiteralTokenizer(this, location);
+						tokenizer = new StringLiteralTokenizer(location, this);
 						return null;
 					default:
 						if((@char >= 'A' && @char <= 'z') || @char == '_') {
-							tokenizer = new AlphanumericTokenizer(this, location);
+							tokenizer = new AlphanumericTokenizer(location, this);
 							return tokenizer.OnCharacter(character);
 						} else if(@char >= '0' && @char <= '9') {
-							tokenizer = new NumberLiteralTokenizer(this, location);
+							tokenizer = new NumberLiteralTokenizer(location, this);
 							return tokenizer.OnCharacter(character);
 						} else if(@char != ' ') {
 							return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);
@@ -114,23 +116,24 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					return error;
 				}
 			}
-			parser.OnDone();
-			consumer();
+			lineReady();
 			return null;
 		}
 		
-		public override Func<Parser, Parser> GetCurrentToken()
+		void OnTokenReady(Func<Parser, Parser> token)
 		{
-			if(tokenizer != null) {
-				return tokenizer.GetCurrentToken();
-			} else {
-				return null;
-			}
+			tokenConsumer(token);
+			tokenReady();
 		}
 
 		public void OnToken(Func<Parser, Parser> token)
 		{
-			parser = token(parser);
+			tokenConsumer(token);
+		}
+		
+		public void OnTokenReady()
+		{
+			tokenReady();
 			tokenizer = null;
 		}
 	}

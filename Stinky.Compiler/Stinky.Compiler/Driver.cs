@@ -30,6 +30,8 @@ using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
+using StinkyParser = Stinky.Compiler.Parser.Parser;
+
 namespace Stinky.Compiler
 {
 	public class Driver
@@ -38,6 +40,8 @@ namespace Stinky.Compiler
 		
 		int indentation;
 		Tokenizer tokenizer;
+		Func<StinkyParser, StinkyParser> token;
+		StinkyParser parser;
 
 		public Driver(Action<int, Expression> consumer)
 		{
@@ -52,7 +56,8 @@ namespace Stinky.Compiler
 				indentation = indentation + 1;
 				return null;
 			} else {
-				tokenizer = new RootTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
+				parser = new LineParser(expression => consumer(indentation, expression));
+				tokenizer = new RootTokenizer(token => this.token = token, () => parser = token(parser), OnLine);
 				return tokenizer.OnCharacter(character);
 			}
 		}
@@ -61,6 +66,7 @@ namespace Stinky.Compiler
 		{
 			tokenizer = null;
 			indentation = 0;
+			parser.OnDone();
 		}
 		
 		public TokenizationException OnDone()

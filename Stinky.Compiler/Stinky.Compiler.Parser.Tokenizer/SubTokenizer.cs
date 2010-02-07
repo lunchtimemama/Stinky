@@ -30,28 +30,21 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public abstract class SubTokenizer : Tokenizer
 	{
-		readonly RootTokenizer lineTokenizer;
+		readonly RootTokenizer rootTokenizer;
 		
-		protected SubTokenizer(RootTokenizer lineTokenizer)
+		protected SubTokenizer(RootTokenizer rootTokenizer)
 		{
-			this.lineTokenizer = lineTokenizer;
+			this.rootTokenizer = rootTokenizer;
 		}
-		
-		protected Func<Parser, Parser> Token { get; set; }
 		
 		public override TokenizationException OnCharacter(Character character)
 		{
-			return lineTokenizer.OnCharacter(character);
-		}
-		
-		public override Func<Parser, Parser> GetCurrentToken()
-		{
-			return Token;
+			return rootTokenizer.OnCharacter(character);
 		}
 		
 		public override TokenizationException OnDone()
 		{
-			lineTokenizer.OnToken(Token);
+			rootTokenizer.OnTokenReady();
 			return null;
 		}
 	}

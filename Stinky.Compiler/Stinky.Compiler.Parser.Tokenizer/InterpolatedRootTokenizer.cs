@@ -30,8 +30,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 {
 	public class InterpolatedRootTokenizer : RootTokenizer
 	{
-		public InterpolatedRootTokenizer(Parser parser, Action consumer)
-			: base(parser, consumer)
+		public InterpolatedRootTokenizer(Action<Func<Parser, Parser>> tokenConsumer, Action tokenReady, Action lineReady)
+			: base(tokenConsumer, tokenReady, lineReady)
 		{
 		}
 		

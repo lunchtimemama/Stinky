@@ -38,7 +38,7 @@ namespace Smell
 		static readonly Location Nowhere = new Location(null, 0, 0);
 		public static void Main(string[] args)
 		{
-			var expressions = Compile(@"""{1+1 + "" is the lonliest number, {name}!} < she said it""");
+			var expressions = Compile("1+1");
 			var eq = expressions[0].Equals(new InterpolatedStringLiteral(
 					new Expression[] {
 						new PlusOperator(
@@ -61,11 +61,11 @@ namespace Smell
 		public static List<Expression> Compile(string source)
 		{
 			var expressions = new List<Expression>();
-			var tokenizer = new Driver((indentation, expression) => expressions.Add(expression));
+			var driver = new Driver((indentation, expression) => expressions.Add(expression));
 			foreach(var character in source) {
-				tokenizer.OnCharacter(new Character(character, new Location(null, 0, 0)));
+				driver.OnCharacter(new Character(character, new Location(null, 0, 0)));
 			}
-			tokenizer.OnDone();
+			driver.OnDone();
 			return expressions;
 		}
 	}

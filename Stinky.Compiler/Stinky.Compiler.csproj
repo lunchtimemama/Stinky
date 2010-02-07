@@ -70,6 +70,7 @@
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\InterpolatedRootTokenizer.cs" />
     <Compile Include="Stinky.Compiler\Driver.cs" />
+    <Compile Include="Stinky.Compiler\SyntaxHighlightingDriver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

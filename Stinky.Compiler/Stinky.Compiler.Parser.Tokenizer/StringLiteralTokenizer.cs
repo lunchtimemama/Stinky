@@ -43,13 +43,13 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		bool potentiallyUninterpolated;
 		bool escaped;
 		
-		public StringLiteralTokenizer(RootTokenizer lineTokenizer, Location location)
-			: base (lineTokenizer)
+		public StringLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
+			: base (rootTokenizer)
 		{
 			this.location = location;
-			Token = parser => interpolatedExpressions != null
+			rootTokenizer.OnToken(parser => interpolatedExpressions != null
 				? parser.ParseInterpolatedStringLiteral(interpolatedExpressions, location)
-				: parser.ParseStringLiteral(stringBuilder.ToString(), location);
+				: parser.ParseStringLiteral(stringBuilder.ToString(), location));
 		}
 		
 		public override TokenizationException OnCharacter(Character character)
@@ -67,9 +67,15 @@ namespace Stinky.Compiler.Parser.Tokenizer
 						interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 						stringBuilder.Remove(0, stringBuilder.Length);
 					}
+					Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression));
+					Func<Parser, Parser> token = null;
 					interpolationTokenizer = new InterpolatedRootTokenizer(
-						new RootParser(expression => interpolatedExpressions.Add(expression)),
-						() => interpolationTokenizer = null);
+						t => token = t,
+						() => parser = token(parser),
+						() => {
+							parser.OnDone();
+							interpolationTokenizer = null;
+						});
 					interpolationTokenizer.OnCharacter(character);
 				}
 				potentiallyInterpolated = false;
@@ -123,15 +129,6 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					stringBuilder.Append(character.Char);
 					return null;
 				}
-			}
-		}
-		
-		public override Func<Parser, Parser> GetCurrentToken()
-		{
-			if(interpolationTokenizer != null) {
-				return interpolationTokenizer.GetCurrentToken();
-			} else {
-				return base.GetCurrentToken();
 			}
 		}
 		

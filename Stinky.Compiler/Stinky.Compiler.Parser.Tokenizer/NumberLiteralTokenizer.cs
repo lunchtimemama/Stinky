@@ -33,10 +33,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		
-		public NumberLiteralTokenizer(RootTokenizer lineTokenizer, Location location)
-			: base(lineTokenizer)
+		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
+			: base(rootTokenizer)
 		{
-			Token = parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location);
+			rootTokenizer.OnToken(parser => parser.ParseNumberLiteral(double.Parse(stringBuilder.ToString()), location));
 		}
 		
 		public override TokenizationException OnCharacter(Character character)
