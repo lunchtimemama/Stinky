@@ -67,7 +67,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 						interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 						stringBuilder.Remove(0, stringBuilder.Length);
 					}
-					interpolationTokenizer = new InterpolatedLineTokenizer(
+					interpolationTokenizer = new InterpolatedRootTokenizer(
 						new RootParser(expression => interpolatedExpressions.Add(expression)),
 						() => interpolationTokenizer = null);
 					interpolationTokenizer.OnCharacter(character);
@@ -126,7 +126,16 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			}
 		}
 		
-		public override TokenizationException OnDone ()
+		public override Func<Parser, Parser> GetCurrentToken()
+		{
+			if(interpolationTokenizer != null) {
+				return interpolationTokenizer.GetCurrentToken();
+			} else {
+				return base.GetCurrentToken();
+			}
+		}
+		
+		public override TokenizationException OnDone()
 		{
 			if(potentiallyInterpolated || (interpolationTokenizer != null && !potentiallyUninterpolated)) {
 				return new TokenizationException(TokenizationError.UnknownError, location, Environment.StackTrace);

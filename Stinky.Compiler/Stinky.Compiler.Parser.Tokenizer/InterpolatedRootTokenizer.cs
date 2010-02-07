@@ -28,9 +28,9 @@ using System;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public class InterpolatedLineTokenizer : RootTokenizer
+	public class InterpolatedRootTokenizer : RootTokenizer
 	{
-		public InterpolatedLineTokenizer(Parser parser, Action consumer)
+		public InterpolatedRootTokenizer(Parser parser, Action consumer)
 			: base(parser, consumer)
 		{
 		}

@@ -1,10 +1,10 @@
 // 
-// SubTokenizer.cs
+// RootTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,35 +25,50 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+
+using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
-	public abstract class SubTokenizer : Tokenizer
+	public class Driver
 	{
-		readonly RootTokenizer lineTokenizer;
+		readonly Action<int, Expression> consumer;
 		
-		protected SubTokenizer(RootTokenizer lineTokenizer)
+		int indentation;
+		Tokenizer tokenizer;
+
+		public Driver(Action<int, Expression> consumer)
 		{
-			this.lineTokenizer = lineTokenizer;
+			this.consumer = consumer;
+		}
+
+		public TokenizationException OnCharacter(Character character)
+		{
+			if(tokenizer != null) {
+				return tokenizer.OnCharacter(character);
+			} else if(character.Char == '\t') {
+				indentation = indentation + 1;
+				return null;
+			} else {
+				tokenizer = new RootTokenizer(new LineParser(expression => consumer(indentation, expression)), OnLine);
+				return tokenizer.OnCharacter(character);
+			}
 		}
 		
-		protected Func<Parser, Parser> Token { get; set; }
-		
-		public override TokenizationException OnCharacter(Character character)
+		void OnLine()
 		{
-			return lineTokenizer.OnCharacter(character);
+			tokenizer = null;
+			indentation = 0;
 		}
 		
-		public override Func<Parser, Parser> GetCurrentToken()
+		public TokenizationException OnDone()
 		{
-			return Token;
-		}
-		
-		public override TokenizationException OnDone()
-		{
-			lineTokenizer.OnToken(Token);
-			return null;
+			if(tokenizer != null) {
+				return tokenizer.OnDone();
+			} else {
+				return null;
+			}
 		}
 	}
 }
-
