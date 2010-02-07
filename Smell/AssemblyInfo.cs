@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -30,11 +31,11 @@ using System.Runtime.CompilerServices;
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("Smell")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A command line compiler for the Stinky programming language.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Scott Thomas")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

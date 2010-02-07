@@ -30,11 +30,11 @@ using System.Runtime.CompilerServices;
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("MonoDevelop.Stinky")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("An addin for MonoDevelop with provides support for the Stinky programming language.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Scott Thomas")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
