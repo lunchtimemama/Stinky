@@ -86,7 +86,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
 				stringBuilder.Remove(0, stringBuilder.Length);
 			}
-			Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), error => OnError(error));
+			Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), ErrorConsumer.ParseErrorConsumer);
 			Func<Parser, Parser> token = null;
 			interpolationTokenizer = new RootTokenizer(
 				t => token = t,
@@ -95,7 +95,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					parser.OnDone();
 					interpolationTokenizer = null;
 				},
-				new ErrorConsumer(error => OnError(error), error => {
+				new ErrorConsumer(ErrorConsumer.ParseErrorConsumer, error => {
 					if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
 						interpolationTokenizer.OnDone();
 					} else {
