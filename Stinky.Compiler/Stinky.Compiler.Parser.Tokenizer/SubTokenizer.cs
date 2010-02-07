@@ -61,6 +61,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		{
 			rootTokenizer.OnError(error);
 		}
+		
+		protected ErrorConsumer ErrorConsumer {
+			get { return rootTokenizer.ErrorConsumer; }
+		}
 	}
 }
 

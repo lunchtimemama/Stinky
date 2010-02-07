@@ -60,30 +60,7 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				if(character.Char == '{') {
 					stringBuilder.Append('{');
 				} else {
-					if(interpolatedExpressions == null) {
-						interpolatedExpressions = new List<Expression>();
-					}
-					if(stringBuilder.Length > 0) {
-						interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
-						stringBuilder.Remove(0, stringBuilder.Length);
-					}
-					Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), error => OnError(error));
-					Func<Parser, Parser> token = null;
-					interpolationTokenizer = new RootTokenizer(
-						t => token = t,
-						() => parser = token(parser),
-						() => {
-							parser.OnDone();
-							interpolationTokenizer = null;
-						},
-						new ErrorConsumer(error => OnError(error), error => {
-							if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
-								interpolationTokenizer.OnDone();
-							} else {
-								OnError(error);
-							}
-						}));
-					interpolationTokenizer.OnCharacter(character);
+					OnFirstInterpolatedCharacter(character);
 				}
 				potentiallyInterpolated = false;
 			} else if(potentiallyUninterpolated) {
@@ -94,45 +71,83 @@ namespace Stinky.Compiler.Parser.Tokenizer
 					OnError(character.Location, TokenizationError.UnexpectedRightCurlyBracket);
 				}
 			} else if(escaped) {
-				escaped = false;
-				switch(character.Char) {
-				case '"':
-					stringBuilder.Append('"');
-					break;
-				case '\\':
-					stringBuilder.Append('\\');
-					break;
-				case 'n':
-					stringBuilder.Append('\n');
-					break;
-				case 't':
-					stringBuilder.Append('\t');
-					break;
-				default:
-					OnError(character.Location, TokenizationError.UnknownError);
-					break;
-				}
+				OnEspacedCharacter(character);
 			} else {
-				switch(character.Char) {
-				case '{':
-					potentiallyInterpolated = true;
-					break;
-				case '}':
-					potentiallyUninterpolated = true;
-					break;
-				case '"':
-					OnDone();
-					break;
-				case '\n':
-					OnError(character.Location, TokenizationError.UnknownError);
-					 break;
-				case '\\':
-					escaped = true;
-					break;
-				default:
-					stringBuilder.Append(character.Char);
-					break;
-				}
+				OnRegularCharacter(character);
+			}
+		}
+		
+		void OnFirstInterpolatedCharacter(Character character)
+		{
+			if(interpolatedExpressions == null) {
+				interpolatedExpressions = new List<Expression>();
+			}
+			if(stringBuilder.Length > 0) {
+				interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
+				stringBuilder.Remove(0, stringBuilder.Length);
+			}
+			Parser parser = new RootParser(expression => interpolatedExpressions.Add(expression), error => OnError(error));
+			Func<Parser, Parser> token = null;
+			interpolationTokenizer = new RootTokenizer(
+				t => token = t,
+				() => parser = token(parser),
+				() => {
+					parser.OnDone();
+					interpolationTokenizer = null;
+				},
+				new ErrorConsumer(error => OnError(error), error => {
+					if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
+						interpolationTokenizer.OnDone();
+					} else {
+						OnError(error);
+					}
+				}));
+			interpolationTokenizer.OnCharacter(character);
+		}
+		
+		void OnEspacedCharacter(Character character)
+		{
+			escaped = false;
+			switch(character.Char) {
+			case '"':
+				stringBuilder.Append('"');
+				break;
+			case '\\':
+				stringBuilder.Append('\\');
+				break;
+			case 'n':
+				stringBuilder.Append('\n');
+				break;
+			case 't':
+				stringBuilder.Append('\t');
+				break;
+			default:
+				OnError(character.Location, TokenizationError.UnknownError);
+				break;
+			}
+		}
+		
+		void OnRegularCharacter(Character character)
+		{
+			switch(character.Char) {
+			case '{':
+				potentiallyInterpolated = true;
+				break;
+			case '}':
+				potentiallyUninterpolated = true;
+				break;
+			case '"':
+				OnDone();
+				break;
+			case '\n':
+				OnError(character.Location, TokenizationError.UnknownError);
+				 break;
+			case '\\':
+				escaped = true;
+				break;
+			default:
+				stringBuilder.Append(character.Char);
+				break;
 			}
 		}
 		

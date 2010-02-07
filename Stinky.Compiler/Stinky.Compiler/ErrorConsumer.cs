@@ -31,6 +31,7 @@ using Stinky.Compiler.Parser.Tokenizer;
 
 namespace Stinky.Compiler
 {
+	// Where are you touple...
 	public class ErrorConsumer
 	{
 		public readonly Action<CompilationError<ParseError>> ParseErrorConsumer;

@@ -45,6 +45,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			this.lineReady = lineReady;
 			this.errorConsumer = errorConsumer;
 		}
+		
+		public ErrorConsumer ErrorConsumer {
+			get { return errorConsumer; }
+		}
 
 		public override void OnCharacter(Character character)
 		{
