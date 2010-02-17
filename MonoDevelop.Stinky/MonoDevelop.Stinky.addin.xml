@@ -10,6 +10,7 @@
 	
 	<Dependencies>
 		<Addin id="Ide" version="2.2"/>
+		<Addin id="SourceEditor2" version="2.2"/>
 	</Dependencies>
 	
 	<Runtime>
@@ -19,6 +20,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Stinky.EvaluationPad" _label="Stinky Evaluator" class="MonoDevelop.Stinky.EvaluationPad" defaultPlacement = "Bottom"/>
 	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.Stinky.EvaluationPad" />
 	</Extension>

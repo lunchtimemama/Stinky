@@ -41,163 +41,111 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestReference()
 		{
-			var expressions = Compile("foo");
-			Assert.AreEqual(new Reference("foo", Nowhere), expressions[0]);
+			AssertCompilation("foo", Reference("foo"));
 		}
 		
 		[Test]
 		public void TestReferences()
 		{
 			var expressions = Compile("foo\nbar");
-			Assert.AreEqual(new Reference("foo", Nowhere), expressions[0]);
-			Assert.AreEqual(new Reference("bar", Nowhere), expressions[1]);
+			Assert.AreEqual(Reference("foo"), expressions[0]);
+			Assert.AreEqual(Reference("bar"), expressions[1]);
 		}
 		
 		[Test]
 		public void TestNumberLiteralZero()
 		{
-			var expressions = Compile("0");
-			Assert.AreEqual(new NumberLiteral(0, Nowhere), expressions[0]);
+			AssertCompilation("0", Number(0));
 		}
 		
 		[Test]
 		public void TestNumberLiteralOne()
 		{
-			var expressions = Compile("1");
-			Assert.AreEqual(new NumberLiteral(1, Nowhere), expressions[0]);
+			AssertCompilation("1", Number(1));
 		}
 		
 		[Test]
 		public void TestNumberLiteralOnePointFive()
 		{
-			var expressions = Compile("1.5");
-			Assert.AreEqual(new NumberLiteral(1.5, Nowhere), expressions[0]);
+			AssertCompilation("1.5", Number(1.5));
 		}
 		
 		[Test]
 		public void TestPlusOperator()
 		{
-			var expressions = Compile("1+2");
-			Assert.AreEqual(
-				new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("1+2", Plus(Number(1), Number(2)));
 		}
 		
 		[Test]
 		public void TestTwoPlusOperators()
 		{
-			var expressions = Compile("1+2+3");
-			Assert.AreEqual(
-				new PlusOperator(
-					new PlusOperator(
-						new NumberLiteral(1, Nowhere),
-						new NumberLiteral(2, Nowhere),
-						Nowhere),
-					new NumberLiteral(3, Nowhere),
-					Nowhere),
-				expressions[0]);
+			AssertCompilation("1+2+3", Plus(Plus(Number(1), Number(2)), Number(3)));
 		}
 		
 		[Test]
 		public void TestPlusOperatorWithWhitespace()
 		{
-			var expressions = Compile("1 + 2");
-			Assert.AreEqual(
-				new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("1 + 2", Plus(Number(1), Number(2)));
 		}
 		
 		[Test]
 		public void TestMinusOperator()
 		{
-			var expressions = Compile("1-2");
-			Assert.AreEqual(
-				new MinusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("1-2", Minus(Number(1), Number(2)));
 		}
 		
 		[Test]
 		public void TestForwardSlashOperator()
 		{
-			var expressions = Compile("1/2");
-			Assert.AreEqual(
-				new ForwardSlashOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("1/2", ForwardSlash(Number(1), Number(2)));
 		}
 		
 		[Test]
 		public void TestAsteriskOperator()
 		{
-			var expressions = Compile("1*2");
-			Assert.AreEqual(
-				new AsteriskOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(2, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("1*2", Asterisk(Number(1), Number(2)));
 		}
 		
 		[Test]
 		public void TestArithmeticOrderOfOperations()
 		{
-			var expressions = Compile("1*2+3/4");
-			Assert.AreEqual(
-				new PlusOperator(
-					new AsteriskOperator(
-						new NumberLiteral(1, Nowhere),
-						new NumberLiteral(2, Nowhere),
-						Nowhere),
-					new ForwardSlashOperator(
-						new NumberLiteral(3, Nowhere),
-						new NumberLiteral(4, Nowhere),
-						Nowhere),
-					Nowhere),
-				expressions[0]);
+			AssertCompilation("1*2+3/4", Plus(Asterisk(Number(1), Number(2)), ForwardSlash(Number(3), Number(4))));
 		}
 		
 		[Test]
 		public void TestDefinition()
 		{
-			var expressions = Compile("foo:42");
-			Assert.AreEqual(
-				new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("foo:42", Definition("foo", Number(42)));
 		}
 		
 		[Test, ExpectedException(typeof(ParseException))]
 		public void TestDoubleDefinitionFailure()
 		{
-			var expressions = Compile("foo:42:10");
-			Assert.AreEqual(
-				new Definition(new Reference("foo", Nowhere), new NumberLiteral(42, Nowhere), Nowhere),
-				expressions[0]);
+			Compile("foo:42:10");
 		}
 		
 		[Test]
 		public void TestReferenceDefinition()
 		{
-			var expressions = Compile("foo:bar");
-			Assert.AreEqual(
-				new Definition(new Reference("foo", Nowhere), new Reference("bar", Nowhere), Nowhere),
-				expressions[0]);
+			AssertCompilation("foo:bar", Definition("foo", Reference("bar")));
 		}
 		
 		[Test]
 		public void TestStringLiteral()
 		{
-			var expressions = Compile(@"""foo""");
-			Assert.AreEqual(new StringLiteral("foo", Nowhere), expressions[0]);
+			AssertCompilation(@"""foo""", String("foo"));
 		}
 		
 		[Test]
 		public void TestEscapedStringLiteral()
 		{
-			var expressions = Compile(@"""\""\n\t\\""");
-			Assert.AreEqual(new StringLiteral("\"\n\t\\", Nowhere), expressions[0]);
+			AssertCompilation(@"""\""\n\t\\""", String("\"\n\t\\"));
 		}
 		
 		[Test]
 		public void TestUninterpolatedStringLiteral()
 		{
-			var expressions = Compile(@"""foo {{bar}} bat""");
-			Assert.AreEqual(new StringLiteral(@"foo {bar} bat", Nowhere), expressions[0]);
+			AssertCompilation(@"""foo {{bar}} bat""", String(@"foo {bar} bat"));
 		}
 		
 		[Test, ExpectedException(typeof(TokenizationException))]
@@ -227,109 +175,63 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestSimpleInterpolatedStringLiteral()
 		{
-			var expressions = Compile(@"""{foo}""");
-			Assert.AreEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new Reference("foo", Nowhere)
-				}, Nowhere),
-				expressions[0]
-			);
+			AssertCompilation(@"""{foo}""", InterpolatedString(Reference("foo")));
 		}
 		
 		[Test]
 		public void TestInterpolatedStringLiteral()
 		{
-			var expressions = Compile(@"""foo {bar} bat""");
-			Assert.AreEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo ", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral(" bat", Nowhere)
-				}, Nowhere),
-				expressions[0]
-			);
+			AssertCompilation(@"""foo {bar} bat""",
+				InterpolatedString(String("foo "), Reference("bar"), String(" bat")));
 		}
 		
 		[Test]
 		public void TestTerminalInterpolatedStringLiteral()
 		{
-			var expressions = Compile(@"""foo {bar}""");
-			Assert.AreEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo ", Nowhere),
-					new Reference("bar", Nowhere)
-				}, Nowhere),
-				expressions[0]
-			);
+			AssertCompilation(@"""foo {bar}""", InterpolatedString(String("foo "), Reference("bar")));
 		}
 		
 		[Test]
 		public void TestComplexInterpolatedStringLiteral()
 		{
-			var expressions = Compile(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""");
-			Assert.AreEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral(@"{foo}: ", Nowhere),
-					new PlusOperator(
-						new PlusOperator(
-							new Reference("bar", Nowhere),
-							new NumberLiteral(42, Nowhere), Nowhere),
-						new StringLiteral("%", Nowhere),
-						Nowhere),
-					new StringLiteral(", ", Nowhere),
-					new Reference("bat", Nowhere)
-				}, Nowhere),
-				expressions[0]
-			);
+			AssertCompilation(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""", InterpolatedString(
+				String(@"{foo}: "),
+				Plus(Plus(Reference("bar"), Number(42)), String("%")),
+				String(", "),
+				Reference("bat")
+			));
 		}
 		
 		[Test]
 		public void TestNestedInterpolatedStringLiterals()
 		{
-			var expressions = Compile(@"""{""{foo}""}""");
-			Assert.AreEqual(new InterpolatedStringLiteral(new Expression[] {
-				new InterpolatedStringLiteral(new Expression[] {
-					new Reference("foo", Nowhere)
-				}, Nowhere),
-			}, Nowhere),
-			expressions[0]);
+			AssertCompilation(@"""{""{foo}""}""", InterpolatedString(InterpolatedString(Reference("foo"))));
 		}
 		
 		[Test]
 		public void TestNestedInterpolatedStringLiteralsWithTrailingString()
 		{
-			var expressions = Compile(@"""{""{foo}""} bar""");
-			Assert.AreEqual(new InterpolatedStringLiteral(new Expression[] {
-				new InterpolatedStringLiteral(new Expression[] {
-					new Reference("foo", Nowhere)
-				}, Nowhere),
-				new StringLiteral(" bar", Nowhere)
-			}, Nowhere),
-			expressions[0]);
+			AssertCompilation(@"""{""{foo}""} bar""",
+				InterpolatedString(InterpolatedString(Reference("foo")), String(" bar")));
 		}
 		
 		[Test]
 		public void TestComplexNestedInterpolatedStringLiterals()
 		{
-			var expressions = Compile(@"""{1+1 + "" is the lonliest number, {name}!""} < she said it""");
-			Assert.AreEqual(
-				new InterpolatedStringLiteral(
-					new Expression[] {
-						new PlusOperator(
-							new PlusOperator(
-								new NumberLiteral(1, Nowhere),
-								new NumberLiteral(1, Nowhere), Nowhere),
-			                new InterpolatedStringLiteral(
-								new Expression[] {
-									new StringLiteral(" is the lonliest number, ", Nowhere),
-									new Reference("name", Nowhere),
-									new StringLiteral("!", Nowhere)
-								}, Nowhere),
-							Nowhere),
-						new StringLiteral(" < she said it", Nowhere),
-					}, Nowhere),
-				expressions[0]);
-				
+			AssertCompilation(@"""{1+1 + "" is the lonliest number, {name}!""} < she said it""",
+				InterpolatedString(
+					Plus(
+						Plus(Number(1), Number(1)),
+						InterpolatedString(
+							String(" is the lonliest number, "),
+							Reference("name"),
+							String("!"))),
+					String(" < she said it")));
+		}
+
+		public static void AssertCompilation(string source, Expression expression)
+		{
+			Assert.AreEqual(expression, Compile(source)[0]);
 		}
 		
 		public static List<Expression> Compile(string source)

@@ -24,10 +24,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
+using Stinky.Compiler.Syntax;
+
 namespace Stinky.Compiler.Tests
 {
 	public class CompilerTests
 	{
 		protected static readonly Location Nowhere = new Location(null, 0, 0);
+
+		protected static Reference Reference(string identifier)
+		{
+			return new Reference(identifier, Nowhere);
+		}
+
+		protected static Definition Definition(string identifier, Expression expression)
+		{
+			return new Definition(Reference(identifier), expression, Nowhere);
+		}
+
+		protected static NumberLiteral Number(double number)
+		{
+			return new NumberLiteral(number, Nowhere);
+		}
+
+		protected static StringLiteral String(string @string)
+		{
+			return new StringLiteral(@string, Nowhere);
+		}
+
+		protected static InterpolatedStringLiteral InterpolatedString(params Expression[] expressions)
+		{
+			return new InterpolatedStringLiteral(expressions, Nowhere);
+		}
+
+		protected static PlusOperator Plus(Expression left, Expression right)
+		{
+			return Plus(left, right, null);
+		}
+
+		protected static PlusOperator Plus(Expression left, Expression right, Type type)
+		{
+			return new PlusOperator(left, right, Nowhere, type);
+		}
+
+		protected static MinusOperator Minus(Expression left, Expression right)
+		{
+			return Minus(left, right, null);
+		}
+
+		protected static MinusOperator Minus(Expression left, Expression right, Type type)
+		{
+			return new MinusOperator(left, right, Nowhere, type);
+		}
+
+		protected static AsteriskOperator Asterisk(Expression left, Expression right)
+		{
+			return Asterisk(left, right, null);
+		}
+
+		protected static AsteriskOperator Asterisk(Expression left, Expression right, Type type)
+		{
+			return new AsteriskOperator(left, right, Nowhere, type);
+		}
+
+		protected static ForwardSlashOperator ForwardSlash(Expression left, Expression right)
+		{
+			return ForwardSlash(left, right, null);
+		}
+
+		protected static ForwardSlashOperator ForwardSlash(Expression left, Expression right, Type type)
+		{
+			return new ForwardSlashOperator(left, right, Nowhere, type);
+		}
 	}
 }

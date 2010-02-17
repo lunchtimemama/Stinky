@@ -30,6 +30,9 @@ using Gtk;
 using Gdk;
 using Pango;
 
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.SourceEditor;
+
 namespace MonoDevelop.Stinky
 {
 	public class ReadEvalPrintLoopView : TextView
@@ -44,8 +47,10 @@ namespace MonoDevelop.Stinky
 			this.evaluator = evaluator;
 			var startIter = Buffer.StartIter;
 			promptStart = Buffer.CreateMark(null, startIter, true);
+			//var style = SyntaxModeService.GetColorStyle(Style, DefaultSourceEditorOptions.Instance.ColorScheme);
 			Buffer.TagTable.Add(new TextTag("prompt") { Editable = false, Weight = Weight.Bold });
 			Buffer.TagTable.Add(new TextTag("history") { Editable = false });
+			//Buffer.TagTable.Add(new TextTag("stringLiteral") { Color = style.BookmarkColor2 });
 			
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);

@@ -66,7 +66,7 @@ namespace Stinky.Compiler
 		{
 			CheckExpressionType(plusOperator);
 			if(plusOperator.Type == typeof(string)) {
-				VisitBinaryOperation<string>((left, right) => left + right, plusOperator);
+				VisitBinaryOperation<string>((left, right) => left + right, plusOperator, t => t.ToString());
 			} else {
 				VisitBinaryOperation<double>((left, right) => left + right, plusOperator);
 			}
@@ -92,9 +92,16 @@ namespace Stinky.Compiler
 		
 		void VisitBinaryOperation<T>(Func<T, T, object> operation, BinaryOperator binaryOperator)
 		{
+			VisitBinaryOperation(operation, binaryOperator, t => (T)t);
+		}
+		
+		void VisitBinaryOperation<T>(Func<T, T, object> operation,
+									 BinaryOperator binaryOperator,
+									 Func<object, T> transformation)
+		{
 			binaryOperator.LeftOperand.Visit(new Interpreter(left => {
 				binaryOperator.RightOperand.Visit(new Interpreter(right => {
-					consumer(operation((T)left, (T)right));
+					consumer(operation(transformation(left), transformation(right)));
 				}));
 			}));
 		}

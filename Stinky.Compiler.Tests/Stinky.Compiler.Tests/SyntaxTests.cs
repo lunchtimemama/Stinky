@@ -36,259 +36,87 @@ namespace Stinky.Compiler.Tests
 	public class SyntaxTests : CompilerTests
 	{
 		[Test]
-		public void TestStringDefinitionTypeResolution()
-		{
-			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(
-				new Resolver(new Scope(), definition => Assert.AreEqual(typeof(string), definition.Type)));
-		}
-		
-		[Test]
-		public void TestStringDefinitionAndReferenceTypeResolution()
-		{
-			var scope = new Scope();
-			new Definition(new Reference("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere).Visit(
-				new Resolver(scope, definition => {
-					scope.OnExpression(definition);
-					new Reference("foo", Nowhere).Visit(new Resolver(scope, reference => {
-						Assert.AreEqual(typeof(string), definition.Type);
-						Assert.AreEqual(typeof(string), reference.Type);
-					}));
-				}));
-		}
-		
-		[Test]
-		public void TestTransitiveStringDefinitionAndReferenceTypeResolution()
-		{
-			var scope = new Scope();
-			new Definition(new Reference("foo", Nowhere), new StringLiteral("", Nowhere), Nowhere).Visit(
-				new Resolver(scope, fooDefinition => {
-					scope.OnExpression(fooDefinition);
-					new Definition(new Reference("bar", Nowhere), new Reference("foo", Nowhere), Nowhere).Visit(
-						new Resolver(scope, barDefinition => {
-							scope.OnExpression(barDefinition);
-							new Reference("bar", Nowhere).Visit(new Resolver(scope, reference => {
-								Assert.AreEqual(typeof(string), fooDefinition.Type);
-								Assert.AreEqual(typeof(string), barDefinition.Type);
-								Assert.AreEqual(typeof(string), reference.Type);
-							}));
-						}));
-				}));
-		}
-		
-		[Test]
-		public void TestInterpolatedStringLiteralEqualityLogic()
+		public void TestInterpolatedStringLiteralEquality()
 		{
 			Assert.AreEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere)
-			);
+				InterpolatedString(String("foo"), Reference("bar"), String("bat")),
+				InterpolatedString(String("foo"), Reference("bar"), String("bat")));
+
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere)
-			);
+				InterpolatedString(String("foo"), Reference("bar")),
+				InterpolatedString(String("foo"), Reference("bar"), String("bat")));
+
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere)
-				}, Nowhere)
-			);
+				InterpolatedString(String("foo"), Reference("bar"), String("bat")),
+				InterpolatedString(String("foo"), Reference("bar")));
+
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("bar", Nowhere),
-					new Reference("foo", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere),
-					new Reference("bar", Nowhere),
-					new StringLiteral("bat", Nowhere)
-				}, Nowhere)
-			);
+				InterpolatedString(String("bar"), Reference("foo"), String("bat")),
+				InterpolatedString(String("foo"), Reference("bar"), String("bat")));
+
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("bar", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere)
-				}, Nowhere)
-			);
+				InterpolatedString(String("bar")),
+				InterpolatedString(String("foo")));
+
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere)
-				}, Nowhere),
-				new InterpolatedStringLiteral(new Expression[0], Nowhere)
-			);
+				InterpolatedString(String("foo")),
+				InterpolatedString());
+			
 			Assert.AreNotEqual(
-				new InterpolatedStringLiteral(new Expression[0], Nowhere),
-				new InterpolatedStringLiteral(new Expression[] {
-					new StringLiteral("foo", Nowhere)
-				}, Nowhere)
-			);
-		}
-		
-		[Test]
-		public void TestPlusOperatorStringConcatinationWithTwoStrings()
-		{
-			new PlusOperator(new StringLiteral("foo", Nowhere), new StringLiteral("bar", Nowhere), Nowhere)
-				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(string), plusOperator.Type)));
-		}
-		
-		[Test]
-		public void TestPlusOperatorStringConcatinationWithOneString()
-		{
-			new PlusOperator(new StringLiteral("foo", Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
-				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(string), plusOperator.Type)));
-		}
-		
-		[Test]
-		public void TestPlusOperatorAddition()
-		{
-			new PlusOperator(new NumberLiteral(1, Nowhere), new NumberLiteral(1, Nowhere), Nowhere)
-				.Visit(new Resolver(new Scope(), plusOperator => Assert.AreEqual(typeof(double), plusOperator.Type)));
+				InterpolatedString(),
+				InterpolatedString(String("foo")));
 		}
 		
 		[Test]
 		public void TestPlusOperatorEquality()
 		{
 			Assert.AreEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), Number(0)),
+				Plus(Number(0), Number(0)));
+
 			Assert.AreEqual(
-				new PlusOperator(
-					null,
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					null,
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(null, Number(0)),
+				Plus(null, Number(0)));
+
 			Assert.AreEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					null,
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					null,
-					Nowhere));
-			
+				Plus(Number(0), null),
+				Plus(Number(0), null));
+
 			Assert.AreEqual(
-				new PlusOperator(
-					null,
-					null,
-					Nowhere),
-				new PlusOperator(
-					null,
-					null,
-					Nowhere));
-			
+				Plus(null, null),
+				Plus(null, null));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(1, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(1), Number(0)),
+				Plus(Number(0), Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(1, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), Number(0)),
+				Plus(Number(1), Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(1, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), Number(1)),
+				Plus(Number(0), Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(1, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), Number(0)),
+				Plus(Number(0), Number(1)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					null,
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(null, Number(0)),
+				Plus(Number(0), Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					null,
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), Number(0)),
+				Plus(null, Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					null,
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere));
-			
+				Plus(Number(0), null),
+				Plus(Number(0), Number(0)));
+
 			Assert.AreNotEqual(
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					new NumberLiteral(0, Nowhere),
-					Nowhere),
-				new PlusOperator(
-					new NumberLiteral(0, Nowhere),
-					null,
-					Nowhere));
+				Plus(Number(0), Number(0)),
+				Plus(Number(0), null));
 		}
 	}
 }
