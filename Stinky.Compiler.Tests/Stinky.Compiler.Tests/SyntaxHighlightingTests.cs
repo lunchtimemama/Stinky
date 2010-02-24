@@ -28,9 +28,10 @@ using System;
 
 using NUnit.Framework;
 
-using Stinky.Compiler;
-using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
+using Stinky.Compiler.Syntax.Highlighting;
+
+using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
 
 namespace Stinky.Compiler.Tests
 {
@@ -45,62 +46,69 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestStringLiteral()
 		{
-			var correct = false;
-			new StringLiteral("foo", Location(0)).Visit(
-				new SyntaxHighlighter(
-					new StringLiteral("fo", Location(0)),
-					expression => correct = expression.Location == Location(0)));
-			Assert.IsTrue(correct);
+			Test(new StringLiteral("foo", Location(0)), SyntaxType.StringLiteral, 0, 3);
+		}
+
+		[Test]
+		public void TestStringLiteralInDefinition()
+		{
+			Test(new Definition(
+					new Reference("foo", Location(0)),
+					new StringLiteral("bar", Location(5)),
+					Location(0)),
+				SyntaxType.StringLiteral, 5, 3);
+		}
+
+		[Test]
+		public void TestNumberLiteral()
+		{
+			Test(new NumberLiteral(123, Location(0)), SyntaxType.NumberLiteral, 0, 3);
 		}
 		
 		[Test]
 		public void TestPlusOperatorStringConcatination()
 		{
-			var correct = false;
-			new PlusOperator(
-				new StringLiteral("foo", Location(0)),
-				new StringLiteral("bar", Location(4)),
-				Location(3))
-			.Visit(
-				new SyntaxHighlighter(
-					new PlusOperator(
-						new StringLiteral("foo", Location(0)),
-						new StringLiteral("ba", Location(4)),
-						Location(3)),
-					expression => correct = expression.Location == Location(4)));
-			Assert.IsTrue(correct);
+			Test(new PlusOperator(
+					new StringLiteral("foo", Location(0)),
+					new StringLiteral("bar", Location(4)),
+					Location(3)),
+				SyntaxType.StringLiteral, 0, 7);
 		}
-		
-		int DriveSyntaxHighlighting(string code, int[] locations)
-		{
-			var i = 0;
-			var correctCount = 0;
-			var driver = new SyntaxHighlightingDriver(expression => {
-				if(expression.Location == Location(locations[i])) {
-					correctCount = correctCount + 1;
-				} else {
-					Assert.Fail();
-				}
-			});
-			for(; i < code.Length; i++) {
-				try {
-					driver.OnCharacter(new Character(code[i], Location(i)));
-				} catch {
-				}
-			}
-			return correctCount;
-		}
-		
+
 		[Test]
-		public void TestSyntaxHighlightingDriverWithStringConcatination()
+		public void TestPlusOperatorStringAndNumberConcatination()
 		{
-			Assert.AreEqual(6, DriveSyntaxHighlighting("foo+bar", new[] { 0, 0, 0, -1, 3, 4, 4 }));
+			Test(new PlusOperator(
+					new NumberLiteral(123, Location(0)),
+					new StringLiteral("bar", Location(4)),
+					Location(3)),
+				SyntaxType.StringLiteral, 0, 7);
 		}
-		
+
 		[Test]
-		public void TestSyntaxHighlightingDriverWithMultipleArithmeticOperators()
+		public void TestPlusOperatorAddition()
 		{
-			Assert.AreEqual(4, DriveSyntaxHighlighting("1*2+3*4", new[] { 0, -1, 1, -1, 3, -1, 5 }));
+			Test(new PlusOperator(
+					new NumberLiteral(123, Location(0)),
+					new NumberLiteral(456, Location(4)),
+					Location(3)),
+				SyntaxType.NumberLiteral, 0, 7);
+		}
+
+		static void Test(Expression expression, SyntaxType syntax, int offset, int length)
+		{
+			var tested = false;
+			expression.Visit(
+				new Resolver(new Scope(), e => e.Visit(
+					new SyntaxHighlighter((s, o, l) => {
+						Assert.AreEqual(syntax, s, "The syntax highlighter used the wrong syntax type.");
+						Assert.AreEqual(offset, o, "The syntax highlighter began at an incorrect offset.");
+						Assert.AreEqual(length, l, "The syntax highlighter stopped after an incorrect length");
+						tested = true;
+					})
+				))
+			);
+			Assert.IsTrue(tested, "The syntax highlighter did not attempt to highlight the syntax.");
 		}
 	}
 }

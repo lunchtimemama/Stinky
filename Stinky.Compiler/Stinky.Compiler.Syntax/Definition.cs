@@ -52,7 +52,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override bool Equals(object obj)
 		{
-			Definition definition = obj as Definition;
+			var definition = obj as Definition;
 			return definition != null
 				&& definition.Reference.Equals(Reference)
 				&& definition.Expression.Equals(Expression)

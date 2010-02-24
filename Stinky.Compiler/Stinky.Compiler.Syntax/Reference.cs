@@ -52,7 +52,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override bool Equals(object obj)
 		{
-			Reference reference = obj as Reference;
+			var reference = obj as Reference;
 			return reference != null
 				&& reference.Identifier == Identifier
 				&& reference.Location == Location;

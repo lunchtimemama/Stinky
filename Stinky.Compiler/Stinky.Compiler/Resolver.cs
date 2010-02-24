@@ -45,7 +45,7 @@ namespace Stinky.Compiler
 			this.consumer = consumer;
 		}
 		
-		public override void VisitDefinition(Definition definition)
+		public override void VisitDefinition<T>(T definition)
 		{
 			definition.Expression.Visit(
 				new Resolver(scope,
@@ -53,18 +53,13 @@ namespace Stinky.Compiler
 						new Definition(definition.Reference, expression, definition.Location, expression.Type))));
 		}
 		
-		public override void VisitReference(Reference reference)
+		public override void VisitReference<T>(T reference)
 		{
 			var definition = scope.GetDefinition(reference);
 			consumer(new Reference(reference.Identifier, definition.Expression, reference.Location, definition.Type));
 		}
 		
-		public override void VisitStringLiteral(StringLiteral stringLiteral)
-		{
-			consumer(stringLiteral);
-		}
-		
-		public override void VisitInterpolatedStringLiteral(InterpolatedStringLiteral interpolatedStringLiteral)
+		public override void VisitInterpolatedStringLiteral<T>(T interpolatedStringLiteral)
 		{
 			var interpolatedExpressions = new List<Expression>();
 			foreach(var interpolatedExpression in interpolatedStringLiteral.InterpolatedExpressions) {
@@ -75,12 +70,7 @@ namespace Stinky.Compiler
 			consumer(new InterpolatedStringLiteral(interpolatedExpressions, interpolatedStringLiteral.Location));
 		}
 		
-		public override void VisitNumberLiteral(NumberLiteral numberLiteral)
-		{
-			consumer(numberLiteral);
-		}
-		
-		public override void VisitPlusOperator(PlusOperator plusOperator)
+		public override void VisitPlusOperator<T>(T plusOperator)
 		{
 			plusOperator.LeftOperand.Visit(new Resolver(scope, leftOperand => {
 				plusOperator.RightOperand.Visit(new Resolver(scope, rightOperand => {
@@ -95,19 +85,19 @@ namespace Stinky.Compiler
 			}));
 		}
 		
-		public override void VisitMinusOperator(MinusOperator minusOperator)
+		public override void VisitMinusOperator<T>(T minusOperator)
 		{
 			VisitBinaryNumberOperator(minusOperator,
 				(left, right) => new MinusOperator(left, right, minusOperator.Location, typeof(double)));
 		}
 		
-		public override void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
+		public override void VisitAsteriskOperator<T>(T asteriskOperator)
 		{
 			VisitBinaryNumberOperator(asteriskOperator,
 				(left, right) => new AsteriskOperator(left, right, asteriskOperator.Location, typeof(double)));
 		}
 		
-		public override void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
+		public override void VisitForwardSlashOperator<T>(T forwardSlashOperator)
 		{
 			VisitBinaryNumberOperator(forwardSlashOperator,
 				(left, right) => new ForwardSlashOperator(left, right, forwardSlashOperator.Location, typeof(double)));
@@ -130,6 +120,11 @@ namespace Stinky.Compiler
 			if(expression.Type != typeof(T)) {
 				throw new InvalidOperationException("The expression must be of type " + typeof(T));
 			}
+		}
+
+		protected override void VisitExpression<T>(T expression)
+		{
+			consumer(expression);
 		}
 	}
 }

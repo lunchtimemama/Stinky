@@ -43,7 +43,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override bool Equals(object obj)
 		{
-			StringLiteral stringLiteral = obj as StringLiteral;
+			var stringLiteral = obj as StringLiteral;
 			return stringLiteral != null
 				&& stringLiteral.String == String
 				&& stringLiteral.Location == Location;

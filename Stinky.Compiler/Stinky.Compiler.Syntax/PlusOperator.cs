@@ -47,13 +47,13 @@ namespace Stinky.Compiler.Syntax
 		
 		public override bool Equals(object obj)
 		{
-			PlusOperator plusOperator = obj as PlusOperator;
+			var plusOperator = obj as PlusOperator;
 			return plusOperator != null && EqualsOther(plusOperator);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return Location.GetHashCode() ^ LeftOperand.GetHashCode() ^ RightOperand.GetHashCode();
+			return typeof(PlusOperator).GetHashCode() ^ base.GetHashCode();
 		}
 		
 		public override string ToString ()

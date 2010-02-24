@@ -54,7 +54,6 @@
     <Compile Include="MonoDevelop.Stinky\EvaluationPad.cs" />
     <Compile Include="MonoDevelop.Stinky\EvaluationWidget.cs" />
     <Compile Include="MonoDevelop.Stinky\ReadEvalPrintLoopView.cs" />
-    <Compile Include="MonoDevelop.Stinky\SyntaxHighlighter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">

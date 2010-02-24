@@ -1,5 +1,5 @@
 // 
-// NumberLiteral.cs
+// ReverseEqualityVisitor.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -24,40 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace Stinky.Compiler.Syntax
+using System;
+
+namespace Stinky.Compiler.Syntax.Highlighting
 {
-	public class NumberLiteral : Expression
+	public class IncrementalSyntaxHighlighter : Visitor
 	{
-		public readonly double Number;
+		readonly Expression expression;
+		readonly Action<Syntax, int, int> consumer;
 		
-		public NumberLiteral(double number, Location location)
-			: base(location, typeof(double))
+		public IncrementalSyntaxHighlighter(Expression expression, Action<Syntax, int, int> consumer)
 		{
-			this.Number = number;
-		}
-		
-		public override void Visit(Visitor visitor)
-		{
-			visitor.VisitNumberLiteral(this);
-		}
-		
-		public override bool Equals(object obj)
-		{
-			var numberLiteral = obj as NumberLiteral;
-			return numberLiteral != null
-				&& numberLiteral.Number == Number
-				&& numberLiteral.Location == Location;
+			this.expression = expression;
+			this.consumer = consumer;
 		}
 
-		public override int GetHashCode()
+		protected override void VisitBinaryOperator<T>(T binaryOperator)
 		{
-			return Number.GetHashCode() ^ Location.GetHashCode();
+			if(expression is T) {
+				if(expression.Type == binaryOperator.Type) {
+					binaryOperator.RightOperand.Visit(this);
+				} else {
+					binaryOperator.Visit(new SyntaxHighlighter(consumer));
+				}
+			} else if(binaryOperator.LeftOperand.Equals(expression)) {
+				binaryOperator.LeftOperand.Visit(new SyntaxHighlighter((syntax, offset, length) => {
+					consumer(syntax, binaryOperator.Location.Column, 1);
+				}));
+			} else {
+				// ?
+			}
 		}
 
-		public override string ToString ()
+		protected override void VisitExpression<T>(T expression)
 		{
-			return Number.ToString();
+			expression.Visit(new SyntaxHighlighter((syntax, offset, length) => {
+				consumer(syntax, offset + length - 1, 1);
+			}));
 		}
-
 	}
 }
+

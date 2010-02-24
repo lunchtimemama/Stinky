@@ -53,8 +53,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override int GetHashCode()
 		{
-			// TODO class-specific entropy
-			return Location.GetHashCode() ^ LeftOperand.GetHashCode() ^ RightOperand.GetHashCode();
+			return typeof(ForwardSlashOperator).GetHashCode() ^ base.GetHashCode();
 		}
 		
 		public override string ToString()

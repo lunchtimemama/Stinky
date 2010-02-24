@@ -28,39 +28,68 @@ namespace Stinky.Compiler.Syntax
 {
 	public class Visitor
 	{
-		public virtual void VisitDefinition(Definition definition)
+		public virtual void VisitDefinition<T>(T definition)
+			where T : Definition
 		{
+			VisitExpression(definition);
 		}
 		
-		public virtual void VisitInterpolatedStringLiteral(InterpolatedStringLiteral interpolatedStringLiteral)
+		public virtual void VisitInterpolatedStringLiteral<T>(T interpolatedStringLiteral)
+			where T : InterpolatedStringLiteral
 		{
+			VisitExpression(interpolatedStringLiteral);
 		}
 		
-		public virtual void VisitNumberLiteral(NumberLiteral numberLiteral)
+		public virtual void VisitNumberLiteral<T>(T numberLiteral)
+			where T : NumberLiteral
 		{
+			VisitExpression(numberLiteral);
 		}
 		
-		public virtual void VisitPlusOperator(PlusOperator plusOperator)
+		public virtual void VisitPlusOperator<T>(T plusOperator)
+			where T : PlusOperator
 		{
+			VisitBinaryOperator(plusOperator);
 		}
 		
-		public virtual void VisitMinusOperator(MinusOperator minusOperator)
+		public virtual void VisitMinusOperator<T>(T minusOperator)
+			where T : MinusOperator
 		{
+			VisitBinaryOperator(minusOperator);
 		}
 		
-		public virtual void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
+		public virtual void VisitForwardSlashOperator<T>(T forwardSlashOperator)
+			where T : ForwardSlashOperator
 		{
+			VisitBinaryOperator(forwardSlashOperator);
 		}
 		
-		public virtual void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
+		public virtual void VisitAsteriskOperator<T>(T asteriskOperator)
+			where T : AsteriskOperator
 		{
+			VisitBinaryOperator(asteriskOperator);
 		}
 		
-		public virtual void VisitReference(Reference reference)
+		public virtual void VisitReference<T>(T reference)
+			where T : Reference
 		{
+			VisitExpression(reference);
 		}
 		
-		public virtual void VisitStringLiteral(StringLiteral stringLiteral)
+		public virtual void VisitStringLiteral<T>(T stringLiteral)
+			where T : StringLiteral
+		{
+			VisitExpression(stringLiteral);
+		}
+
+		protected virtual void VisitBinaryOperator<T>(T binaryOperator)
+			where T : BinaryOperator
+		{
+			VisitExpression(binaryOperator);
+		}
+
+		protected virtual void VisitExpression<T>(T expression)
+			where T : Expression
 		{
 		}
 	}

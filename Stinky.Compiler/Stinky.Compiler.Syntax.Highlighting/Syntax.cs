@@ -1,5 +1,5 @@
 // 
-// SyntaxHighlighter.cs
+// Syntax.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -24,36 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-using Gtk;
-
-using Stinky.Compiler.Syntax;
-
-namespace MonoDevelop.Stinky
+namespace Stinky.Compiler.Syntax.Highlighting
 {
-	public class SyntaxHighlighter : Visitor
+	public enum Syntax
 	{
-		readonly Expression expression;
-		TextBuffer buffer;
-		TextIter iter;
-
-		public SyntaxHighlighter(TextBuffer buffer, TextIter iter, Expression expression)
-		{
-			this.buffer = buffer;
-			this.expression = expression;
-			this.iter = iter;
-		}
-
-		public override void VisitStringLiteral(StringLiteral stringLiteral)
-		{
-			var startIter = iter;
-			startIter.ForwardChars(stringLiteral.Location.Column);
-			var endIter = startIter;
-			endIter.ForwardChars(stringLiteral.String.Length);
-			buffer.ApplyTag("stringLiteral", startIter, endIter);
-			Console.Write(expression);
-		}
+		StringLiteral,
+		NumberLiteral
 	}
 }
 

@@ -30,6 +30,7 @@ using Stinky.Compiler;
 using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
+using Stinky.Compiler.Syntax.Highlighting;
 
 namespace Smell
 {
@@ -40,20 +41,6 @@ namespace Smell
 			var code = "foo+bar";
 			var locations = new[] { 0, 0, 0, 0, 4, 4, 4 };
 			var i = 0;
-			var correctCount = 0;
-			var driver = new SyntaxHighlightingDriver(expression => {
-				if(expression.Location == Location(locations[i])) {
-					correctCount = correctCount + 1;
-				} else {
-					Console.WriteLine(expression.Location);
-				}
-			});
-			for(; i < code.Length; i++) {
-				try {
-					driver.OnCharacter(new Character(code[i], Location(i)));
-				} catch {
-				}
-			}
 		}
 		
 		static Location Location(int location)

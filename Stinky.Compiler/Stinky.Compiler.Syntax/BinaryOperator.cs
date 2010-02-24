@@ -68,5 +68,10 @@ namespace Stinky.Compiler.Syntax
 			
 			return true;
 		}
+
+		public override int GetHashCode()
+		{
+			return LeftOperand.GetHashCode() ^ RightOperand.GetHashCode() ^ Location.GetHashCode();
+		}
 	}
 }

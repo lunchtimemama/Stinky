@@ -47,7 +47,7 @@ namespace Stinky.Compiler.Syntax
 		
 		public override bool Equals(object obj)
 		{
-			InterpolatedStringLiteral interpolatedStringLiteral = obj as InterpolatedStringLiteral;
+			var interpolatedStringLiteral = obj as InterpolatedStringLiteral;
 			if(interpolatedStringLiteral == null || interpolatedStringLiteral.Location != Location) {
 				return false;
 			}

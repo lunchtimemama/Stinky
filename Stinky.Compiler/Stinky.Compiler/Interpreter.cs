@@ -42,12 +42,12 @@ namespace Stinky.Compiler
 			this.consumer = consumer;
 		}
 		
-		public override void VisitDefinition(Definition definition)
+		public override void VisitDefinition<T>(T definition)
 		{
 			definition.Expression.Visit(this);
 		}
 		
-		public override void VisitInterpolatedStringLiteral(InterpolatedStringLiteral interpolatedStringLiteral)
+		public override void VisitInterpolatedStringLiteral<T>(T interpolatedStringLiteral)
 		{
 			var stringBuilder = new StringBuilder();
 			var interpreter = new Interpreter(result => stringBuilder.Append(result));
@@ -57,12 +57,12 @@ namespace Stinky.Compiler
 			consumer(stringBuilder.ToString());
 		}
 		
-		public override void VisitNumberLiteral(NumberLiteral numberLiteral)
+		public override void VisitNumberLiteral<T>(T numberLiteral)
 		{
 			consumer(numberLiteral.Number);
 		}
 		
-		public override void VisitPlusOperator(PlusOperator plusOperator)
+		public override void VisitPlusOperator<T>(T plusOperator)
 		{
 			CheckExpressionType(plusOperator);
 			if(plusOperator.Type == typeof(string)) {
@@ -72,19 +72,19 @@ namespace Stinky.Compiler
 			}
 		}
 		
-		public override void VisitMinusOperator(MinusOperator minusOperator)
+		public override void VisitMinusOperator<T>(T minusOperator)
 		{
 			CheckExpressionType(minusOperator);
 			VisitBinaryOperation<double>((left, right) => left - right, minusOperator);
 		}
 		
-		public override void VisitForwardSlashOperator(ForwardSlashOperator forwardSlashOperator)
+		public override void VisitForwardSlashOperator<T>(T forwardSlashOperator)
 		{
 			CheckExpressionType(forwardSlashOperator);
 			VisitBinaryOperation<double>((left, right) => left / right, forwardSlashOperator);
 		}
 		
-		public override void VisitAsteriskOperator(AsteriskOperator asteriskOperator)
+		public override void VisitAsteriskOperator<T>(T asteriskOperator)
 		{
 			CheckExpressionType(asteriskOperator);
 			VisitBinaryOperation<double>((left, right) => left * right, asteriskOperator);
@@ -106,13 +106,13 @@ namespace Stinky.Compiler
 			}));
 		}
 		
-		public override void VisitReference(Reference reference)
+		public override void VisitReference<T>(T reference)
 		{
 			CheckExpressionType(reference);
 			reference.Expression.Visit(this);
 		}
 		
-		public override void VisitStringLiteral(StringLiteral stringLiteral)
+		public override void VisitStringLiteral<T>(T stringLiteral)
 		{
 			consumer(stringLiteral.String);
 		}

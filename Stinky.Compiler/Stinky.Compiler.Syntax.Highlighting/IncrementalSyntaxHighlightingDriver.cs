@@ -28,24 +28,25 @@ using System;
 
 using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
 
 using StinkyParser = Stinky.Compiler.Parser.Parser;
 
-namespace Stinky.Compiler
+namespace Stinky.Compiler.Syntax.Highlighting
 {
-	public class SyntaxHighlightingDriver
+	public class IncrementalSyntaxHighlightingDriver
 	{
 		RootTokenizer rootTokenizer;
 		Func<StinkyParser, StinkyParser> token;
 		StinkyParser parser;
 		Expression expression;
 		
-		public SyntaxHighlightingDriver(Action<Expression> consumer)
+		public IncrementalSyntaxHighlightingDriver(Action<Syntax, int, int> consumer)
 		{
+			var resolver =
+				new Resolver(new Scope(), expression => new IncrementalSyntaxHighlighter(this.expression, consumer));
 			parser = new LineParser(
 				expression => {
-					expression.Visit(new SyntaxHighlighter(this.expression, consumer));
+					expression.Visit(resolver);
 					this.expression = expression;
 				}, error => {});
 			rootTokenizer = new RootTokenizer(

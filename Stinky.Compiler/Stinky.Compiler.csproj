@@ -69,10 +69,12 @@
     <Compile Include="Stinky.Compiler\Resolver.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
     <Compile Include="Stinky.Compiler\Driver.cs" />
-    <Compile Include="Stinky.Compiler\SyntaxHighlightingDriver.cs" />
-    <Compile Include="Stinky.Compiler\SyntaxHighlighter.cs" />
     <Compile Include="Stinky.Compiler\CompilationError.cs" />
     <Compile Include="Stinky.Compiler\ErrorConsumer.cs" />
+    <Compile Include="Stinky.Compiler.Syntax.Highlighting\SyntaxHighlighter.cs" />
+    <Compile Include="Stinky.Compiler.Syntax.Highlighting\IncrementalSyntaxHighlightingDriver.cs" />
+    <Compile Include="Stinky.Compiler.Syntax.Highlighting\IncrementalSyntaxHighlighter.cs" />
+    <Compile Include="Stinky.Compiler.Syntax.Highlighting\Syntax.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -80,5 +82,6 @@
     <Folder Include="Stinky.Compiler\" />
     <Folder Include="Stinky.Compiler.Parser.Tokenizer\" />
     <Folder Include="Stinky.Compiler.Syntax\" />
+    <Folder Include="Stinky.Compiler.Syntax.Highlighting\" />
   </ItemGroup>
 </Project>
