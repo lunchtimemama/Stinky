@@ -1,5 +1,5 @@
 // 
-// SyntaxHighlightingTests.cs
+// IncrementalSyntaxHighlighterTester.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -36,63 +36,20 @@ using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
 namespace Stinky.Compiler.Tests
 {
 	[TestFixture]
-	public class SyntaxHighlightingTests : HighlightingTests
+	public class IncrementalSyntaxHighlightingTests : HighlightingTests
 	{
 		[Test]
 		public void TestStringLiteral()
 		{
-			Test(new StringLiteral("foo", Location(0)), SyntaxType.StringLiteral, 0, 3);
+			Test(
+				new StringLiteral("fo", Location(0)),
+				new StringLiteral("foo", Location(0)),
+				SyntaxType.StringLiteral, 2, 1);
 		}
 
-		[Test]
-		public void TestStringLiteralInDefinition()
+		static void Test(Expression oldExpression, Expression newExpression, SyntaxType syntax, int offset, int length)
 		{
-			Test(new Definition(
-					new Reference("foo", Location(0)),
-					new StringLiteral("bar", Location(5)),
-					Location(0)),
-				SyntaxType.StringLiteral, 5, 3);
-		}
-
-		[Test]
-		public void TestNumberLiteral()
-		{
-			Test(new NumberLiteral(123, Location(0)), SyntaxType.NumberLiteral, 0, 3);
-		}
-		
-		[Test]
-		public void TestPlusOperatorStringConcatination()
-		{
-			Test(new PlusOperator(
-					new StringLiteral("foo", Location(0)),
-					new StringLiteral("bar", Location(4)),
-					Location(3)),
-				SyntaxType.StringLiteral, 0, 7);
-		}
-
-		[Test]
-		public void TestPlusOperatorStringAndNumberConcatination()
-		{
-			Test(new PlusOperator(
-					new NumberLiteral(123, Location(0)),
-					new StringLiteral("bar", Location(4)),
-					Location(3)),
-				SyntaxType.StringLiteral, 0, 7);
-		}
-
-		[Test]
-		public void TestPlusOperatorAddition()
-		{
-			Test(new PlusOperator(
-					new NumberLiteral(123, Location(0)),
-					new NumberLiteral(456, Location(4)),
-					Location(3)),
-				SyntaxType.NumberLiteral, 0, 7);
-		}
-
-		static void Test(Expression expression, SyntaxType syntax, int offset, int length)
-		{
-			Test(expression, test => new SyntaxHighlighter(test), syntax, offset, length);
+			Test(newExpression, test => new IncrementalSyntaxHighlighter(oldExpression, test), syntax, offset, length);
 		}
 	}
 }
