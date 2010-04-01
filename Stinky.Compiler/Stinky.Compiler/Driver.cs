@@ -33,8 +33,6 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler
 {
-	using StinkyParser = Stinky.Compiler.Source.Parser.Parser;
-
 	public class Driver
 	{
 		readonly ErrorConsumer errorConsumer;
@@ -42,8 +40,8 @@ namespace Stinky.Compiler
 		
 		int indentation;
 		Tokenizer tokenizer;
-		Func<StinkyParser, StinkyParser> token;
-		StinkyParser parser;
+		Func<Parser, Parser> token;
+		Parser parser;
 
 		public Driver(Action<int, Action<SyntaxVisitor>> consumer, ErrorConsumer errorConsumer)
 			: this(consumer, errorConsumer, null)

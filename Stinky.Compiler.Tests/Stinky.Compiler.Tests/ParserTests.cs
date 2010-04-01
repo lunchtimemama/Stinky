@@ -36,7 +36,6 @@ using Stinky.Compiler.Source.Parser.Tokenizer;
 namespace Stinky.Compiler.Tests
 {
 	using Source = Action<SourceVisitor>;
-	using StinkyParser = Stinky.Compiler.Source.Parser.Parser;
 
 	[TestFixture]
 	public class ParserTests : Sources
@@ -230,8 +229,8 @@ namespace Stinky.Compiler.Tests
 		static void AssertCompilation(string code, Source source)
 		{
 			Source parsedSource = null;
-			Func<StinkyParser, StinkyParser> token = null;
-			StinkyParser parser = new LineParser(s => parsedSource = s, e => {});
+			Func<Parser, Parser> token = null;
+			Parser parser = new LineParser(s => parsedSource = s, e => {});
 			var rootTokenizer = new RootTokenizer(
 				t => token = t, () => parser = token(parser), () => parser.OnDone(), new ErrorConsumer(null, null));
 			var column = 0;
