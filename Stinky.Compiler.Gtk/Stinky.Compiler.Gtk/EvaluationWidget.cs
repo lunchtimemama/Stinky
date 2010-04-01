@@ -29,8 +29,7 @@ using System;
 using Gtk;
 
 using Stinky.Compiler.Expressions;
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
+using Stinky.Compiler.Source;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Gtk

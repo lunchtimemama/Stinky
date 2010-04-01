@@ -28,7 +28,7 @@ using System;
 
 using Stinky.Compiler.Syntax;
 
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source
 {
 	using Source = Action<SourceVisitor>;
 	using Syntax = Action<SyntaxVisitor>;

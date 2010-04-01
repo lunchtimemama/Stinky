@@ -28,9 +28,6 @@ using System;
 
 using NUnit.Framework;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
 //using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
 
 namespace Stinky.Compiler.Tests

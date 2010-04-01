@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-using Stinky.Compiler.Parser;
+using Stinky.Compiler.Source;
 
 namespace Stinky.Compiler.Tests
 {

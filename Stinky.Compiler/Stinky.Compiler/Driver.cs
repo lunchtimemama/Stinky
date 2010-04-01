@@ -26,13 +26,14 @@
 
 using System;
 
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
+using Stinky.Compiler.Source;
+using Stinky.Compiler.Source.Parser;
+using Stinky.Compiler.Source.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler
 {
-	using StinkyParser = Stinky.Compiler.Parser.Parser;
+	using StinkyParser = Stinky.Compiler.Source.Parser.Parser;
 
 	public class Driver
 	{

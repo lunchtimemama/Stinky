@@ -1,10 +1,10 @@
 // 
-// SubTokenizer.cs
+// NumberLiteralTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,46 +25,31 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
-	public abstract class SubTokenizer : Tokenizer
+	public class NumberLiteralTokenizer : SubTokenizer
 	{
-		readonly RootTokenizer rootTokenizer;
+		StringBuilder stringBuilder = new StringBuilder();
 		
-		protected SubTokenizer(RootTokenizer rootTokenizer)
+		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
+			: base(rootTokenizer)
 		{
-			this.rootTokenizer = rootTokenizer;
+			rootTokenizer.OnToken(
+				parser => parser.ParseNumberLiteral(
+					double.Parse(stringBuilder.ToString()), new Region(location, stringBuilder.Length)));
 		}
 		
 		public override void OnCharacter(Character character)
 		{
-			rootTokenizer.OnCharacter(character);
-		}
-		
-		public override void OnDone()
-		{
-			rootTokenizer.OnTokenReady();
-		}
-		
-		protected void OnError(Location location, TokenizationError error)
-		{
-			rootTokenizer.OnError(location, error);
-		}
-		
-		protected void OnError(CompilationError<ParseError> error)
-		{
-			rootTokenizer.OnError(error);
-		}
-		
-		protected void OnError(CompilationError<TokenizationError> error)
-		{
-			rootTokenizer.OnError(error);
-		}
-		
-		protected ErrorConsumer ErrorConsumer {
-			get { return rootTokenizer.ErrorConsumer; }
+			var @char = character.Char;
+			if((@char >= '0' && @char <= '9') || @char == '.') {
+				stringBuilder.Append(@char);
+			} else {
+				OnDone();
+				base.OnCharacter(character);
+			}
 		}
 	}
 }
-

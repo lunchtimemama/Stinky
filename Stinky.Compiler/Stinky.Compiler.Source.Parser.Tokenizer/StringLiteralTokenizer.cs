@@ -28,9 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
 	using Source = Action<SourceVisitor>;
 

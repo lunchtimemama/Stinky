@@ -1,5 +1,5 @@
 // 
-// Syntaxer.cs
+// Token.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -23,53 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-using System.Collections.Generic;
-
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source
 {
-	using Source = Action<SourceVisitor>;
-
-	public class SourceVisitor
+	public struct Region : IEquatable<Region>
 	{
-		public virtual void VisitStringLiteral(string @string, Region region)
+		public readonly Location Location;
+		public readonly int Length;
+
+		public Region(Location location, int length)
 		{
+			Location = location;
+			Length = length;
 		}
 
-		public virtual void VisitNumberLiteral(double number, Region region)
+		public static bool operator ==(Region token1, Region token2)
 		{
+			return token1.Location == token2.Location && token1.Length == token2.Length;
 		}
 
-		public virtual void VisitPlusOperator(Source left, Source right, Location location)
+		public static bool operator !=(Region token1, Region token2)
 		{
+			return !(token1 == token2);
 		}
 
-		public virtual void VisitMinusOperator(Source left, Source right, Location location)
+		public bool Equals(Region token)
 		{
+			return this == token;
 		}
 
-		public virtual void VisitAsteriskOperator(Source left, Source right, Location location)
+		public override bool Equals(object obj)
 		{
+			return obj is Region && Equals((Region)obj);
 		}
 
-		public virtual void VisitForwardSlashOperator(Source left, Source right, Location location)
+		public override int GetHashCode()
 		{
+			var hash = 17;
+			hash = 31 * Location.GetHashCode();
+			hash = 31 * Length.GetHashCode();
+			return hash;
 		}
 
-		public virtual void VisitReference(string identifier, Region region)
+		public override string ToString()
 		{
-		}
-
-		public virtual void VisitDefinition(Source reference, Source expression, Location location)
-		{
-		}
-
-		public virtual void VisitInterpolatedStringLiteral(IEnumerable<Source> sources, Region region)
-		{
+			return string.Format("@({0}) x({1})", Location, Length);
 		}
 	}
 }
-

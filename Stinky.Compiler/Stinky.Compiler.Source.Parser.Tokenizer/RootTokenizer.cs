@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
 	public class RootTokenizer : Tokenizer
 	{

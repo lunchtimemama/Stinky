@@ -26,8 +26,8 @@
 
 using System;
 
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
+using Stinky.Compiler.Source.Parser;
+using Stinky.Compiler.Source.Parser.Tokenizer;
 
 namespace Stinky.Compiler
 {

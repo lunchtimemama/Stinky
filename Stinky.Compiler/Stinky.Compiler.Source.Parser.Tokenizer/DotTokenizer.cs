@@ -1,5 +1,5 @@
 // 
-// AlphanumericTokenizer.cs
+// DotTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -22,29 +22,30 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.using System.Text;
+// THE SOFTWARE.
 
 using System;
-using System.Text;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
-	public class AlphanumericTokenizer : SubTokenizer
+	public class DotTokenizer : SubTokenizer
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		bool doubleDot;
 
-		public AlphanumericTokenizer(Location location, RootTokenizer rootTokenizer)
-			: base(rootTokenizer)
+		public DotTokenizer(RootTokenizer lineTokenizer, Location location)
+			: base(lineTokenizer)
 		{
-			rootTokenizer.OnToken(
-				parser => parser.ParseIdentifier(stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
+			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
 		}
 
 		public override void OnCharacter(Character character)
 		{
-			var @char = character.Char;
-			if((@char >= '0' && @char <= '9') || (@char >= 'A' && @char <= 'z') || @char == '#' || @char == '_') {
-				stringBuilder.Append(@char);
+			if(character.Char == '.') {
+				if(doubleDot) {
+					OnError(character.Location, TokenizationError.UnknownError);
+				} else {
+					doubleDot = true;
+				}
 			} else {
 				OnDone();
 				base.OnCharacter(character);

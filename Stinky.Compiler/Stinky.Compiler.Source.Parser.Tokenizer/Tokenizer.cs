@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
 	public abstract class Tokenizer
 	{

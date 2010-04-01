@@ -1,5 +1,5 @@
 // 
-// ReferenceOrDefinitionParser.cs
+// SubTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,30 +26,45 @@
 
 using System;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source.Parser.Tokenizer
 {
-	using Source = Action<SourceVisitor>;
-	
-	public class ReferenceOrDefinitionParser : ExpressionParser
+	public abstract class SubTokenizer : Tokenizer
 	{
-		readonly Source reference;
+		readonly RootTokenizer rootTokenizer;
 		
-		public ReferenceOrDefinitionParser(string identifier,
-										   Region region,
-										   Action<Source> consumer,
-										   Action<CompilationError<ParseError>> errorConsumer,
-										   Parser nextParser)
-			: base(Reference(identifier, region), consumer, errorConsumer, nextParser)
+		protected SubTokenizer(RootTokenizer rootTokenizer)
 		{
-			reference = Reference(identifier, region);
+			this.rootTokenizer = rootTokenizer;
 		}
 		
-		public override Parser ParseColon(Location location)
+		public override void OnCharacter(Character character)
 		{
-			return new RootParser(expression => Consumer(Definition(reference, expression, location)), ErrorConsumer);
+			rootTokenizer.OnCharacter(character);
+		}
+		
+		public override void OnDone()
+		{
+			rootTokenizer.OnTokenReady();
+		}
+		
+		protected void OnError(Location location, TokenizationError error)
+		{
+			rootTokenizer.OnError(location, error);
+		}
+		
+		protected void OnError(CompilationError<ParseError> error)
+		{
+			rootTokenizer.OnError(error);
+		}
+		
+		protected void OnError(CompilationError<TokenizationError> error)
+		{
+			rootTokenizer.OnError(error);
+		}
+		
+		protected ErrorConsumer ErrorConsumer {
+			get { return rootTokenizer.ErrorConsumer; }
 		}
 	}
 }
+

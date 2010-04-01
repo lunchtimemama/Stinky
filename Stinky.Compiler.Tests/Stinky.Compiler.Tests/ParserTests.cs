@@ -29,14 +29,14 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
+using Stinky.Compiler.Source;
+using Stinky.Compiler.Source.Parser;
+using Stinky.Compiler.Source.Parser.Tokenizer;
 
 namespace Stinky.Compiler.Tests
 {
 	using Source = Action<SourceVisitor>;
-	using StinkyParser = Stinky.Compiler.Parser.Parser;
+	using StinkyParser = Stinky.Compiler.Source.Parser.Parser;
 
 	[TestFixture]
 	public class ParserTests : Sources

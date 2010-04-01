@@ -26,9 +26,6 @@
 
 using System;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
 namespace Stinky.Compiler.Tests
 {
 	public class CompilerTests

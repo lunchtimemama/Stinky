@@ -1,5 +1,5 @@
 // 
-// TokenizationError.cs
+// Syntaxer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -25,13 +25,49 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source
 {
-	public enum TokenizationError
+	using Source = Action<SourceVisitor>;
+
+	public class SourceVisitor
 	{
-		UnknownError,
-		UnexpectedRightCurlyBracket
+		public virtual void VisitStringLiteral(string @string, Region region)
+		{
+		}
+
+		public virtual void VisitNumberLiteral(double number, Region region)
+		{
+		}
+
+		public virtual void VisitPlusOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitMinusOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitAsteriskOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitForwardSlashOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitReference(string identifier, Region region)
+		{
+		}
+
+		public virtual void VisitDefinition(Source reference, Source expression, Location location)
+		{
+		}
+
+		public virtual void VisitInterpolatedStringLiteral(IEnumerable<Source> sources, Region region)
+		{
+		}
 	}
 }
 

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using Stinky.Compiler.Parser;
+using Stinky.Compiler.Source;
 
 namespace Stinky.Compiler.Tests
 {

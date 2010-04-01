@@ -1,5 +1,5 @@
 // 
-// LineParser.cs
+// Character.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,23 +26,47 @@
 
 using System;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source
 {
-	using Source = Action<SourceVisitor>;
-	
-	public class LineParser : RootParser
+	public struct Character : IEquatable<Character>
 	{
-		public LineParser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
-			: base(consumer, errorConsumer)
+		public readonly char Char;
+		public readonly Location Location;
+
+		public Character(char @char, Location location)
 		{
+			Char = @char;
+			Location = location;
 		}
 		
-		public override Parser ParseIdentifier (string identifier, Region token)
+		public static bool operator ==(Character character1, Character character2)
 		{
-			return new ReferenceOrDefinitionParser(identifier, token, Consumer, ErrorConsumer, this);
+			return character1.Location == character2.Location;
+		}
+		
+		public static bool operator !=(Character character1, Character character2)
+		{
+			return !(character1 == character2);
+		}
+		
+		public bool Equals(Character character)
+		{
+			return this == character;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			return obj is Character && Equals((Character)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Location.GetHashCode();
+		}
+		
+		public override string ToString()
+		{
+			return Char.ToString();
 		}
 	}
 }

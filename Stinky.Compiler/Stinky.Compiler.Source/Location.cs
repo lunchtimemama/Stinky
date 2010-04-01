@@ -1,5 +1,5 @@
 // 
-// Character.cs
+// Location.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,47 +26,55 @@
 
 using System;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source
 {
-	public struct Character : IEquatable<Character>
+	public struct Location : IEquatable<Location>
 	{
-		public readonly char Char;
-		public readonly Location Location;
+		public readonly string Source;
+		public readonly int Line;
+		public readonly int Column;
 
-		public Character(char @char, Location location)
+		public Location(string source, int line, int column)
 		{
-			Char = @char;
-			Location = location;
+			Source = source;
+			Line = line;
+			Column = column;
 		}
 		
-		public static bool operator ==(Character character1, Character character2)
+		public static bool operator ==(Location location1, Location location2)
 		{
-			return character1.Location == character2.Location;
+			return location1.Source == location2.Source
+				&& location1.Line == location2.Line
+				&& location1.Column == location2.Column;
 		}
 		
-		public static bool operator !=(Character character1, Character character2)
+		public static bool operator !=(Location location1, Location location2)
 		{
-			return !(character1 == character2);
+			return !(location1 == location2);
 		}
 		
-		public bool Equals(Character character)
+		public bool Equals(Location location)
 		{
-			return this == character;
+			return this == location;
 		}
 		
 		public override bool Equals(object obj)
 		{
-			return obj is Character && Equals((Character)obj);
+			return obj is Location && Equals((Location)obj);
 		}
 
 		public override int GetHashCode()
 		{
-			return Location.GetHashCode();
+			var hash = 17;
+			hash = 31 * hash + Source.GetHashCode();
+			hash = 31 * hash + Line.GetHashCode();
+			hash = 31 * hash + Column.GetHashCode();
+			return hash;
 		}
 		
 		public override string ToString()
 		{
-			return Char.ToString();
+			return string.Format("{0}line:{1} column:{2}", Source == null ? "" : Source + " ", Line, Column);
 		}
 	}
 }

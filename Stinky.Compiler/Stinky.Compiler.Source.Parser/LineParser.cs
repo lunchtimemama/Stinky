@@ -1,5 +1,5 @@
 // 
-// Token.cs
+// LineParser.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,50 +26,20 @@
 
 using System;
 
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source.Parser
 {
-	public struct Region : IEquatable<Region>
+	using Source = Action<SourceVisitor>;
+	
+	public class LineParser : RootParser
 	{
-		public readonly Location Location;
-		public readonly int Length;
-
-		public Region(Location location, int length)
+		public LineParser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
+			: base(consumer, errorConsumer)
 		{
-			Location = location;
-			Length = length;
 		}
-
-		public static bool operator ==(Region token1, Region token2)
+		
+		public override Parser ParseIdentifier (string identifier, Region token)
 		{
-			return token1.Location == token2.Location && token1.Length == token2.Length;
-		}
-
-		public static bool operator !=(Region token1, Region token2)
-		{
-			return !(token1 == token2);
-		}
-
-		public bool Equals(Region token)
-		{
-			return this == token;
-		}
-
-		public override bool Equals(object obj)
-		{
-			return obj is Region && Equals((Region)obj);
-		}
-
-		public override int GetHashCode()
-		{
-			var hash = 17;
-			hash = 31 * Location.GetHashCode();
-			hash = 31 * Length.GetHashCode();
-			return hash;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("@({0}) x({1})", Location, Length);
+			return new ReferenceOrDefinitionParser(identifier, token, Consumer, ErrorConsumer, this);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 // 
-// DotTokenizer.cs
+// ParseError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser
 {
-	public class DotTokenizer : SubTokenizer
+	public enum ParseError
 	{
-		bool doubleDot;
-
-		public DotTokenizer(RootTokenizer lineTokenizer, Location location)
-			: base(lineTokenizer)
-		{
-			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
-		}
-
-		public override void OnCharacter(Character character)
-		{
-			if(character.Char == '.') {
-				if(doubleDot) {
-					OnError(character.Location, TokenizationError.UnknownError);
-				} else {
-					doubleDot = true;
-				}
-			} else {
-				OnDone();
-				base.OnCharacter(character);
-			}
-		}
+		UnknownError
 	}
 }

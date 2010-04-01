@@ -27,10 +27,7 @@
 using System;
 using System.Collections.Generic;
 
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Parser
+namespace Stinky.Compiler.Source.Parser
 {
 	using Source = Action<SourceVisitor>;
 	// FIXME why does gmcs barf when we change Action<SourceVisitor> to Source?

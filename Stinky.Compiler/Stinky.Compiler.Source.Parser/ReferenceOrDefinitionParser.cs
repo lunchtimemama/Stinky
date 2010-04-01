@@ -1,10 +1,10 @@
 // 
-// NumberLiteralTokenizer.cs
+// ReferenceOrDefinitionParser.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,31 +25,28 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
 
-namespace Stinky.Compiler.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parser
 {
-	public class NumberLiteralTokenizer : SubTokenizer
+	using Source = Action<SourceVisitor>;
+	
+	public class ReferenceOrDefinitionParser : ExpressionParser
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		readonly Source reference;
 		
-		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
-			: base(rootTokenizer)
+		public ReferenceOrDefinitionParser(string identifier,
+										   Region region,
+										   Action<Source> consumer,
+										   Action<CompilationError<ParseError>> errorConsumer,
+										   Parser nextParser)
+			: base(Reference(identifier, region), consumer, errorConsumer, nextParser)
 		{
-			rootTokenizer.OnToken(
-				parser => parser.ParseNumberLiteral(
-					double.Parse(stringBuilder.ToString()), new Region(location, stringBuilder.Length)));
+			reference = Reference(identifier, region);
 		}
 		
-		public override void OnCharacter(Character character)
+		public override Parser ParseColon(Location location)
 		{
-			var @char = character.Char;
-			if((@char >= '0' && @char <= '9') || @char == '.') {
-				stringBuilder.Append(@char);
-			} else {
-				OnDone();
-				base.OnCharacter(character);
-			}
+			return new RootParser(expression => Consumer(Definition(reference, expression, location)), ErrorConsumer);
 		}
 	}
 }
