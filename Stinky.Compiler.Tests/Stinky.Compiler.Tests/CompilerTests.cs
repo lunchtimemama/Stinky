@@ -26,77 +26,163 @@
 
 using System;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Tests
 {
 	public class CompilerTests
 	{
-		protected static readonly Location Nowhere = new Location(null, 0, 0);
+		/*
+		protected static Location Location(int column)
+		{
+			return new Location(null, 0, column);
+		}
+
+		protected static Region Token(int offset, int length)
+		{
+			return new Region(Location(offset), length);
+		}
 
 		protected static Reference Reference(string identifier)
 		{
-			return new Reference(identifier, Nowhere);
+			return Reference(identifier, 0);
 		}
 
-		protected static Definition Definition(string identifier, Expression expression)
+		protected static Reference Reference(string identifier, int offset)
 		{
-			return new Definition(Reference(identifier), expression, Nowhere);
+			return new Reference(identifier, Token(offset, identifier.Length));
+		}
+
+		protected static Definition Definition(string identifier, Syntax expression)
+		{
+			return Definition(identifier, expression, 0);
+		}
+
+		protected static Definition Definition(string identifier, Syntax expression, int offset)
+		{
+			return new Definition(Reference(identifier, offset), expression,
+				Token(offset, identifier.Length + 1));
 		}
 
 		protected static NumberLiteral Number(double number)
 		{
-			return new NumberLiteral(number, Nowhere);
+			return Number(number, 0);
+		}
+
+		protected static NumberLiteral Number(double number, int offset)
+		{
+			return new NumberLiteral(number, Token(offset, number.ToString().Length));
 		}
 
 		protected static StringLiteral String(string @string)
 		{
-			return new StringLiteral(@string, Nowhere);
+			return String(@string, 0, @string.Length + 2);
 		}
 
-		protected static InterpolatedStringLiteral InterpolatedString(params Expression[] expressions)
+		protected static StringLiteral String(string @string, int offset, int length)
 		{
-			return new InterpolatedStringLiteral(expressions, Nowhere);
+			return new StringLiteral(@string, Token(offset, length));
 		}
 
-		protected static PlusOperator Plus(Expression left, Expression right)
+		protected static InterpolatedStringLiteral InterpolatedString(params Syntax[] expressions)
+		{
+			return InterpolatedString(0, expressions);
+		}
+
+		protected static InterpolatedStringLiteral InterpolatedString(int offset, params Syntax[] expressions)
+		{
+			return new InterpolatedStringLiteral(expressions, Token(offset, 0));
+		}
+
+		protected static PlusOperator Plus(Syntax left, Syntax right)
 		{
 			return Plus(left, right, null);
 		}
 
-		protected static PlusOperator Plus(Expression left, Expression right, Type type)
+		protected static PlusOperator Plus(Syntax left, Syntax right, Type type)
 		{
-			return new PlusOperator(left, right, Nowhere, type);
+			return Plus(left, right, GetOperatorOffset(left), type);
 		}
 
-		protected static MinusOperator Minus(Expression left, Expression right)
+		protected static PlusOperator Plus(Syntax left, Syntax right, int offset)
+		{
+			return Plus(left, right, offset, null);
+		}
+
+		protected static PlusOperator Plus(Syntax left, Syntax right, int offset, Type type)
+		{
+			return new PlusOperator(left, right, Token(offset, 1), type);
+		}
+
+		protected static MinusOperator Minus(Syntax left, Syntax right)
 		{
 			return Minus(left, right, null);
 		}
 
-		protected static MinusOperator Minus(Expression left, Expression right, Type type)
+		protected static MinusOperator Minus(Syntax left, Syntax right, Type type)
 		{
-			return new MinusOperator(left, right, Nowhere, type);
+			return Minus(left, right, GetOperatorOffset(left), type);
 		}
 
-		protected static AsteriskOperator Asterisk(Expression left, Expression right)
+		protected static MinusOperator Minus(Syntax left, Syntax right, int offset)
+		{
+			return Minus(left, right, offset, null);
+		}
+
+		protected static MinusOperator Minus(Syntax left, Syntax right, int offset, Type type)
+		{
+			return new MinusOperator(left, right, Token(offset, 1), type);
+		}
+
+		protected static AsteriskOperator Asterisk(Syntax left, Syntax right)
 		{
 			return Asterisk(left, right, null);
 		}
 
-		protected static AsteriskOperator Asterisk(Expression left, Expression right, Type type)
+		protected static AsteriskOperator Asterisk(Syntax left, Syntax right, Type type)
 		{
-			return new AsteriskOperator(left, right, Nowhere, type);
+			return Asterisk(left, right, GetOperatorOffset(left), type);
 		}
 
-		protected static ForwardSlashOperator ForwardSlash(Expression left, Expression right)
+		protected static AsteriskOperator Asterisk(Syntax left, Syntax right, int offset)
+		{
+			return Asterisk(left, right, offset, null);
+		}
+
+		protected static AsteriskOperator Asterisk(Syntax left, Syntax right, int offset, Type type)
+		{
+			return new AsteriskOperator(left, right, Token(offset, 1), type);
+		}
+
+		protected static ForwardSlashOperator ForwardSlash(Syntax left, Syntax right)
 		{
 			return ForwardSlash(left, right, null);
 		}
 
-		protected static ForwardSlashOperator ForwardSlash(Expression left, Expression right, Type type)
+		protected static ForwardSlashOperator ForwardSlash(Syntax left, Syntax right, Type type)
 		{
-			return new ForwardSlashOperator(left, right, Nowhere, type);
+			return ForwardSlash(left, right, GetOperatorOffset(left), type);
 		}
+
+		protected static ForwardSlashOperator ForwardSlash(Syntax left, Syntax right, int offset)
+		{
+			return ForwardSlash(left, right, offset, null);
+		}
+
+		protected static ForwardSlashOperator ForwardSlash(Syntax left, Syntax right, int offset, Type type)
+		{
+			return new ForwardSlashOperator(left, right, Token(offset, 1), type);
+		}
+
+		static int GetOperatorOffset(Syntax left)
+		{
+			if(left == null) {
+				return 0;
+			}
+
+			return left.Source.Location.Column + left.Source.Length;
+		}
+		*/
 	}
 }

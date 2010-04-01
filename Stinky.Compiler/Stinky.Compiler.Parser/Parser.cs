@@ -27,22 +27,25 @@
 using System;
 using System.Collections.Generic;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser
 {
+	using Source = Action<SourceVisitor>;
+
 	public class Parser
 	{
-		protected readonly Action<Expression> Consumer;
+		protected readonly Action<Source> Consumer;
 		protected readonly Action<CompilationError<ParseError>> ErrorConsumer;
 		protected readonly Parser NextParser;
 		
-		public Parser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
+		public Parser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
 			: this(consumer, errorConsumer, null)
 		{
 		}
 		
-		public Parser(Action<Expression> consumer,
+		public Parser(Action<Source> consumer,
 					  Action<CompilationError<ParseError>> errorConsumer,
 					  Parser nextParser)
 		{
@@ -51,14 +54,14 @@ namespace Stinky.Compiler.Parser
 			NextParser = nextParser;
 		}
 		
-		public virtual Parser ParseIdentifier(string identifier, Location location)
+		public virtual Parser ParseIdentifier(string identifier, Region region)
 		{
-			return ParseIdentifier(identifier, location, CreateError(location));
+			return ParseIdentifier(identifier, region, CreateError(region));
 		}
 		
-		protected Parser ParseIdentifier(string identifier, Location location, CompilationError<ParseError> error)
+		protected Parser ParseIdentifier(string identifier, Region region, CompilationError<ParseError> error)
 		{
-			return ParseToken(nextParser => nextParser.ParseStringLiteral(identifier, location, error), error);
+			return ParseToken(nextParser => nextParser.ParseStringLiteral(identifier, region, error), error);
 		}
 		
 		public virtual Parser ParseColon(Location location)
@@ -71,38 +74,38 @@ namespace Stinky.Compiler.Parser
 			return ParseToken(nextParser => nextParser.ParseColon(location, error), error);
 		}
 
-		public virtual Parser ParseNumberLiteral(double number, Location location)
+		public virtual Parser ParseNumberLiteral(double number, Region region)
 		{
-			return ParseNumberLiteral(number, location, CreateError(location));
+			return ParseNumberLiteral(number, region, CreateError(region));
 		}
 
-		protected Parser ParseNumberLiteral(double number, Location location, CompilationError<ParseError> error)
+		protected Parser ParseNumberLiteral(double number, Region region, CompilationError<ParseError> error)
 		{
-			return ParseToken(nextParser => nextParser.ParseNumberLiteral(number, location, error), error);
+			return ParseToken(nextParser => nextParser.ParseNumberLiteral(number, region, error), error);
 		}
 		
-		public virtual Parser ParseStringLiteral(string @string, Location location)
+		public virtual Parser ParseStringLiteral(string @string, Region region)
 		{
-			return ParseStringLiteral(@string, location, CreateError(location));
+			return ParseStringLiteral(@string, region, CreateError(region));
 		}
 		
-		protected Parser ParseStringLiteral(string @string, Location location, CompilationError<ParseError> error)
+		protected Parser ParseStringLiteral(string @string, Region region, CompilationError<ParseError> error)
 		{
-			return ParseToken(nextParser => nextParser.ParseStringLiteral(@string, location, error), error);
+			return ParseToken(nextParser => nextParser.ParseStringLiteral(@string, region, error), error);
 		}
 		
-		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
-															 Location location)
+		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions,
+															 Region region)
 		{
-			return ParseInterpolatedStringLiteral(interpolatedExpressions, location, CreateError(location));
+			return ParseInterpolatedStringLiteral(interpolatedExpressions, region, CreateError(region));
 		}
 		
-		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
-														Location location,
+		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions,
+														Region region,
 														CompilationError<ParseError> error)
 		{
 			return ParseToken(
-				nextParser => nextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, location, error),
+				nextParser => nextParser.ParseInterpolatedStringLiteral(interpolatedExpressions, region, error),
 				error);
 		}
 
@@ -155,6 +158,11 @@ namespace Stinky.Compiler.Parser
 				return null;
 			}
 		}
+
+		CompilationError<ParseError> CreateError(Region region)
+		{
+			return CreateError(region.Location);
+		}
 		
 		CompilationError<ParseError> CreateError(Location location)
 		{
@@ -167,6 +175,51 @@ namespace Stinky.Compiler.Parser
 		
 		public virtual void OnDone()
 		{
+		}
+
+		protected static Source StringLiteral(string @string, Region region)
+		{
+			return visitor => visitor.VisitStringLiteral(@string, region);
+		}
+
+		protected static Source NumberLiteral(double number, Region region)
+		{
+			return visitor => visitor.VisitNumberLiteral(number, region);
+		}
+
+		protected static Source Reference(string identifier, Region region)
+		{
+			return visitor => visitor.VisitReference(identifier, region);
+		}
+
+		protected static Source Definition(Source reference, Source expression, Location location)
+		{
+			return visitor => visitor.VisitDefinition(reference, expression, location);
+		}
+
+		protected static Source InterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions, Region region)
+		{
+			return visitor => visitor.VisitInterpolatedStringLiteral(interpolatedExpressions, region);
+		}
+
+		protected static Source PlusOperator(Source left, Source right, Location location)
+		{
+			return visitor => visitor.VisitPlusOperator(left, right, location);
+		}
+
+		protected static Source MinusOperator(Source left, Source right, Location location)
+		{
+			return visitor => visitor.VisitMinusOperator(left, right, location);
+		}
+
+		protected static Source AsteriskOperator(Source left, Source right, Location location)
+		{
+			return visitor => visitor.VisitAsteriskOperator(left, right, location);
+		}
+
+		protected static Source ForwardSlashOperator(Source left, Source right, Location location)
+		{
+			return visitor => visitor.VisitForwardSlashOperator(left, right, location);
 		}
 	}
 }

@@ -27,50 +27,56 @@
 using System;
 using System.Collections.Generic;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser
 {
+	using Source = Action<SourceVisitor>;
+	// FIXME why does gmcs barf when we change Action<SourceVisitor> to Source?
+	using ExpressionParserProvider = Func<Action<SourceVisitor>, Action<Action<SourceVisitor>>, Action<CompilationError<ParseError>>, Parser, Parser>;
+
 	public class RootParser : Parser
 	{
-		readonly Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser>
-			expressionParserProvider;
+		readonly ExpressionParserProvider expressionParserProvider;
 		
-		public RootParser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
-			: this((e, c, ec, p) => new ExpressionParser(e, c, ec, p), consumer, errorConsumer)
+		public RootParser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
+			: this((s, c, ec, p) => new ExpressionParser(s, c, ec, p), consumer, errorConsumer)
 		{
 		}
 		
-		public RootParser(Func<Expression, Action<Expression>, Action<CompilationError<ParseError>>, Parser, Parser> expressionParserProvider,
-		                  Action<Expression> consumer,
+		public RootParser(ExpressionParserProvider expressionParserProvider,
+		                  Action<Source> consumer,
 		                  Action<CompilationError<ParseError>> errorConsumer)
 			: base(consumer, errorConsumer)
 		{
-			if(expressionParserProvider == null) throw new ArgumentNullException("expressionParserProvider");
+			if(expressionParserProvider == null) {
+				throw new ArgumentNullException("expressionParserProvider");
+			}
 			
 			this.expressionParserProvider = expressionParserProvider;
 		}
 		
-		public override Parser ParseIdentifier(string identifier, Location location)
+		public override Parser ParseIdentifier(string identifier, Region region)
 		{
-			return expressionParserProvider(new Reference(identifier, location), Consumer, ErrorConsumer, this);
+			return expressionParserProvider(Reference(identifier, region), Consumer, ErrorConsumer, this);
 		}
 		
-		public override Parser ParseNumberLiteral(double number, Location location)
+		public override Parser ParseNumberLiteral(double number, Region region)
 		{
-			return expressionParserProvider(new NumberLiteral(number, location), Consumer, ErrorConsumer, this);
+			return expressionParserProvider(NumberLiteral(number, region), Consumer, ErrorConsumer, this);
 		}
 		
-		public override Parser ParseStringLiteral(string @string, Location location)
+		public override Parser ParseStringLiteral(string @string, Region region)
 		{
-			return expressionParserProvider(new StringLiteral(@string, location), Consumer, ErrorConsumer, this);
+			return expressionParserProvider(StringLiteral(@string, region), Consumer, ErrorConsumer, this);
 		}
 		
-		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Expression> interpolatedExpressions,
-															  Location location)
+		public override Parser ParseInterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions,
+															  Region token)
 		{
 			return expressionParserProvider(
-				new InterpolatedStringLiteral(interpolatedExpressions, location), Consumer, ErrorConsumer, this);
+				InterpolatedStringLiteral(interpolatedExpressions, token), Consumer, ErrorConsumer, this);
 		}
 	}
 }

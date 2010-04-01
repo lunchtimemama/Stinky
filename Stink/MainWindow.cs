@@ -1,5 +1,5 @@
 // 
-// BinaryOperator.cs
+// MainWindow.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,52 +26,22 @@
 
 using System;
 
-namespace Stinky.Compiler.Syntax
-{
-	public abstract class BinaryOperator : Expression
-	{
-		public readonly Expression LeftOperand;
-		public readonly Expression RightOperand;
-		
-		protected BinaryOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
-			: base(location, type)
-		{
-			LeftOperand = leftOperand;
-			RightOperand = rightOperand;
-		}
-		
-		protected bool EqualsOther(BinaryOperator binaryOperator)
-		{
-			if(Location != binaryOperator.Location) {
-				return false;
-			}
-			
-			if(LeftOperand != null) {
-				if(!LeftOperand.Equals(binaryOperator.LeftOperand)) {
-					return false;
-				}
-			} else {
-				if(binaryOperator.LeftOperand != null) {
-					return false;
-				}
-			}
-			
-			if(RightOperand != null) {
-				if(!RightOperand.Equals(binaryOperator.RightOperand)) {
-					return false;
-				}
-			} else {
-				if(binaryOperator.RightOperand != null) {
-					return false;
-				}
-			}
-			
-			return true;
-		}
+using Gtk;
 
-		public override int GetHashCode()
-		{
-			return LeftOperand.GetHashCode() ^ RightOperand.GetHashCode() ^ Location.GetHashCode();
-		}
+using Stinky.Compiler.Gtk;
+
+public partial class MainWindow : Window
+{
+	public MainWindow() : base(WindowType.Toplevel)
+	{
+		Build();
+		Add(new EvaluationWidget());
+	}
+
+	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
+	{
+		Application.Quit();
+		a.RetVal = true;
 	}
 }
+

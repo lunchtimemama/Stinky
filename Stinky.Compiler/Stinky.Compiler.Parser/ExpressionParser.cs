@@ -26,28 +26,31 @@
 
 using System;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser
 {
+	using Source = Action<SourceVisitor>;
+
 	public class ExpressionParser : Parser
 	{
-		readonly Expression expression;
-		readonly Func<Expression, Expression> @operator;
+		readonly Source expression;
+		readonly Func<Source, Source> @operator;
 		readonly int operatorPriority;
 		
-		public ExpressionParser(Expression expression,
-								Action<Expression> consumer,
+		public ExpressionParser(Source expression,
+								Action<Source> consumer,
 								Action<CompilationError<ParseError>> errorConsumer,
 								Parser nextParser)
 			: this(expression, null, 0, consumer, errorConsumer, nextParser)
 		{
 		}
 		
-		public ExpressionParser(Expression expression,
-		                        Func<Expression, Expression> @operator,
+		public ExpressionParser(Source expression,
+		                        Func<Source, Source> @operator,
 		                        int operatorPriority,
-		                        Action<Expression> consumer,
+		                        Action<Source> consumer,
 		                        Action<CompilationError<ParseError>> errorConsumer,
 		                        Parser nextParser)
 			: base(consumer, errorConsumer, nextParser)
@@ -61,26 +64,30 @@ namespace Stinky.Compiler.Parser
 		
 		public override Parser ParsePlus(Location location)
 		{
-			return ParseBinaryOperator(location, (left, right, loc) => new PlusOperator(left, right, loc), 1);
+			return ParseBinaryOperator(location,
+				(left, right) => PlusOperator(left, right, location), 1);
 		}
 		
 		public override Parser ParseMinus(Location location)
 		{
-			return ParseBinaryOperator(location, (left, right, loc) => new MinusOperator(left, right, loc), 1);
+			return ParseBinaryOperator(location,
+				(left, right) => MinusOperator(left, right, location), 1);
 		}
-		
+
 		public override Parser ParseForwardSlash(Location location)
 		{
-			return ParseBinaryOperator(location, (left, right, loc) => new ForwardSlashOperator(left, right, loc), 2);
+			return ParseBinaryOperator(location,
+				(left, right) => ForwardSlashOperator(left, right, location), 2);
 		}
 		
 		public override Parser ParseAsterisk(Location location)
 		{
-			return ParseBinaryOperator(location, (left, right, loc) => new AsteriskOperator(left, right, loc), 2);
+			return ParseBinaryOperator(location,
+				(left, right) => AsteriskOperator(left, right, location), 2);
 		}
 		
 		Parser ParseBinaryOperator(Location location,
-								   Func<Expression, Expression, Location, Expression> binaryOperator,
+								   Func<Source, Source, Source> binaryOperator,
 								   int operatorPriority)
 		{
 			return new RootParser(
@@ -88,12 +95,12 @@ namespace Stinky.Compiler.Parser
 					new ExpressionParser(e, operand => {
 						if(@operator != null) {
 							if(this.operatorPriority < operatorPriority) {
-								return @operator(binaryOperator(expression, operand, location));
+								return @operator(binaryOperator(expression, operand));
 							} else {
-								return binaryOperator(@operator(expression), operand, location);
+								return binaryOperator(@operator(expression), operand);
 							}
 						} else {
-							return binaryOperator(expression, operand, location);
+							return binaryOperator(expression, operand);
 						}
 					}, operatorPriority, c, ec, p),
 				operation => Consumer(operation),

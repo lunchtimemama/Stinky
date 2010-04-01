@@ -29,45 +29,44 @@ using System.Collections.Generic;
 
 namespace Stinky.Compiler.Syntax
 {
+	using Syntax = Action<SyntaxVisitor>;
+
 	public class Scope
 	{
-		readonly Scope parentScope;
-		
-		List<Expression> expressions = new List<Expression>();
-		Dictionary<string, Definition> definitions = new Dictionary<string, Definition>();
-		
-		public Scope()
-		{
-		}
-		
-		public Scope(Scope parentScope)
-		{
-			this.parentScope = parentScope;
-		}
-		
-		public void OnExpression(Expression expression)
-		{
-			Definition definition = expression as Definition;
-			if(definition != null) {
-				if(definitions.ContainsKey(definition.Reference.Identifier)) {
-					throw new ArgumentException(
-						"expression", "The scope already contains a definition for " + definition.Reference.Identifier);
+		Dictionary<string, Syntax> definitions = new Dictionary<string, Syntax>();
+
+		public Syntax this[string identifier] {
+			get {
+				if(identifier == null) {
+					throw new ArgumentNullException("identifier");
 				}
-				definitions[definition.Reference.Identifier] = definition;
+				Syntax syntax;
+				var success = TryGetValue(identifier, out syntax);
+				if(!success) {
+					throw new ArgumentNullException(
+						string.Format("The identifier '{0}' does not exist in the scope.", identifier), "identifier");
+				}
+				return syntax;
 			}
-			expressions.Add(expression);
+			set {
+				if(identifier == null) {
+					throw new ArgumentNullException("identifier");
+				}
+				if(value == null) {
+					throw new ArgumentNullException("value");
+				}
+				if(definitions.ContainsKey(identifier)) {
+					throw new ArgumentException(
+						string.Format("The identifier '{0}' already exists in the scope.", identifier), "identifier");
+				}
+				definitions[identifier] = value;
+			}
 		}
-		
-		public Definition GetDefinition(Reference reference)
+
+		public bool TryGetValue(string identifier, out Syntax syntax)
 		{
-			Definition definition;
-			if(definitions.TryGetValue(reference.Identifier, out definition)) {
-				return definition;
-			} else if(parentScope != null) {
-				return parentScope.GetDefinition(reference);
-			} else {
-				return null;
-			}
+			return definitions.TryGetValue(identifier, out syntax);
 		}
 	}
 }
+

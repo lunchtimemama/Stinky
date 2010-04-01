@@ -1,5 +1,5 @@
 // 
-// MinusOperator.cs
+// Location.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,40 +26,55 @@
 
 using System;
 
-namespace Stinky.Compiler.Syntax
+namespace Stinky.Compiler.Parser
 {
-	public class MinusOperator : BinaryOperator
+	public struct Location : IEquatable<Location>
 	{
-		public MinusOperator(Expression leftOperand, Expression rightOperand, Location location)
-			: this(leftOperand, rightOperand, location, null)
+		public readonly string Source;
+		public readonly int Line;
+		public readonly int Column;
+
+		public Location(string source, int line, int column)
 		{
+			Source = source;
+			Line = line;
+			Column = column;
 		}
 		
-		public MinusOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
-			: base(leftOperand, rightOperand, location, type)
+		public static bool operator ==(Location location1, Location location2)
 		{
+			return location1.Source == location2.Source
+				&& location1.Line == location2.Line
+				&& location1.Column == location2.Column;
 		}
 		
-		public override void Visit(Visitor visitor)
+		public static bool operator !=(Location location1, Location location2)
 		{
-			visitor.VisitMinusOperator(this);
+			return !(location1 == location2);
+		}
+		
+		public bool Equals(Location location)
+		{
+			return this == location;
 		}
 		
 		public override bool Equals(object obj)
 		{
-			var minusOperator = obj as MinusOperator;
-			return minusOperator != null && EqualsOther(minusOperator);
+			return obj is Location && Equals((Location)obj);
 		}
-		
+
 		public override int GetHashCode()
 		{
-			return typeof(MinusOperator).GetHashCode() ^ base.GetHashCode();
+			var hash = 17;
+			hash = 31 * hash + Source.GetHashCode();
+			hash = 31 * hash + Line.GetHashCode();
+			hash = 31 * hash + Column.GetHashCode();
+			return hash;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("({0} - {1})", LeftOperand, RightOperand);
+			return string.Format("{0}line:{1} column:{2}", Source == null ? "" : Source + " ", Line, Column);
 		}
 	}
 }
-

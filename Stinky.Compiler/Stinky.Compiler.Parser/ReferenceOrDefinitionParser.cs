@@ -26,29 +26,30 @@
 
 using System;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser
 {
+	using Source = Action<SourceVisitor>;
+	
 	public class ReferenceOrDefinitionParser : ExpressionParser
 	{
-		readonly Reference reference;
+		readonly Source reference;
 		
 		public ReferenceOrDefinitionParser(string identifier,
-										   Location location,
-										   Action<Expression> consumer,
+										   Region region,
+										   Action<Source> consumer,
 										   Action<CompilationError<ParseError>> errorConsumer,
 										   Parser nextParser)
-			: base(new Reference(identifier, location), consumer, errorConsumer, nextParser)
+			: base(Reference(identifier, region), consumer, errorConsumer, nextParser)
 		{
-			reference = new Reference(identifier, location);
+			reference = Reference(identifier, region);
 		}
 		
 		public override Parser ParseColon(Location location)
 		{
-			return new RootParser(
-				expression => Consumer(new Definition(reference, expression, location)),
-				ErrorConsumer);
+			return new RootParser(expression => Consumer(Definition(reference, expression, location)), ErrorConsumer);
 		}
 	}
 }

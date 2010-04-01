@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9E1A3CD8-539F-45E0-8CB5-06E07E677543}</ProjectGuid>
+    <ProjectGuid>{8DCCEEBE-CED3-49D6-8EA0-B64A21C3315E}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Stinky.Compiler.Tests</RootNamespace>
-    <AssemblyName>Stinky.Compiler.Tests</AssemblyName>
+    <RootNamespace>Stinky.Compiler.Gtk</RootNamespace>
+    <AssemblyName>Stinky.Compiler.Gtk</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -19,7 +19,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -27,29 +27,30 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
-    <Reference Include="System.Core" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Stinky.Compiler.Tests\" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Stinky.Compiler.Gtk\EvaluationWidget.cs" />
+    <Compile Include="Stinky.Compiler.Gtk\ReadEvalPrintLoopView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Stinky.Compiler.Tests\ParserTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\CompilerTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\ParseException.cs" />
-    <Compile Include="Stinky.Compiler.Tests\TokenizationException.cs" />
-    <Compile Include="Stinky.Compiler.Tests\InterpreterTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\ResolverTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\IncrementalSyntaxHighlightingTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\HighlightingTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\SourceDecomposer.cs" />
-    <Compile Include="Stinky.Compiler.Tests\SourceTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\Sources.cs" />
+    <Folder Include="Stinky.Compiler.Gtk\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">

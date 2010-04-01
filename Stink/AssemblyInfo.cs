@@ -1,5 +1,5 @@
 // 
-// NumberLiteral.cs
+// AssemblyInfo.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -23,41 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace Stinky.Compiler.Syntax
-{
-	public class NumberLiteral : Expression
-	{
-		public readonly double Number;
-		
-		public NumberLiteral(double number, Location location)
-			: base(location, typeof(double))
-		{
-			this.Number = number;
-		}
-		
-		public override void Visit(Visitor visitor)
-		{
-			visitor.VisitNumberLiteral(this);
-		}
-		
-		public override bool Equals(object obj)
-		{
-			var numberLiteral = obj as NumberLiteral;
-			return numberLiteral != null
-				&& numberLiteral.Number == Number
-				&& numberLiteral.Location == Location;
-		}
+// Information about this assembly is defined by the following attributes. 
+// Change them to the values specific to your project.
 
-		public override int GetHashCode()
-		{
-			return Number.GetHashCode() ^ Location.GetHashCode();
-		}
+[assembly: AssemblyTitle("Stink")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
-		public override string ToString ()
-		{
-			return Number.ToString();
-		}
+// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
+// The form "{Major}.{Minor}.*" will automatically update the build and revision,
+// and "{Major}.{Minor}.{Build}.*" will update just the revision.
 
-	}
-}
+[assembly: AssemblyVersion("1.0.*")]
+
+// The following attributes are used to specify the signing key for the assembly, 
+// if desired. See the Mono documentation for more information about signing.
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]
+

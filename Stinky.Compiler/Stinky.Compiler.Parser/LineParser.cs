@@ -26,20 +26,23 @@
 
 using System;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser
 {
+	using Source = Action<SourceVisitor>;
+	
 	public class LineParser : RootParser
 	{
-		public LineParser(Action<Expression> consumer, Action<CompilationError<ParseError>> errorConsumer)
+		public LineParser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
 			: base(consumer, errorConsumer)
 		{
 		}
 		
-		public override Parser ParseIdentifier (string identifier, Location location)
+		public override Parser ParseIdentifier (string identifier, Region token)
 		{
-			return new ReferenceOrDefinitionParser(identifier, location, Consumer, ErrorConsumer, this);
+			return new ReferenceOrDefinitionParser(identifier, token, Consumer, ErrorConsumer, this);
 		}
 	}
 }

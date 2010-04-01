@@ -36,7 +36,8 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		public AlphanumericTokenizer(Location location, RootTokenizer rootTokenizer)
 			: base(rootTokenizer)
 		{
-			rootTokenizer.OnToken(parser => parser.ParseIdentifier(stringBuilder.ToString(), location));
+			rootTokenizer.OnToken(
+				parser => parser.ParseIdentifier(stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
 		}
 
 		public override void OnCharacter(Character character)

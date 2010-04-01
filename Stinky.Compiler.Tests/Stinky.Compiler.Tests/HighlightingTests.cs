@@ -28,21 +28,42 @@ using System;
 
 using NUnit.Framework;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
-using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
+//using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
 
 namespace Stinky.Compiler.Tests
 {
+	/*
 	public class HighlightingTests
 	{
-		protected static Location Location(int location)
+		protected class Highlighting
 		{
-			return new Location(null, 0, location);
+			public readonly SyntaxType Syntax;
+			public readonly int Offset;
+			public readonly int Length;
+
+			public Highlighting(SyntaxType syntax, int offset, int length)
+			{
+				Syntax = syntax;
+				Offset = offset;
+				Length = length;
+			}
 		}
 
-		protected static void Test(Expression expression,
-						 Func<Action<SyntaxType, int, int>, Visitor> highlighterProvider,
+		protected static Highlighting String(int offset, int length)
+		{
+			return new Highlighting(SyntaxType.StringLiteral, offset, length);
+		}
+
+		protected static Region Token(int location, int length)
+		{
+			return new Region(new Location(null, 0, location), length);
+		}
+
+		protected static void Test(Syntax expression,
+						 Func<Action<SyntaxType, int, int>, SyntaxVisitor> highlighterProvider,
 						 SyntaxType syntax,
 						 int offset,
 						 int length)
@@ -50,13 +71,29 @@ namespace Stinky.Compiler.Tests
 			var tested = false;
 			expression.Visit(new Resolver(new Scope(), e => e.Visit(highlighterProvider((s, o, l) =>
 			{
-				Assert.AreEqual(syntax, s, "The syntax highlighter used the wrong syntax type.");
-				Assert.AreEqual(offset, o, "The syntax highlighter began at an incorrect offset.");
-				Assert.AreEqual(length, l, "The syntax highlighter stopped after an incorrect length");
+				AssertSyntaxAreEqual(syntax, s);
+				AssertOffsetsAreEqual(offset, o);
+				AssertLengthsAreEqual(length, l);
 				tested = true;
 			}))));
 			Assert.IsTrue(tested, "The syntax highlighter did not attempt to highlight the syntax.");
 		}
+
+		protected static void AssertSyntaxAreEqual(SyntaxType expectedSyntax, SyntaxType actualSyntax)
+		{
+			Assert.AreEqual(expectedSyntax, actualSyntax, "The syntax highlighter used the wrong syntax type.");
+		}
+
+		protected static void AssertOffsetsAreEqual(int expectedOffset, int actualOffset)
+		{
+			Assert.AreEqual(expectedOffset, actualOffset, "The syntax highlighter began at an incorrect offset.");
+		}
+
+		protected static void AssertLengthsAreEqual(int expectedLength, int actualLength)
+		{
+			Assert.AreEqual(expectedLength, actualLength, "The syntax highlighter stopped after an incorrect length");
+		}
 	}
+	*/
 }
 

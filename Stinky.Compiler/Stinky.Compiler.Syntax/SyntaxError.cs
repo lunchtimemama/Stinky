@@ -1,5 +1,5 @@
 // 
-// AsteriskOperator.cs
+// SyntaxError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -24,41 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace Stinky.Compiler.Syntax
 {
-	public class AsteriskOperator : BinaryOperator
+	public class SyntaxError
 	{
-		public AsteriskOperator(Expression leftOperand, Expression rightOperand, Location location)
-			: this(leftOperand, rightOperand, location, null)
+		public SyntaxError()
 		{
-		}
-		
-		public AsteriskOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
-			: base(leftOperand, rightOperand, location, type)
-		{
-		}
-		
-		public override void Visit(Visitor visitor)
-		{
-			visitor.VisitAsteriskOperator(this);
-		}
-		
-		public override bool Equals(object obj)
-		{
-			var asteriskOperator = obj as AsteriskOperator;
-			return asteriskOperator != null && EqualsOther(asteriskOperator);
-		}
-		
-		public override int GetHashCode()
-		{
-			return typeof(AsteriskOperator).GetHashCode() ^ base.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("({0} * {1})", LeftOperand, RightOperand);
 		}
 	}
 }

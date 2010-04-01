@@ -28,13 +28,13 @@ using System;
 
 using NUnit.Framework;
 
+using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
-using Stinky.Compiler.Syntax.Highlighting;
-
-using SyntaxType = Stinky.Compiler.Syntax.Highlighting.Syntax;
+//using Stinky.Compiler.Syntax.Highlighting;
 
 namespace Stinky.Compiler.Tests
 {
+		/*
 	[TestFixture]
 	public class IncrementalSyntaxHighlightingTests : HighlightingTests
 	{
@@ -42,15 +42,47 @@ namespace Stinky.Compiler.Tests
 		public void TestStringLiteral()
 		{
 			Test(
-				new StringLiteral("fo", Location(0)),
-				new StringLiteral("foo", Location(0)),
+				new StringLiteral("fo", Token(0, 2)),
+				new StringLiteral("foo", Token(0, 3)),
 				SyntaxType.StringLiteral, 2, 1);
 		}
 
-		static void Test(Expression oldExpression, Expression newExpression, SyntaxType syntax, int offset, int length)
+		[Test]
+		public void TestDriveStringLiteral()
+		{
+			DriveTest(
+				@"""foo""",
+				String(1, 1),
+				String(2, 1),
+				String(3, 1));
+		}
+
+		static void DriveTest(string source, params Highlighting[] highlightings)
+		{
+			var highlightingCount = 0;
+			var driver = new IncrementalSyntaxHighlightingDriver((syntax, offset, length) =>
+			{
+				if(highlightingCount == highlightings.Length) {
+					Assert.Fail("The syntax highlighter is performing more highlighting than expected.");
+				}
+				var highlighting = highlightings[highlightingCount];
+				AssertSyntaxAreEqual(highlighting.Syntax, syntax);
+				AssertOffsetsAreEqual(highlighting.Offset, offset);
+				AssertLengthsAreEqual(highlighting.Length, length);
+				highlightingCount++;
+			});
+			foreach(var character in source) {
+				driver.OnCharacter(character);
+			}
+			Assert.AreEqual(highlightings.Length, highlightingCount,
+				"The syntax highlighter performed less highlighting than expected");
+		}
+
+		static void Test(Syntax oldExpression, Syntax newExpression, SyntaxType syntax, int offset, int length)
 		{
 			Test(newExpression, test => new IncrementalSyntaxHighlighter(oldExpression, test), syntax, offset, length);
 		}
 	}
+		*/
 }
 

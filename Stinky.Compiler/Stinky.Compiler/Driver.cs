@@ -30,24 +30,42 @@ using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
 using Stinky.Compiler.Syntax;
 
-using StinkyParser = Stinky.Compiler.Parser.Parser;
-
 namespace Stinky.Compiler
 {
+	using StinkyParser = Stinky.Compiler.Parser.Parser;
+
 	public class Driver
 	{
-		readonly Action<int, Expression> consumer;
 		readonly ErrorConsumer errorConsumer;
+		readonly Syntaxifier syntaxifier;
 		
 		int indentation;
 		Tokenizer tokenizer;
 		Func<StinkyParser, StinkyParser> token;
 		StinkyParser parser;
 
-		public Driver(Action<int, Expression> consumer, ErrorConsumer errorConsumer)
+		public Driver(Action<int, Action<SyntaxVisitor>> consumer, ErrorConsumer errorConsumer)
+			: this(consumer, errorConsumer, null)
 		{
-			this.consumer = consumer;
+		}
+
+		public Driver(Action<int, Action<SyntaxVisitor>> consumer,
+		              ErrorConsumer errorConsumer,
+		              Action<CompilationError<SyntaxError>> syntaxErrorConsumer)
+		{
+			if(consumer == null) {
+				throw new ArgumentNullException("consumer");
+			} else if(errorConsumer == null) {
+				throw new ArgumentNullException("errorConsumer");
+			}
+			if(syntaxErrorConsumer == null) {
+				syntaxErrorConsumer = e => {};
+			}
 			this.errorConsumer = errorConsumer;
+			syntaxifier = new Syntaxifier(
+				syntax => consumer(indentation, syntax),
+				(e, l) => syntaxErrorConsumer(new CompilationError<SyntaxError>(l, e))
+			);
 		}
 
 		public void OnCharacter(Character character)
@@ -58,7 +76,7 @@ namespace Stinky.Compiler
 				indentation = indentation + 1;
 			} else {
 				parser = new LineParser(
-					expression => consumer(indentation, expression),
+					source => source(syntaxifier),
 					errorConsumer.ParseErrorConsumer);
 
 				tokenizer = new RootTokenizer(

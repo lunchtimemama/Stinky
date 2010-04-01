@@ -26,6 +26,8 @@
 
 using System;
 
+using Stinky.Compiler.Parser;
+
 namespace Stinky.Compiler
 {
 	// Why don't enums implement IEquatable? THAT IS SILLY! We could be saving a box...
@@ -36,6 +38,9 @@ namespace Stinky.Compiler
 		
 		public CompilationError(Location location, T error)
 		{
+			if(error == null) {
+				throw new ArgumentNullException("error");
+			}
 			Location = location;
 			Error = error;
 		}

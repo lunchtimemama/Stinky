@@ -30,10 +30,7 @@ using Gtk;
 using Gdk;
 using Pango;
 
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.SourceEditor;
-
-namespace MonoDevelop.Stinky
+namespace Stinky.Compiler.Gtk
 {
 	public class ReadEvalPrintLoopView : TextView
 	{
@@ -47,10 +44,8 @@ namespace MonoDevelop.Stinky
 			this.evaluator = evaluator;
 			var startIter = Buffer.StartIter;
 			promptStart = Buffer.CreateMark(null, startIter, true);
-			//var style = SyntaxModeService.GetColorStyle(Style, DefaultSourceEditorOptions.Instance.ColorScheme);
 			Buffer.TagTable.Add(new TextTag("prompt") { Editable = false, Weight = Weight.Bold });
 			Buffer.TagTable.Add(new TextTag("history") { Editable = false });
-			//Buffer.TagTable.Add(new TextTag("stringLiteral") { Color = style.BookmarkColor2 });
 			
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
@@ -65,6 +60,7 @@ namespace MonoDevelop.Stinky
 				Buffer.ApplyTag("history", startIter, endIter);
 				promptStart = Buffer.CreateMark(null, endIter, true);
 				evaluator(text);
+				NewLine();
 				return true;
 			}
 			return base.OnKeyPressEvent(evnt);
@@ -75,7 +71,15 @@ namespace MonoDevelop.Stinky
 			var startIter = Buffer.GetIterAtMark(promptStart);
 			Buffer.InsertWithTagsByName(ref startIter, "\n", "history");
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
-			Buffer.InsertWithTagsByName(ref startIter, text + "\n", "history");
+			Buffer.InsertWithTagsByName(ref startIter, text, "history");
+			promptStart = Buffer.CreateMark(null, startIter, true);
+			Buffer.PlaceCursor(startIter);
+		}
+
+		public void NewLine()
+		{
+			var startIter = Buffer.GetIterAtMark(promptStart);
+			Buffer.InsertWithTagsByName(ref startIter, "\n", "history");
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
 			Buffer.PlaceCursor(startIter);

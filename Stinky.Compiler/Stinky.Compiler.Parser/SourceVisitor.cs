@@ -1,5 +1,5 @@
 // 
-// SyntaxHighlightingDriver.cs
+// Syntaxer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -23,44 +23,52 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 
-using Stinky.Compiler.Parser;
 using Stinky.Compiler.Parser.Tokenizer;
+using Stinky.Compiler.Syntax;
+using System.Collections.Generic;
 
-using StinkyParser = Stinky.Compiler.Parser.Parser;
-
-namespace Stinky.Compiler.Syntax.Highlighting
+namespace Stinky.Compiler.Parser
 {
-	public class IncrementalSyntaxHighlightingDriver
+	using Source = Action<SourceVisitor>;
+
+	public class SourceVisitor
 	{
-		RootTokenizer rootTokenizer;
-		Func<StinkyParser, StinkyParser> token;
-		StinkyParser parser;
-		Expression expression;
-		
-		public IncrementalSyntaxHighlightingDriver(Action<Syntax, int, int> consumer)
+		public virtual void VisitStringLiteral(string @string, Region region)
 		{
-			var resolver =
-				new Resolver(new Scope(), expression => new IncrementalSyntaxHighlighter(this.expression, consumer));
-			parser = new LineParser(
-				expression => {
-					expression.Visit(resolver);
-					this.expression = expression;
-				}, error => {});
-			rootTokenizer = new RootTokenizer(
-				token => this.token = token,
-				() => parser = token(parser),
-				() => {},
-				new ErrorConsumer(null, null)
-			);
 		}
-		
-		public void OnCharacter(Character character)
+
+		public virtual void VisitNumberLiteral(double number, Region region)
 		{
-			rootTokenizer.OnCharacter(character);
-			token(parser).OnDone();
+		}
+
+		public virtual void VisitPlusOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitMinusOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitAsteriskOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitForwardSlashOperator(Source left, Source right, Location location)
+		{
+		}
+
+		public virtual void VisitReference(string identifier, Region region)
+		{
+		}
+
+		public virtual void VisitDefinition(Source reference, Source expression, Location location)
+		{
+		}
+
+		public virtual void VisitInterpolatedStringLiteral(IEnumerable<Source> sources, Region region)
+		{
 		}
 	}
 }

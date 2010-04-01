@@ -52,12 +52,12 @@ namespace Stinky.Compiler.Parser.Tokenizer
 			rootTokenizer.OnError(location, error);
 		}
 		
-		protected void OnError(CompilationError<TokenizationError> error)
+		protected void OnError(CompilationError<ParseError> error)
 		{
 			rootTokenizer.OnError(error);
 		}
 		
-		protected void OnError(CompilationError<ParseError> error)
+		protected void OnError(CompilationError<TokenizationError> error)
 		{
 			rootTokenizer.OnError(error);
 		}

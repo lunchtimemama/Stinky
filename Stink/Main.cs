@@ -1,5 +1,5 @@
 // 
-// ForwardSlashOperator.cs
+// Main.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -23,42 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using Gtk;
 
-namespace Stinky.Compiler.Syntax
+namespace Stink
 {
-	public class ForwardSlashOperator : BinaryOperator
+	class MainClass
 	{
-		public ForwardSlashOperator(Expression leftOperand, Expression rightOperand, Location location)
-			: this(leftOperand, rightOperand, location, null)
+		public static void Main(string[] args)
 		{
-		}
-		
-		public ForwardSlashOperator(Expression leftOperand, Expression rightOperand, Location location, Type type)
-			: base(leftOperand, rightOperand, location, type)
-		{
-		}
-		
-		public override void Visit(Visitor visitor)
-		{
-			visitor.VisitForwardSlashOperator(this);
-		}
-		
-		public override bool Equals(object obj)
-		{
-			var forwardSlashOperator = obj as ForwardSlashOperator;
-			return forwardSlashOperator != null && EqualsOther(forwardSlashOperator);
-		}
-		
-		public override int GetHashCode()
-		{
-			return typeof(ForwardSlashOperator).GetHashCode() ^ base.GetHashCode();
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("({0} / {1})", LeftOperand, RightOperand);
+			Application.Init();
+			MainWindow win = new MainWindow();
+			win.Show();
+			Application.Run();
 		}
 	}
 }

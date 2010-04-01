@@ -52,8 +52,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Stinky\EvaluationPad.cs" />
-    <Compile Include="MonoDevelop.Stinky\EvaluationWidget.cs" />
-    <Compile Include="MonoDevelop.Stinky\ReadEvalPrintLoopView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">

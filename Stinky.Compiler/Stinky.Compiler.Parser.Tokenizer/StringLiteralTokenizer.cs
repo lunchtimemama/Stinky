@@ -32,28 +32,32 @@ using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler.Parser.Tokenizer
 {
+	using Source = Action<SourceVisitor>;
+
 	public class StringLiteralTokenizer : SubTokenizer
 	{
 		readonly Location location;
-		
 		StringBuilder stringBuilder = new StringBuilder();
-		List<Expression> interpolatedExpressions;
+		List<Source> interpolatedExpressions;
 		RootTokenizer interpolationTokenizer;
+		int lastColumn;
 		bool potentiallyInterpolated;
 		bool potentiallyUninterpolated;
 		bool escaped;
 		
 		public StringLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
-			: base (rootTokenizer)
+			: base(rootTokenizer)
 		{
 			this.location = location;
+			lastColumn = location.Column;
 			rootTokenizer.OnToken(parser => interpolatedExpressions != null
-				? parser.ParseInterpolatedStringLiteral(interpolatedExpressions, location)
-				: parser.ParseStringLiteral(stringBuilder.ToString(), location));
+				? parser.ParseInterpolatedStringLiteral(interpolatedExpressions, new Region(location, 0)) // FIXME this
+				: parser.ParseStringLiteral(stringBuilder.ToString(), GetCurrentRegion()));
 		}
 		
 		public override void OnCharacter(Character character)
 		{
+			lastColumn = character.Location.Column;
 			if(interpolationTokenizer != null) {
 				interpolationTokenizer.OnCharacter(character);
 			} else if(potentiallyInterpolated) {
@@ -80,10 +84,10 @@ namespace Stinky.Compiler.Parser.Tokenizer
 		void OnFirstInterpolatedCharacter(Character character)
 		{
 			if(interpolatedExpressions == null) {
-				interpolatedExpressions = new List<Expression>();
+				interpolatedExpressions = new List<Source>();
 			}
 			if(stringBuilder.Length > 0) {
-				interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
+				interpolatedExpressions.Add(GetCurrentStringLiteral());
 				stringBuilder.Remove(0, stringBuilder.Length);
 			}
 			Parser parser = new RootParser(
@@ -158,12 +162,24 @@ namespace Stinky.Compiler.Parser.Tokenizer
 				OnError(location, TokenizationError.UnknownError);
 			} else if(interpolatedExpressions != null) {
 				if(stringBuilder.Length > 0) {
-					interpolatedExpressions.Add(new StringLiteral(stringBuilder.ToString(), location));
+					interpolatedExpressions.Add(GetCurrentStringLiteral());
 				}
 				base.OnDone();
 			} else {
 				base.OnDone();
 			}
+		}
+
+		Region GetCurrentRegion()
+		{
+			return new Region(location, lastColumn - location.Column + 1);
+		}
+
+		Source GetCurrentStringLiteral()
+		{
+			var @string = stringBuilder.ToString();
+			var region = GetCurrentRegion();
+			return visitor => visitor.VisitStringLiteral(@string, region);
 		}
 	}
 }

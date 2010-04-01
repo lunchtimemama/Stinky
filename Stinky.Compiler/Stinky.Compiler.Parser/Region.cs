@@ -1,5 +1,5 @@
 // 
-// EvaluationWidget.cs
+// Token.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,44 +26,50 @@
 
 using System;
 
-using Gtk;
-
-using Stinky.Compiler;
-using Stinky.Compiler.Parser;
-using Stinky.Compiler.Parser.Tokenizer;
-using Stinky.Compiler.Syntax;
-
-namespace MonoDevelop.Stinky
+namespace Stinky.Compiler.Parser
 {
-	public class EvaluationWidget : VBox
+	public struct Region : IEquatable<Region>
 	{
-		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
-		
-		public EvaluationWidget()
+		public readonly Location Location;
+		public readonly int Length;
+
+		public Region(Location location, int length)
 		{
-			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
-			var scope = new Scope();
-			var resolver = new Resolver(scope, value => {
-				scope.OnExpression(value);
-				if(value.Type != typeof(void)) {
-					value.Visit(interpreter);
-				}
-			});
-			var rootTokenizer = new Driver(
-				(indentation, expression) => expression.Visit(resolver), new ErrorConsumer(null, null));
-			var scrolledWindow = new ScrolledWindow();
-			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
-				var column = 0;
-				foreach(var character in text) {
-					rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
-					column++;
-				}
-				rootTokenizer.OnCharacter(new Character('\n', new Location(null, 0, column)));
-			});
-			scrolledWindow.Add(readEvalPrintLoopView);
-			PackStart(scrolledWindow);
-			ShowAll();
+			Location = location;
+			Length = length;
+		}
+
+		public static bool operator ==(Region token1, Region token2)
+		{
+			return token1.Location == token2.Location && token1.Length == token2.Length;
+		}
+
+		public static bool operator !=(Region token1, Region token2)
+		{
+			return !(token1 == token2);
+		}
+
+		public bool Equals(Region token)
+		{
+			return this == token;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Region && Equals((Region)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			var hash = 17;
+			hash = 31 * Location.GetHashCode();
+			hash = 31 * Length.GetHashCode();
+			return hash;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("@({0}) x({1})", Location, Length);
 		}
 	}
 }
-

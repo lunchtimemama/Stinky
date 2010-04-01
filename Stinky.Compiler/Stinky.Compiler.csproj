@@ -38,13 +38,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Stinky.Compiler.Parser\Parser.cs" />
-    <Compile Include="Stinky.Compiler\Location.cs" />
-    <Compile Include="Stinky.Compiler.Parser\ParseError.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\Expression.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\Reference.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\BinaryOperator.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\PlusOperator.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\NumberLiteral.cs" />
     <Compile Include="Stinky.Compiler.Parser\ReferenceOrDefinitionParser.cs" />
     <Compile Include="Stinky.Compiler.Parser\ExpressionParser.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\Character.cs" />
@@ -56,25 +49,23 @@
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\RootTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\StringLiteralTokenizer.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\Tokenizer.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\Definition.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\StringLiteral.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\InterpolatedStringLiteral.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\Visitor.cs" />
-    <Compile Include="Stinky.Compiler\Interpreter.cs" />
-    <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationError.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\MinusOperator.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\ForwardSlashOperator.cs" />
-    <Compile Include="Stinky.Compiler.Syntax\AsteriskOperator.cs" />
-    <Compile Include="Stinky.Compiler\Resolver.cs" />
     <Compile Include="Stinky.Compiler.Parser.Tokenizer\SubTokenizer.cs" />
     <Compile Include="Stinky.Compiler\Driver.cs" />
     <Compile Include="Stinky.Compiler\CompilationError.cs" />
     <Compile Include="Stinky.Compiler\ErrorConsumer.cs" />
-    <Compile Include="Stinky.Compiler.Syntax.Highlighting\SyntaxHighlighter.cs" />
-    <Compile Include="Stinky.Compiler.Syntax.Highlighting\IncrementalSyntaxHighlightingDriver.cs" />
-    <Compile Include="Stinky.Compiler.Syntax.Highlighting\IncrementalSyntaxHighlighter.cs" />
-    <Compile Include="Stinky.Compiler.Syntax.Highlighting\Syntax.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Stringifier.cs" />
+    <Compile Include="Stinky.Compiler.Expressions\Interpreter.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Resolver.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\Scope.cs" />
+    <Compile Include="Stinky.Compiler.Parser\ParseError.cs" />
+    <Compile Include="Stinky.Compiler.Parser.Tokenizer\TokenizationError.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\SyntaxVisitor.cs" />
+    <Compile Include="Stinky.Compiler.Syntax\SyntaxError.cs" />
+    <Compile Include="Stinky.Compiler.Expressions\ExpressionVisitor.cs" />
+    <Compile Include="Stinky.Compiler.Parser\SourceVisitor.cs" />
+    <Compile Include="Stinky.Compiler.Parser\Syntaxifier.cs" />
+    <Compile Include="Stinky.Compiler.Parser\Location.cs" />
+    <Compile Include="Stinky.Compiler.Parser\Region.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -83,5 +74,6 @@
     <Folder Include="Stinky.Compiler.Parser.Tokenizer\" />
     <Folder Include="Stinky.Compiler.Syntax\" />
     <Folder Include="Stinky.Compiler.Syntax.Highlighting\" />
+    <Folder Include="Stinky.Compiler.Expressions\" />
   </ItemGroup>
 </Project>
