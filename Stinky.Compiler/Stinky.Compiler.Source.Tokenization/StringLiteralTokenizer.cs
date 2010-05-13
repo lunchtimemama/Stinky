@@ -76,7 +76,7 @@ namespace Stinky.Compiler.Source.Tokenization
 					OnFirstInterpolatedCharacter(character);
 				}
 				potentiallyInterpolated = false;
-				endColumn = character.Location.Column;
+				endColumn = character.Location.Column; // TODO get rid of this?
 				return this;
 			} else if(potentiallyUninterpolated) {
 				if(character.Char == '}') {

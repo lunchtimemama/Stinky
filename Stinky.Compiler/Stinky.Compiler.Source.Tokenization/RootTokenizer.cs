@@ -76,37 +76,37 @@ namespace Stinky.Compiler.Source.Tokenization
 			switch(@char) {
 			case '+':
 				OnTokenReady(parser => parser.ParsePlus(location));
-				return this;
+				break;
 			case '-':
 				OnTokenReady(parser => parser.ParseMinus(location));
-				return this;
+				break;
 			case '/':
 				OnTokenReady(parser => parser.ParseForwardSlash(location));
-				return this;
+				break;
 			case '*':
 				OnTokenReady(parser => parser.ParseAsterisk(location));
-				return this;
+				break;
 			case '}':
 				OnError(location, TokenizationError.UnexpectedRightCurlyBracket);
-				return this;
+				break;
 			case '(':
 				//OnToken(parser => parser.ParseOpenParentheses(location));
-				return this;
+				break;
 			case ')':
 				//OnToken(parser => parser.ParseCloseParentheses(location));
-				return this;
+				break;
 			case '.':
 				//tokenizer = new DotTokenizer(this, location);
-				return this;
+				break;
 			case ',':
 				//OnToken(parser => parser.ParseComma(location));
-				return this;
+				break;
 			case ':':
 				OnTokenReady(parser => parser.ParseColon(location));
-				return this;
+				break;
 			case '&':
 				//OnToken(parser => parser.ParseAmpersand(location));
-				return this;
+				break;
 			case '"':
 				return new StringLiteralTokenizer(location, this);
 			default:
@@ -116,12 +116,13 @@ namespace Stinky.Compiler.Source.Tokenization
 					return new NumberLiteralTokenizer(location, this).Tokenize(character);
 				} else if(@char != ' ') {
 					OnError(location, TokenizationError.UnknownError);
-					return this;
+					break;
 				} else {
 					// TODO handle this
-					return this;
+					break;
 				}
 			}
+			return this;
 		}
 
 		public override void OnDone()
