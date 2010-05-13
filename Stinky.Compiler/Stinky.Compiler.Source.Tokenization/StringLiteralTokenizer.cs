@@ -47,6 +47,7 @@ namespace Stinky.Compiler.Source.Tokenization
 		int endColumn;
 		bool potentiallyInterpolated;
 		bool potentiallyUninterpolated;
+		bool justUninterpolated;
 		bool escaped;
 		
 		public StringLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
@@ -60,8 +61,13 @@ namespace Stinky.Compiler.Source.Tokenization
 		
 		public override Tokenizer OnCharacter(Character character)
 		{
+			if(justUninterpolated) {
+				this.startColumn = location.Column;
+				justUninterpolated = false;
+			}
 			if(interpolationTokenizer != null) {
 				interpolationTokenizer = interpolationTokenizer.OnCharacter(character);
+				return this;
 			} else if(potentiallyInterpolated) {
 				if(character.Char == '{') {
 					stringBuilder.Append('{');
@@ -69,32 +75,38 @@ namespace Stinky.Compiler.Source.Tokenization
 					OnFirstInterpolatedCharacter(character);
 				}
 				potentiallyInterpolated = false;
+				endColumn = character.Location.Column;
+				return this;
 			} else if(potentiallyUninterpolated) {
 				if(character.Char == '}') {
 					stringBuilder.Append('}');
 					potentiallyUninterpolated = false;
-					interpolationTokenizer.OnDone();
-					interpolationTokenizer = null;
 				} else {
 					OnError(character.Location, TokenizationError.UnexpectedRightCurlyBracket);
 				}
+				endColumn = character.Location.Column;
+				return this;
 			} else if(escaped) {
 				OnEspacedCharacter(character);
+				return this;
 			} else {
 				return OnRegularCharacter(character);
 			}
-			endColumn = character.Location.Column;
-			return this;
 		}
 		
 		Tokenizer OnRegularCharacter(Character character)
 		{
+			var oldEndColumn = endColumn;
+			endColumn = character.Location.Column;
 			switch(character.Char) {
 			case '{':
 				potentiallyInterpolated = true;
+				endColumn = oldEndColumn;
 				return this;
 			case '}':
 				potentiallyUninterpolated = true;
+				endColumn = oldEndColumn;
+					Console.WriteLine("good");
 				return this;
 			case '"':
 				RootTokenizer.OnTokenReady();
@@ -114,6 +126,7 @@ namespace Stinky.Compiler.Source.Tokenization
 		void OnEspacedCharacter(Character character)
 		{
 			escaped = false;
+			endColumn = character.Location.Column;
 			switch(character.Char) {
 			case '"':
 				stringBuilder.Append('"');
@@ -212,6 +225,8 @@ namespace Stinky.Compiler.Source.Tokenization
 			{
 				if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
 					interpolationTokenizer.interpolationTokenizer.OnDone();
+					interpolationTokenizer.interpolationTokenizer = null;
+					interpolationTokenizer.justUninterpolated = true;
 				} else {
 					ParentContext.HandleTokenError(error);
 				}
