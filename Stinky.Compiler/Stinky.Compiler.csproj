@@ -75,11 +75,7 @@
     <Folder Include="Stinky.Compiler\" />
     <Folder Include="Stinky.Compiler.Syntax\" />
     <Folder Include="Stinky.Compiler.Expressions\" />
-    <Folder Include="Stinky.Compiler.Source.Parser\" />
     <Folder Include="Stinky.Compiler.Source\" />
-    <Folder Include="Stinky.Compiler.Source.Parser\" />
-    <Folder Include="Stinky.Compiler.Source.Parser\" />
-    <Folder Include="Stinky.Compiler.Source.Parser\" />
     <Folder Include="Stinky.Compiler.Source.Highlighting\" />
     <Folder Include="Stinky.Compiler.Source.Parsing\" />
     <Folder Include="Stinky.Compiler.Source.Tokenization\" />

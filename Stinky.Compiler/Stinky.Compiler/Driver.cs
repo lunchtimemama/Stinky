@@ -74,7 +74,7 @@ namespace Stinky.Compiler
 					() => parser = token(parser),
 					OnLine,
 				    compilationContext);
-				tokenizer.OnCharacter(character);
+				tokenizer = tokenizer.OnCharacter(character);
 			}
 		}
 		

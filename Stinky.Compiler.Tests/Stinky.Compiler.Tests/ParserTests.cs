@@ -169,13 +169,13 @@ namespace Stinky.Compiler.Tests
 //			Compile(@"""foo {""");
 //		}
 		
-		/*[Test]
+		[Test]
 		public void TestSimpleInterpolatedStringLiteral()
 		{
-			AssertCompilation(@"""{foo}""", InterpolatedString(0, 7, Reference("foo", 0)));
+			AssertCompilation(@"""{foo}""", InterpolatedString(0, 7, Reference("foo", 2)));
 		}
 		
-		[Test]
+		/*[Test]
 		public void TestInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar} bat""",

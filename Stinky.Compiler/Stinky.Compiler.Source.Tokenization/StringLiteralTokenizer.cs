@@ -62,7 +62,8 @@ namespace Stinky.Compiler.Source.Tokenization
 		public override Tokenizer OnCharacter(Character character)
 		{
 			if(justUninterpolated) {
-				this.startColumn = location.Column;
+				startColumn = location.Column;
+				interpolationTokenizer = null;
 				justUninterpolated = false;
 			}
 			if(interpolationTokenizer != null) {
@@ -151,7 +152,9 @@ namespace Stinky.Compiler.Source.Tokenization
 			if(interpolatedExpressions == null) {
 				interpolatedExpressions = new List<Source>();
 				RootTokenizer.OnToken(
-					p => p.ParseInterpolatedStringLiteral(() => interpolatedExpressions, new Region(location, 0)));
+					p => p.ParseInterpolatedStringLiteral(
+						() => interpolatedExpressions,
+						new Region(location, endColumn - location.Column + 1)));
 			}
 
 			if(stringBuilder.Length > 0) {
@@ -165,14 +168,9 @@ namespace Stinky.Compiler.Source.Tokenization
 			Token token = null;
 			interpolationTokenizer = context.CreateTokenizer(
 				t => token = t,
-				() => parser = token(parser),
-				() => {
-					parser.OnDone();
-					interpolationTokenizer = null;
-				},
-				context);
-
-			interpolationTokenizer.OnCharacter(character);
+				() => parser = justUninterpolated ? parser : token(parser),
+				() => parser.OnDone(),
+				context).OnCharacter(character);
 		}
 
 		Region GetStringLiteralRegion()
@@ -224,9 +222,8 @@ namespace Stinky.Compiler.Source.Tokenization
 			public override void HandleTokenError(CompilationError<TokenizationError> error)
 			{
 				if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
-					interpolationTokenizer.interpolationTokenizer.OnDone();
-					interpolationTokenizer.interpolationTokenizer = null;
 					interpolationTokenizer.justUninterpolated = true;
+					interpolationTokenizer.interpolationTokenizer.OnDone();
 				} else {
 					ParentContext.HandleTokenError(error);
 				}

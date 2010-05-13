@@ -37,7 +37,8 @@ namespace Stinky.Compiler.Source.Tokenization
 			: base(rootTokenizer)
 		{
 			rootTokenizer.OnToken(
-				parser => parser.ParseIdentifier(() => stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
+				parser => parser.ParseIdentifier(
+					() => stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
 		}
 
 		public override Tokenizer OnCharacter(Character character)
