@@ -1,5 +1,5 @@
 // 
-// EvaluationWidget.cs
+// CompilationContext.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,44 +26,48 @@
 
 using System;
 
-using Gtk;
-
-using Stinky.Compiler.Expressions;
 using Stinky.Compiler.Source;
+using Stinky.Compiler.Source.Parsing;
+using Stinky.Compiler.Source.Tokenization;
 using Stinky.Compiler.Syntax;
 
-namespace Stinky.Compiler.Gtk
+namespace Stinky.Compiler
 {
-	using Syntax = Action<SyntaxVisitor>;
-	using Expression = Action<ExpressionVisitor>;
+	using Token = Func<Parser, Parser>;
 
-	public class EvaluationWidget : VBox
+	public class CompilationContext
 	{
-		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
-		
-		public EvaluationWidget()
+		public Tokenizer CreateTokenizer(Action<Token> tokenConsumer,
+		                                         Action tokenReady,
+		                                         Action lineReady)
 		{
-			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
-			var scope = new Scope();
-			var resolver = new Resolver(scope, (type, expression) => {
-				if(type != typeof(void)) {
-					expression(interpreter);
-				}
-			});
-			var context = new CompilationContext();
-			var driver = new Driver((indentation, syntax) => syntax(resolver), context);
-			var scrolledWindow = new ScrolledWindow();
-			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
-				var column = 0;
-				foreach(var character in text) {
-					driver.OnCharacter(new Character(character, new Location(null, 0, column)));
-					column++;
-				}
-				driver.OnCharacter(new Character('\n', new Location(null, 0, column)));
-			});
-			scrolledWindow.Add(readEvalPrintLoopView);
-			PackStart(scrolledWindow);
-			ShowAll();
+			return CreateTokenizer(tokenConsumer, tokenReady, lineReady, this);
+		}
+
+		public virtual Tokenizer CreateTokenizer(Action<Token> tokenConsumer,
+		                                         Action tokenReady,
+		                                         Action lineReady,
+		                                         CompilationContext compilationContext)
+		{
+			return new RootTokenizer(tokenConsumer, tokenReady, lineReady, compilationContext);
+		}
+
+		public virtual Parser CreateParser(Action<Action<SourceVisitor>> sourceConsumer)
+		{
+			// FIXME take a Context?
+			return new LineParser(sourceConsumer, e => HandleParseError(e));
+		}
+
+		public virtual void HandleTokenError(CompilationError<TokenizationError> error)
+		{
+		}
+
+		public virtual void HandleParseError(CompilationError<ParseError> error)
+		{
+		}
+
+		public virtual void HandleSyntaxError(CompilationError<SyntaxError> error)
+		{
 		}
 	}
 }

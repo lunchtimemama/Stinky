@@ -48,6 +48,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Stinky.Compiler.Gtk\EvaluationWidget.cs" />
     <Compile Include="Stinky.Compiler.Gtk\ReadEvalPrintLoopView.cs" />
+    <Compile Include="Stinky.Compiler.Gtk\GtkHighlighter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Stinky.Compiler.Gtk\" />

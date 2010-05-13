@@ -1,10 +1,10 @@
 // 
-// Consumer.cs
+// AlphanumericTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +22,34 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE.using System.Text;
 
 using System;
+using System.Text;
 
-using Stinky.Compiler.Source.Parser;
-using Stinky.Compiler.Source.Parser.Tokenizer;
-
-namespace Stinky.Compiler
+namespace Stinky.Compiler.Source.Tokenization
 {
-	// Where are you touple...
-	public class ErrorConsumer
+	public class AlphanumericTokenizer : SubTokenizer
 	{
-		public readonly Action<CompilationError<ParseError>> ParseErrorConsumer;
-		public readonly Action<CompilationError<TokenizationError>> TokenizationErrorConsumer;
-		
-		public ErrorConsumer(Action<CompilationError<ParseError>> parseErrorConsumer,
-		                     Action<CompilationError<TokenizationError>> tokenizationErrorConsumer)
+		StringBuilder stringBuilder = new StringBuilder();
+
+		public AlphanumericTokenizer(Location location, RootTokenizer rootTokenizer)
+			: base(rootTokenizer)
 		{
-			ParseErrorConsumer = parseErrorConsumer ?? (error => {});
-			TokenizationErrorConsumer = tokenizationErrorConsumer ?? (error => {});
+			rootTokenizer.OnToken(
+				parser => parser.ParseIdentifier(() => stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
+		}
+
+		public override Tokenizer OnCharacter(Character character)
+		{
+			var @char = character.Char;
+			if((@char >= '0' && @char <= '9') || (@char >= 'A' && @char <= 'z') || @char == '#' || @char == '_') {
+				stringBuilder.Append(@char);
+				return this;
+			} else {
+				RootTokenizer.OnTokenReady();
+				return base.OnCharacter(character);
+			}
 		}
 	}
 }
-

@@ -1,5 +1,5 @@
 // 
-// EvaluationWidget.cs
+// SubTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,44 +26,45 @@
 
 using System;
 
-using Gtk;
-
-using Stinky.Compiler.Expressions;
-using Stinky.Compiler.Source;
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Gtk
+namespace Stinky.Compiler.Source.Tokenization
 {
-	using Syntax = Action<SyntaxVisitor>;
-	using Expression = Action<ExpressionVisitor>;
+	using TokenErrorConsumer = Action<CompilationError<TokenizationError>>;
 
-	public class EvaluationWidget : VBox
+	public abstract class SubTokenizer : Tokenizer
 	{
-		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
+		protected readonly RootTokenizer RootTokenizer;
 		
-		public EvaluationWidget()
+		protected SubTokenizer(RootTokenizer rootTokenizer)
 		{
-			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
-			var scope = new Scope();
-			var resolver = new Resolver(scope, (type, expression) => {
-				if(type != typeof(void)) {
-					expression(interpreter);
-				}
-			});
-			var context = new CompilationContext();
-			var driver = new Driver((indentation, syntax) => syntax(resolver), context);
-			var scrolledWindow = new ScrolledWindow();
-			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
-				var column = 0;
-				foreach(var character in text) {
-					driver.OnCharacter(new Character(character, new Location(null, 0, column)));
-					column++;
-				}
-				driver.OnCharacter(new Character('\n', new Location(null, 0, column)));
-			});
-			scrolledWindow.Add(readEvalPrintLoopView);
-			PackStart(scrolledWindow);
-			ShowAll();
+			if(rootTokenizer == null) {
+				throw new ArgumentNullException("rootTokenizer");
+			}
+			this.RootTokenizer = rootTokenizer;
+		}
+		
+		public override Tokenizer OnCharacter(Character character)
+		{
+			return RootTokenizer.OnCharacter(character);
+		}
+		
+		public override void OnDone()
+		{
+			RootTokenizer.OnTokenReady();
+			RootTokenizer.OnDone();
+		}
+		
+		protected void OnError(Location location, TokenizationError error)
+		{
+			RootTokenizer.OnError(location, error);
+		}
+		
+		protected void OnError(CompilationError<TokenizationError> error)
+		{
+			RootTokenizer.OnError(error);
+		}
+
+		protected CompilationContext CompilationContext {
+			get { return RootTokenizer.CompilationContext; }
 		}
 	}
 }

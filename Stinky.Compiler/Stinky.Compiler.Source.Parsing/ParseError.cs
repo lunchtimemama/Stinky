@@ -1,10 +1,10 @@
 // 
-// Tokenizer.cs
+// ParseError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace Stinky.Compiler.Source.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Parsing
 {
-	public abstract class Tokenizer
+	public enum ParseError
 	{
-		public abstract void OnCharacter(Character character);
-
-		public virtual void OnDone()
-		{
-		}
+		UnknownError
 	}
 }

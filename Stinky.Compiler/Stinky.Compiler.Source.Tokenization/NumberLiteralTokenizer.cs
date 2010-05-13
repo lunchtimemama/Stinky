@@ -1,10 +1,10 @@
 // 
-// ParseError.cs
+// NumberLiteralTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace Stinky.Compiler.Source.Parser
+using System;
+using System.Text;
+
+namespace Stinky.Compiler.Source.Tokenization
 {
-	public enum ParseError
+	public class NumberLiteralTokenizer : SubTokenizer
 	{
-		UnknownError
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
+			: base(rootTokenizer)
+		{
+			rootTokenizer.OnToken(
+				parser => parser.ParseNumberLiteral(
+					() => double.Parse(stringBuilder.ToString()), new Region(location, stringBuilder.Length)));
+		}
+		
+		public override Tokenizer OnCharacter(Character character)
+		{
+			var @char = character.Char;
+			if((@char >= '0' && @char <= '9') || @char == '.') {
+				stringBuilder.Append(@char);
+				return this;
+			} else {
+				RootTokenizer.OnTokenReady();
+				return base.OnCharacter(character);
+			}
+		}
 	}
 }

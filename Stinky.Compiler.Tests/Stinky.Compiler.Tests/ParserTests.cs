@@ -30,12 +30,13 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using Stinky.Compiler.Source;
-using Stinky.Compiler.Source.Parser;
-using Stinky.Compiler.Source.Parser.Tokenizer;
+using Stinky.Compiler.Source.Parsing;
+using Stinky.Compiler.Source.Tokenization;
 
 namespace Stinky.Compiler.Tests
 {
 	using Source = Action<SourceVisitor>;
+	using Token = Func<Parser, Parser>;
 
 	[TestFixture]
 	public class ParserTests : Sources
@@ -229,13 +230,14 @@ namespace Stinky.Compiler.Tests
 		static void AssertCompilation(string code, Source source)
 		{
 			Source parsedSource = null;
-			Func<Parser, Parser> token = null;
-			Parser parser = new LineParser(s => parsedSource = s, e => {});
-			var rootTokenizer = new RootTokenizer(
-				t => token = t, () => parser = token(parser), () => parser.OnDone(), new ErrorConsumer(null, null));
+			Token token = null;
+			var context = new CompilationContext();
+			var parser = context.CreateParser(s => parsedSource = s);
+			var rootTokenizer = context.CreateTokenizer(
+				t => token = t, () => parser = token(parser), () => parser.OnDone());
 			var column = 0;
 			foreach(var character in code) {
-				rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
+				rootTokenizer = rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
 				column++;
 			}
 			rootTokenizer.OnDone();

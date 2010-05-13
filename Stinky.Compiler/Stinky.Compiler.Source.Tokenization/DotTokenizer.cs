@@ -1,10 +1,10 @@
 // 
-// SubTokenizer.cs
+// DotTokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,45 +26,31 @@
 
 using System;
 
-namespace Stinky.Compiler.Source.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Tokenization
 {
-	public abstract class SubTokenizer : Tokenizer
+	public class DotTokenizer : SubTokenizer
 	{
-		readonly RootTokenizer rootTokenizer;
-		
-		protected SubTokenizer(RootTokenizer rootTokenizer)
+		bool doubleDot;
+
+		public DotTokenizer(RootTokenizer lineTokenizer, Location location)
+			: base(lineTokenizer)
 		{
-			this.rootTokenizer = rootTokenizer;
+			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
 		}
-		
-		public override void OnCharacter(Character character)
+
+		public override Tokenizer OnCharacter(Character character)
 		{
-			rootTokenizer.OnCharacter(character);
-		}
-		
-		public override void OnDone()
-		{
-			rootTokenizer.OnTokenReady();
-		}
-		
-		protected void OnError(Location location, TokenizationError error)
-		{
-			rootTokenizer.OnError(location, error);
-		}
-		
-		protected void OnError(CompilationError<ParseError> error)
-		{
-			rootTokenizer.OnError(error);
-		}
-		
-		protected void OnError(CompilationError<TokenizationError> error)
-		{
-			rootTokenizer.OnError(error);
-		}
-		
-		protected ErrorConsumer ErrorConsumer {
-			get { return rootTokenizer.ErrorConsumer; }
+			if(character.Char == '.') {
+				if(doubleDot) {
+					OnError(character.Location, TokenizationError.UnknownError);
+					return RootTokenizer;
+				}
+				doubleDot = true;
+				return this;
+			} else {
+				RootTokenizer.OnTokenReady();
+				return base.OnCharacter(character);
+			}
 		}
 	}
 }
-

@@ -1,5 +1,5 @@
 // 
-// TokenizationError.cs
+// SourceHighlighter.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,12 +26,16 @@
 
 using System;
 
-namespace Stinky.Compiler.Source.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Highlighting
 {
-	public enum TokenizationError
+	public class SourceHighlighter : SourceVisitor
 	{
-		UnknownError,
-		UnexpectedRightCurlyBracket
+		public readonly Highlighter highlighter;
+
+		public SourceHighlighter(Highlighter highlighter)
+		{
+			this.highlighter = highlighter;
+		}
 	}
 }
 

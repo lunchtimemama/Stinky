@@ -1,5 +1,5 @@
-// 
-// Parser.cs
+//
+// BaseParser.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -27,41 +27,47 @@
 using System;
 using System.Collections.Generic;
 
-namespace Stinky.Compiler.Source.Parser
+namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
 
-	public class Parser
+	public class BaseParser : Parser
 	{
 		protected readonly Action<Source> Consumer;
 		protected readonly Action<CompilationError<ParseError>> ErrorConsumer;
-		protected readonly Parser NextParser;
+		protected readonly BaseParser NextParser;
 		
-		public Parser(Action<Source> consumer, Action<CompilationError<ParseError>> errorConsumer)
-			: this(consumer, errorConsumer, null)
+		public BaseParser(Action<Source> sourceConsumer, Action<CompilationError<ParseError>> parseErrorConsumer)
+			: this(sourceConsumer, parseErrorConsumer, null)
 		{
 		}
 		
-		public Parser(Action<Source> consumer,
-					  Action<CompilationError<ParseError>> errorConsumer,
-					  Parser nextParser)
+		public BaseParser(Action<Source> sourceConsumer,
+						  Action<CompilationError<ParseError>> parseErrorConsumer,
+						  BaseParser nextParser)
 		{
-			Consumer = consumer;
-			ErrorConsumer = errorConsumer;
+			if(sourceConsumer == null) {
+				throw new ArgumentNullException("sourceConsumer");
+			}
+			if(parseErrorConsumer == null) {
+				throw new ArgumentNullException("parseErrorConsumer");
+			}
+			Consumer = sourceConsumer;
+			ErrorConsumer = parseErrorConsumer;
 			NextParser = nextParser;
 		}
-		
-		public virtual Parser ParseIdentifier(string identifier, Region region)
+
+		public override Parser ParseIdentifier(Func<string> identifier, Region region)
 		{
 			return ParseIdentifier(identifier, region, CreateError(region));
 		}
 		
-		protected Parser ParseIdentifier(string identifier, Region region, CompilationError<ParseError> error)
+		protected Parser ParseIdentifier(Func<string> identifier, Region region, CompilationError<ParseError> error)
 		{
 			return ParseToken(nextParser => nextParser.ParseStringLiteral(identifier, region, error), error);
 		}
 		
-		public virtual Parser ParseColon(Location location)
+		public override Parser ParseColon(Location location)
 		{
 			return ParseColon(location, CreateError(location));
 		}
@@ -71,33 +77,33 @@ namespace Stinky.Compiler.Source.Parser
 			return ParseToken(nextParser => nextParser.ParseColon(location, error), error);
 		}
 
-		public virtual Parser ParseNumberLiteral(double number, Region region)
+		public override Parser ParseNumberLiteral(Func<double> number, Region region)
 		{
 			return ParseNumberLiteral(number, region, CreateError(region));
 		}
 
-		protected Parser ParseNumberLiteral(double number, Region region, CompilationError<ParseError> error)
+		protected Parser ParseNumberLiteral(Func<double> number, Region region, CompilationError<ParseError> error)
 		{
 			return ParseToken(nextParser => nextParser.ParseNumberLiteral(number, region, error), error);
 		}
 		
-		public virtual Parser ParseStringLiteral(string @string, Region region)
+		public override Parser ParseStringLiteral(Func<string> @string, Region region)
 		{
 			return ParseStringLiteral(@string, region, CreateError(region));
 		}
 		
-		protected Parser ParseStringLiteral(string @string, Region region, CompilationError<ParseError> error)
+		protected Parser ParseStringLiteral(Func<string> @string, Region region, CompilationError<ParseError> error)
 		{
 			return ParseToken(nextParser => nextParser.ParseStringLiteral(@string, region, error), error);
 		}
 		
-		public virtual Parser ParseInterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions,
+		public override Parser ParseInterpolatedStringLiteral(Func<IEnumerable<Source>> interpolatedExpressions,
 															 Region region)
 		{
 			return ParseInterpolatedStringLiteral(interpolatedExpressions, region, CreateError(region));
 		}
 		
-		protected Parser ParseInterpolatedStringLiteral(IEnumerable<Source> interpolatedExpressions,
+		protected Parser ParseInterpolatedStringLiteral(Func<IEnumerable<Source>> interpolatedExpressions,
 														Region region,
 														CompilationError<ParseError> error)
 		{
@@ -106,7 +112,7 @@ namespace Stinky.Compiler.Source.Parser
 				error);
 		}
 
-		public virtual Parser ParsePlus(Location location)
+		public override Parser ParsePlus(Location location)
 		{
 			return ParsePlus(location, CreateError(location));
 		}
@@ -116,7 +122,7 @@ namespace Stinky.Compiler.Source.Parser
 			return ParseToken(nextParser => nextParser.ParsePlus(location, error), error);
 		}
 
-		public virtual Parser ParseMinus(Location location)
+		public override Parser ParseMinus(Location location)
 		{
 			return ParseMinus(location, CreateError(location));
 		}
@@ -126,7 +132,7 @@ namespace Stinky.Compiler.Source.Parser
 			return ParseToken(nextParser => nextParser.ParseMinus(location, error), error);
 		}
 
-		public virtual Parser ParseForwardSlash(Location location)
+		public override Parser ParseForwardSlash(Location location)
 		{
 			return ParseForwardSlash(location, CreateError(location));
 		}
@@ -136,7 +142,7 @@ namespace Stinky.Compiler.Source.Parser
 			return ParseToken(nextParser => nextParser.ParseForwardSlash(location, error), error);
 		}
 
-		public virtual Parser ParseAsterisk(Location location)
+		public override Parser ParseAsterisk(Location location)
 		{
 			return ParseAsterisk(location, CreateError(location));
 		}
@@ -146,7 +152,7 @@ namespace Stinky.Compiler.Source.Parser
 			return ParseToken(nextParser => nextParser.ParseAsterisk(location, error), error);
 		}
 		
-		Parser ParseToken(Func<Parser, Parser> nextParser, CompilationError<ParseError> error)
+		Parser ParseToken(Func<BaseParser, Parser> nextParser, CompilationError<ParseError> error)
 		{
 			if(NextParser != null) {
 				return nextParser(NextParser);
@@ -170,8 +176,11 @@ namespace Stinky.Compiler.Source.Parser
 			get { return ParseError.UnknownError; }
 		}
 		
-		public virtual void OnDone()
+		public override void OnDone()
 		{
+			if(NextParser != null) {
+				NextParser.OnDone();
+			}
 		}
 
 		protected static Source StringLiteral(string @string, Region region)

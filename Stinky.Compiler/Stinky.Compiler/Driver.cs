@@ -27,63 +27,53 @@
 using System;
 
 using Stinky.Compiler.Source;
-using Stinky.Compiler.Source.Parser;
-using Stinky.Compiler.Source.Parser.Tokenizer;
+using Stinky.Compiler.Source.Parsing;
+using Stinky.Compiler.Source.Tokenization;
 using Stinky.Compiler.Syntax;
 
 namespace Stinky.Compiler
 {
+	using Token = Func<Parser, Parser>;
+	using Syntax = Action<SyntaxVisitor>;
+	using Consumer = Action<int, Action<SyntaxVisitor>>;
+
 	public class Driver
 	{
-		readonly ErrorConsumer errorConsumer;
+		readonly CompilationContext compilationContext;
 		readonly Syntaxifier syntaxifier;
 		
 		int indentation;
 		Tokenizer tokenizer;
-		Func<Parser, Parser> token;
+		Token token;
 		Parser parser;
 
-		public Driver(Action<int, Action<SyntaxVisitor>> consumer, ErrorConsumer errorConsumer)
-			: this(consumer, errorConsumer, null)
-		{
-		}
-
-		public Driver(Action<int, Action<SyntaxVisitor>> consumer,
-		              ErrorConsumer errorConsumer,
-		              Action<CompilationError<SyntaxError>> syntaxErrorConsumer)
+		public Driver(Consumer consumer, CompilationContext compilationContext)
 		{
 			if(consumer == null) {
 				throw new ArgumentNullException("consumer");
-			} else if(errorConsumer == null) {
-				throw new ArgumentNullException("errorConsumer");
+			} else if(compilationContext == null) {
+				throw new ArgumentNullException("compilationContext");
 			}
-			if(syntaxErrorConsumer == null) {
-				syntaxErrorConsumer = e => {};
-			}
-			this.errorConsumer = errorConsumer;
-			syntaxifier = new Syntaxifier(
+
+			this.compilationContext = compilationContext;
+			this.syntaxifier = new Syntaxifier(
 				syntax => consumer(indentation, syntax),
-				(e, l) => syntaxErrorConsumer(new CompilationError<SyntaxError>(l, e))
-			);
+				e => compilationContext.HandleSyntaxError(e));
 		}
 
 		public void OnCharacter(Character character)
 		{
 			if(tokenizer != null) {
-				tokenizer.OnCharacter(character);
+				tokenizer = tokenizer.OnCharacter(character);
 			} else if(character.Char == '\t') {
 				indentation = indentation + 1;
 			} else {
-				parser = new LineParser(
-					source => source(syntaxifier),
-					errorConsumer.ParseErrorConsumer);
-
-				tokenizer = new RootTokenizer(
+				parser = compilationContext.CreateParser(source => source(syntaxifier));
+				tokenizer = compilationContext.CreateTokenizer(
 					token => this.token = token,
 					() => parser = token(parser),
 					OnLine,
-					errorConsumer);
-				
+				    compilationContext);
 				tokenizer.OnCharacter(character);
 			}
 		}

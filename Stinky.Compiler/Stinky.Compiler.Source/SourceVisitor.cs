@@ -35,37 +35,60 @@ namespace Stinky.Compiler.Source
 	{
 		public virtual void VisitStringLiteral(string @string, Region region)
 		{
+			VisitRegion(region);
 		}
 
 		public virtual void VisitNumberLiteral(double number, Region region)
 		{
+			VisitRegion(region);
 		}
 
 		public virtual void VisitPlusOperator(Source left, Source right, Location location)
 		{
+			VisitBinaryOperator(left, right, location);
 		}
 
 		public virtual void VisitMinusOperator(Source left, Source right, Location location)
 		{
+			VisitBinaryOperator(left, right, location);
 		}
 
 		public virtual void VisitAsteriskOperator(Source left, Source right, Location location)
 		{
+			VisitBinaryOperator(left, right, location);
 		}
 
 		public virtual void VisitForwardSlashOperator(Source left, Source right, Location location)
 		{
+			VisitBinaryOperator(left, right, location);
 		}
 
 		public virtual void VisitReference(string identifier, Region region)
 		{
+			VisitRegion(region);
 		}
 
 		public virtual void VisitDefinition(Source reference, Source expression, Location location)
 		{
+			VisitLocation(location);
 		}
 
 		public virtual void VisitInterpolatedStringLiteral(IEnumerable<Source> sources, Region region)
+		{
+			VisitRegion(region);
+		}
+
+		protected virtual void VisitBinaryOperator(Source left, Source right, Location location)
+		{
+			VisitLocation(location);
+		}
+
+		protected virtual void VisitRegion(Region region)
+		{
+			VisitLocation(region.Location);
+		}
+
+		protected virtual void VisitLocation(Location location)
 		{
 		}
 	}

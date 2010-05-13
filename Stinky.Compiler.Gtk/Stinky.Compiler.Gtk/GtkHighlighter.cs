@@ -1,10 +1,10 @@
 // 
-// NumberLiteralTokenizer.cs
+// GtkHighlighter.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,31 +25,44 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
 
-namespace Stinky.Compiler.Source.Parser.Tokenizer
+using Gtk;
+
+using Stinky.Compiler.Source;
+
+using Stinky.Compiler.Source.Highlighting;
+
+namespace Stinky.Compiler.Gtk
 {
-	public class NumberLiteralTokenizer : SubTokenizer
+	public class GtkHighlighter : Highlighter
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		public NumberLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
-			: base(rootTokenizer)
+		readonly TextBuffer buffer;
+		readonly TextMark lineStart;
+
+		public GtkHighlighter(TextBuffer buffer)
 		{
-			rootTokenizer.OnToken(
-				parser => parser.ParseNumberLiteral(
-					double.Parse(stringBuilder.ToString()), new Region(location, stringBuilder.Length)));
+			this.buffer = buffer;
+			lineStart = buffer.CreateMark(null, buffer.EndIter, true);
 		}
-		
-		public override void OnCharacter(Character character)
+
+		public override void HighlightStringLiteral(Region region)
 		{
-			var @char = character.Char;
-			if((@char >= '0' && @char <= '9') || @char == '.') {
-				stringBuilder.Append(@char);
-			} else {
-				OnDone();
-				base.OnCharacter(character);
-			}
+			Highlight("string", region);
+		}
+
+		public override void HighlightNumberLiteral (Region region)
+		{
+			Highlight("number", region);
+		}
+
+		void Highlight(string tag, Region region)
+		{
+			var start = buffer.GetIterAtMark(lineStart);
+			start.ForwardChars(region.Location.Column);
+			var end = start;
+			end.ForwardChars(region.Length);
+			buffer.ApplyTag(tag, start, end);
 		}
 	}
 }
+

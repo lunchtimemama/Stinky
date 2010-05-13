@@ -1,10 +1,10 @@
 // 
-// ReferenceOrDefinitionParser.cs
+// Tokenizer.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2010 Scott Thomas
+// Copyright (c) 2009 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-namespace Stinky.Compiler.Source.Parser
+namespace Stinky.Compiler.Source.Tokenization
 {
-	using Source = Action<SourceVisitor>;
-	
-	public class ReferenceOrDefinitionParser : ExpressionParser
+	public abstract class Tokenizer
 	{
-		readonly Source reference;
-		
-		public ReferenceOrDefinitionParser(string identifier,
-										   Region region,
-										   Action<Source> consumer,
-										   Action<CompilationError<ParseError>> errorConsumer,
-										   Parser nextParser)
-			: base(Reference(identifier, region), consumer, errorConsumer, nextParser)
+		public abstract Tokenizer OnCharacter(Character character);
+
+		public virtual void OnDone()
 		{
-			reference = Reference(identifier, region);
-		}
-		
-		public override Parser ParseColon(Location location)
-		{
-			return new RootParser(expression => Consumer(Definition(reference, expression, location)), ErrorConsumer);
 		}
 	}
 }

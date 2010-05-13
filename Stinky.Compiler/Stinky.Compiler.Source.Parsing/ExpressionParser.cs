@@ -26,34 +26,35 @@
 
 using System;
 
-namespace Stinky.Compiler.Source.Parser
+namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
 
-	public class ExpressionParser : Parser
+	public class ExpressionParser :BaseParser
 	{
 		readonly Source expression;
 		readonly Func<Source, Source> @operator;
 		readonly int operatorPriority;
 		
 		public ExpressionParser(Source expression,
-								Action<Source> consumer,
-								Action<CompilationError<ParseError>> errorConsumer,
-								Parser nextParser)
-			: this(expression, null, 0, consumer, errorConsumer, nextParser)
+								Action<Source> sourceConsumer,
+								Action<CompilationError<ParseError>> parseErrorConsumer,
+								BaseParser nextParser)
+			: this(expression, null, 0, sourceConsumer, parseErrorConsumer, nextParser)
 		{
 		}
 		
 		public ExpressionParser(Source expression,
 		                        Func<Source, Source> @operator,
 		                        int operatorPriority,
-		                        Action<Source> consumer,
-		                        Action<CompilationError<ParseError>> errorConsumer,
-		                        Parser nextParser)
-			: base(consumer, errorConsumer, nextParser)
+		                        Action<Source> sourceConsumer,
+		                        Action<CompilationError<ParseError>> parseErrorConsumer,
+		                        BaseParser nextParser)
+			: base(sourceConsumer, parseErrorConsumer, nextParser)
 		{
-			if(expression == null) throw new ArgumentNullException("expression");
-			
+			if(expression == null) {
+				throw new ArgumentNullException("expression");
+			}
 			this.expression = expression;
 			this.@operator = @operator;
 			this.operatorPriority = operatorPriority;

@@ -37,9 +37,9 @@ namespace Stinky.Compiler.Source
 	public class Syntaxifier : SourceVisitor
 	{
 		readonly Action<Syntax> consumer;
-		readonly Action<SyntaxError, Location> errorConsumer;
+		readonly Action<CompilationError<SyntaxError>> errorConsumer;
 
-		public Syntaxifier(Action<Syntax> consumer, Action<SyntaxError, Location> errorConsumer)
+		public Syntaxifier(Action<Syntax> consumer, Action<CompilationError<SyntaxError>> errorConsumer)
 		{
 			if(consumer == null) {
 				throw new ArgumentNullException("consumer");
@@ -114,7 +114,7 @@ namespace Stinky.Compiler.Source
 
 		Action<SyntaxError> Error(Location location)
 		{
-			return error => errorConsumer(error, location);
+			return error => errorConsumer(new CompilationError<SyntaxError>(location, error));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 // 
-// EvaluationWidget.cs
+// ReferenceOrDefinitionParser.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -26,45 +26,27 @@
 
 using System;
 
-using Gtk;
-
-using Stinky.Compiler.Expressions;
-using Stinky.Compiler.Source;
-using Stinky.Compiler.Syntax;
-
-namespace Stinky.Compiler.Gtk
+namespace Stinky.Compiler.Source.Parsing
 {
-	using Syntax = Action<SyntaxVisitor>;
-	using Expression = Action<ExpressionVisitor>;
-
-	public class EvaluationWidget : VBox
+	using Source = Action<SourceVisitor>;
+	
+	public class ReferenceOrDefinitionParser : ExpressionParser
 	{
-		readonly ReadEvalPrintLoopView readEvalPrintLoopView;
+		readonly Source reference;
 		
-		public EvaluationWidget()
+		public ReferenceOrDefinitionParser(string identifier,
+										   Region region,
+										   Action<Source> sourceConsumer,
+										   Action<CompilationError<ParseError>> parseErrorConsumer,
+										   BaseParser nextParser)
+			: base(Reference(identifier, region), sourceConsumer, parseErrorConsumer, nextParser)
 		{
-			var interpreter = new Interpreter(value => readEvalPrintLoopView.Print(value.ToString()));
-			var scope = new Scope();
-			var resolver = new Resolver(scope, (type, expression) => {
-				if(type != typeof(void)) {
-					expression(interpreter);
-				}
-			});
-			var context = new CompilationContext();
-			var driver = new Driver((indentation, syntax) => syntax(resolver), context);
-			var scrolledWindow = new ScrolledWindow();
-			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
-				var column = 0;
-				foreach(var character in text) {
-					driver.OnCharacter(new Character(character, new Location(null, 0, column)));
-					column++;
-				}
-				driver.OnCharacter(new Character('\n', new Location(null, 0, column)));
-			});
-			scrolledWindow.Add(readEvalPrintLoopView);
-			PackStart(scrolledWindow);
-			ShowAll();
+			reference = Reference(identifier, region);
+		}
+		
+		public override Parser ParseColon(Location location)
+		{
+			return new RootParser(expression => Consumer(Definition(reference, expression, location)), ErrorConsumer);
 		}
 	}
 }
-

@@ -30,13 +30,19 @@ using Gtk;
 using Gdk;
 using Pango;
 
+using Stinky.Compiler.Source;
+using Stinky.Compiler.Source.Highlighting;
+
 namespace Stinky.Compiler.Gtk
 {
 	public class ReadEvalPrintLoopView : TextView
 	{
 		readonly Action<string> evaluator;
+
+		IncrementalSourceHighlighter sourceHighlighter;
 		
 		TextMark promptStart;
+		int column;
 		
 		public ReadEvalPrintLoopView(Action<string> evaluator)
 			: base(new TextBuffer(new TextTagTable()))
@@ -46,9 +52,13 @@ namespace Stinky.Compiler.Gtk
 			promptStart = Buffer.CreateMark(null, startIter, true);
 			Buffer.TagTable.Add(new TextTag("prompt") { Editable = false, Weight = Weight.Bold });
 			Buffer.TagTable.Add(new TextTag("history") { Editable = false });
+			Buffer.TagTable.Add(new TextTag("string") { Foreground ="red" });
+			Buffer.TagTable.Add(new TextTag("number") { Foreground ="green" });
 			
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
+
+			this.sourceHighlighter = new IncrementalSourceHighlighter(new GtkHighlighter(Buffer));
 		}
 		
 		protected override bool OnKeyPressEvent(EventKey evnt)
@@ -62,8 +72,13 @@ namespace Stinky.Compiler.Gtk
 				evaluator(text);
 				NewLine();
 				return true;
+			} else if(evnt.Key == Gdk.Key.Shift_L) {
+				return base.OnKeyPressEvent(evnt);
 			}
-			return base.OnKeyPressEvent(evnt);
+			var result = base.OnKeyPressEvent(evnt);
+			sourceHighlighter.OnCharacter(new Character((char)evnt.KeyValue, new Location(null, 0, column)));
+			column++;
+			return result;
 		}
 		
 		public void Print(string text)
@@ -83,6 +98,8 @@ namespace Stinky.Compiler.Gtk
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
 			Buffer.PlaceCursor(startIter);
+			this.sourceHighlighter = new IncrementalSourceHighlighter(new GtkHighlighter(Buffer));
+			column = 0;
 		}
 	}
 }

@@ -1,10 +1,10 @@
 // 
-// AlphanumericTokenizer.cs
+// TokenizationError.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
 // 
-// Copyright (c) 2009 Scott Thomas
+// Copyright (c) 2010 Scott Thomas
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,16 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.using System.Text;
+// THE SOFTWARE.
 
 using System;
-using System.Text;
 
-namespace Stinky.Compiler.Source.Parser.Tokenizer
+namespace Stinky.Compiler.Source.Tokenization
 {
-	public class AlphanumericTokenizer : SubTokenizer
+	public enum TokenizationError
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-
-		public AlphanumericTokenizer(Location location, RootTokenizer rootTokenizer)
-			: base(rootTokenizer)
-		{
-			rootTokenizer.OnToken(
-				parser => parser.ParseIdentifier(stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
-		}
-
-		public override void OnCharacter(Character character)
-		{
-			var @char = character.Char;
-			if((@char >= '0' && @char <= '9') || (@char >= 'A' && @char <= 'z') || @char == '#' || @char == '_') {
-				stringBuilder.Append(@char);
-			} else {
-				OnDone();
-				base.OnCharacter(character);
-			}
-		}
+		UnknownError,
+		UnexpectedRightCurlyBracket
 	}
 }
+

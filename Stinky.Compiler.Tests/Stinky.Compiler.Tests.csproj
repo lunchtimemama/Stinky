@@ -45,8 +45,6 @@
     <Compile Include="Stinky.Compiler.Tests\TokenizationException.cs" />
     <Compile Include="Stinky.Compiler.Tests\InterpreterTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\ResolverTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\IncrementalSyntaxHighlightingTests.cs" />
-    <Compile Include="Stinky.Compiler.Tests\HighlightingTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\SourceDecomposer.cs" />
     <Compile Include="Stinky.Compiler.Tests\SourceTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\Sources.cs" />
