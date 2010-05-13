@@ -61,10 +61,10 @@ namespace Stinky.Compiler
 				e => compilationContext.HandleSyntaxError(e));
 		}
 
-		public void OnCharacter(Character character)
+		public void Tokenize(Character character)
 		{
 			if(tokenizer != null) {
-				tokenizer = tokenizer.OnCharacter(character);
+				tokenizer = tokenizer.Tokenize(character);
 			} else if(character.Char == '\t') {
 				indentation = indentation + 1;
 			} else {
@@ -74,7 +74,7 @@ namespace Stinky.Compiler
 					() => parser = token(parser),
 					OnLine,
 				    compilationContext);
-				tokenizer = tokenizer.OnCharacter(character);
+				tokenizer = tokenizer.Tokenize(character);
 			}
 		}
 		

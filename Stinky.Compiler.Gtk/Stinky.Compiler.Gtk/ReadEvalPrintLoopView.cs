@@ -76,7 +76,7 @@ namespace Stinky.Compiler.Gtk
 				return base.OnKeyPressEvent(evnt);
 			}
 			var result = base.OnKeyPressEvent(evnt);
-			sourceHighlighter.OnCharacter(new Character((char)evnt.KeyValue, new Location(null, 0, column)));
+			sourceHighlighter.Tokenize(new Character((char)evnt.KeyValue, new Location(null, 0, column)));
 			column++;
 			return result;
 		}

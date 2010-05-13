@@ -38,7 +38,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			//token = parser => doubleDot ? parser.ParseDoubleDot(location) : parser.ParseDot(location);
 		}
 
-		public override Tokenizer OnCharacter(Character character)
+		public override Tokenizer Tokenize(Character character)
 		{
 			if(character.Char == '.') {
 				if(doubleDot) {
@@ -49,7 +49,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				return this;
 			} else {
 				RootTokenizer.OnTokenReady();
-				return base.OnCharacter(character);
+				return base.Tokenize(character);
 			}
 		}
 	}

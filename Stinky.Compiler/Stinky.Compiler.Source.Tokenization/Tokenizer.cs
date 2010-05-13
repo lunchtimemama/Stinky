@@ -28,7 +28,7 @@ namespace Stinky.Compiler.Source.Tokenization
 {
 	public abstract class Tokenizer
 	{
-		public abstract Tokenizer OnCharacter(Character character);
+		public abstract Tokenizer Tokenize(Character character);
 
 		public virtual void OnDone()
 		{

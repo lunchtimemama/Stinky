@@ -41,7 +41,7 @@ namespace Stinky.Compiler.Source.Tokenization
 					() => stringBuilder.ToString(), new Region(location, stringBuilder.Length)));
 		}
 
-		public override Tokenizer OnCharacter(Character character)
+		public override Tokenizer Tokenize(Character character)
 		{
 			var @char = character.Char;
 			if((@char >= '0' && @char <= '9') || (@char >= 'A' && @char <= 'z') || @char == '#' || @char == '_') {
@@ -49,7 +49,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				return this;
 			} else {
 				RootTokenizer.OnTokenReady();
-				return base.OnCharacter(character);
+				return base.Tokenize(character);
 			}
 		}
 	}

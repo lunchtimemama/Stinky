@@ -51,9 +51,9 @@ namespace Stinky.Compiler.Source.Highlighting
 			);
 		}
 
-		public void OnCharacter(Character character)
+		public void Tokenize(Character character)
 		{
-			tokenizer.OnCharacter(character);
+			tokenizer.Tokenize(character);
 			highlightingParser.Consumer(character.Location);
 		}
 

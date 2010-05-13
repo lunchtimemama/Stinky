@@ -42,9 +42,9 @@ namespace Stinky.Compiler.Source.Tokenization
 			this.RootTokenizer = rootTokenizer;
 		}
 		
-		public override Tokenizer OnCharacter(Character character)
+		public override Tokenizer Tokenize(Character character)
 		{
-			return RootTokenizer.OnCharacter(character);
+			return RootTokenizer.Tokenize(character);
 		}
 		
 		public override void OnDone()

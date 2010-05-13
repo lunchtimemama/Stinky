@@ -237,7 +237,7 @@ namespace Stinky.Compiler.Tests
 				t => token = t, () => parser = token(parser), () => parser.OnDone());
 			var column = 0;
 			foreach(var character in code) {
-				rootTokenizer = rootTokenizer.OnCharacter(new Character(character, new Location(null, 0, column)));
+				rootTokenizer = rootTokenizer.Tokenize(new Character(character, new Location(null, 0, column)));
 				column++;
 			}
 			rootTokenizer.OnDone();

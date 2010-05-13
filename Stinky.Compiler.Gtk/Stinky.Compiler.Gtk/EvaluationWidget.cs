@@ -56,10 +56,10 @@ namespace Stinky.Compiler.Gtk
 			readEvalPrintLoopView = new ReadEvalPrintLoopView(text => {
 				var column = 0;
 				foreach(var character in text) {
-					driver.OnCharacter(new Character(character, new Location(null, 0, column)));
+					driver.Tokenize(new Character(character, new Location(null, 0, column)));
 					column++;
 				}
-				driver.OnCharacter(new Character('\n', new Location(null, 0, column)));
+				driver.Tokenize(new Character('\n', new Location(null, 0, column)));
 			});
 			scrolledWindow.Add(readEvalPrintLoopView);
 			PackStart(scrolledWindow);

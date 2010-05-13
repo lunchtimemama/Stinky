@@ -39,7 +39,7 @@ namespace Smell
 			var driver = new Driver((s, i) => { }, context);
 			var column = 0;
 			foreach(var c in @"""{foo}""") {
-				driver.OnCharacter(new Character(c, new Location(null, 0, column)));
+				driver.Tokenize(new Character(c, new Location(null, 0, column)));
 				column++;
 			}
 			driver.OnDone();

@@ -59,7 +59,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				parser => parser.ParseStringLiteral(() => stringBuilder.ToString(), GetStringLiteralRegion()));
 		}
 		
-		public override Tokenizer OnCharacter(Character character)
+		public override Tokenizer Tokenize(Character character)
 		{
 			if(justUninterpolated) {
 				startColumn = location.Column;
@@ -67,7 +67,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				justUninterpolated = false;
 			}
 			if(interpolationTokenizer != null) {
-				interpolationTokenizer = interpolationTokenizer.OnCharacter(character);
+				interpolationTokenizer = interpolationTokenizer.Tokenize(character);
 				return this;
 			} else if(potentiallyInterpolated) {
 				if(character.Char == '{') {
@@ -170,7 +170,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				t => token = t,
 				() => parser = justUninterpolated ? parser : token(parser),
 				() => parser.OnDone(),
-				context).OnCharacter(character);
+				context).Tokenize(character);
 		}
 
 		Region GetStringLiteralRegion()

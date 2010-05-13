@@ -64,7 +64,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			get { return compilationContext; }
 		}
 
-		public override Tokenizer OnCharacter(Character character)
+		public override Tokenizer Tokenize(Character character)
 		{
 			var @char = character.Char;
 			if(@char == '\n') {
@@ -111,9 +111,9 @@ namespace Stinky.Compiler.Source.Tokenization
 				return new StringLiteralTokenizer(location, this);
 			default:
 				if((@char >= 'A' && @char <= 'z') || @char == '_') {
-					return new AlphanumericTokenizer(location, this).OnCharacter(character);
+					return new AlphanumericTokenizer(location, this).Tokenize(character);
 				} else if(@char >= '0' && @char <= '9') {
-					return new NumberLiteralTokenizer(location, this).OnCharacter(character);
+					return new NumberLiteralTokenizer(location, this).Tokenize(character);
 				} else if(@char != ' ') {
 					OnError(location, TokenizationError.UnknownError);
 					return this;
