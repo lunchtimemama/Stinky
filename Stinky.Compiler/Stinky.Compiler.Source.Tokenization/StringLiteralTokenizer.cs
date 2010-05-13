@@ -62,7 +62,7 @@ namespace Stinky.Compiler.Source.Tokenization
 		public override Tokenizer Tokenize(Character character)
 		{
 			if(justUninterpolated) {
-				startColumn = location.Column;
+				startColumn = character.Location.Column;
 				interpolationTokenizer = null;
 				justUninterpolated = false;
 			}
@@ -107,9 +107,11 @@ namespace Stinky.Compiler.Source.Tokenization
 			case '}':
 				potentiallyUninterpolated = true;
 				endColumn = oldEndColumn;
-					Console.WriteLine("good");
 				return this;
 			case '"':
+				if(interpolatedExpressions != null) {
+					ConsumeStringLiteral();
+				}
 				RootTokenizer.OnTokenReady();
 				return RootTokenizer;
 			case '\n':
@@ -157,9 +159,7 @@ namespace Stinky.Compiler.Source.Tokenization
 						new Region(location, endColumn - location.Column + 1)));
 			}
 
-			if(stringBuilder.Length > 0) {
-				ConsumeStringLiteral();
-			}
+			ConsumeStringLiteral();
 
 			var context = new InterpolatedCompilationContext(this);
 			var parser = context.CreateParser(
@@ -180,10 +180,12 @@ namespace Stinky.Compiler.Source.Tokenization
 
 		void ConsumeStringLiteral()
 		{
-			var @string = stringBuilder.ToString();
-			stringBuilder.Remove(0, stringBuilder.Length);
-			var region = GetStringLiteralRegion();
-			interpolatedExpressions.Add(visitor => visitor.VisitStringLiteral(@string, region));
+			if(stringBuilder.Length > 0) {
+				var @string = stringBuilder.ToString();
+				stringBuilder.Remove(0, stringBuilder.Length);
+				var region = GetStringLiteralRegion();
+				interpolatedExpressions.Add(visitor => visitor.VisitStringLiteral(@string, region));
+			}
 		}
 		
 		public override void OnDone()
@@ -194,9 +196,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			}
 
 			if(interpolatedExpressions != null) {
-				if(stringBuilder.Length > 0) {
-					ConsumeStringLiteral();
-				}
+				ConsumeStringLiteral();
 			}
 
 			if(potentiallyInterpolated || (interpolationTokenizer != null && !potentiallyUninterpolated)) {

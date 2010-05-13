@@ -175,14 +175,14 @@ namespace Stinky.Compiler.Tests
 			AssertCompilation(@"""{foo}""", InterpolatedString(0, 7, Reference("foo", 2)));
 		}
 		
-		/*[Test]
+		[Test]
 		public void TestInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar} bat""",
-				InterpolatedString(0, String("foo ", 0, 5), Reference("bar", 6), String(" bat", 9, 5)));
+				InterpolatedString(0, 15, String("foo ", 0, 5), Reference("bar", 6), String(" bat", 10, 5)));
 		}
 		
-		[Test]
+		/*[Test]
 		public void TestTerminalInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar}""", InterpolatedString(0, String("foo ", 0, 5), Reference("bar", 6)));
