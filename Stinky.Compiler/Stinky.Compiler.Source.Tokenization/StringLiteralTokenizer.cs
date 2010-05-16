@@ -38,8 +38,7 @@ namespace Stinky.Compiler.Source.Tokenization
 
 	public class StringLiteralTokenizer : SubTokenizer
 	{
-		readonly Location location;
-
+		Location? location;
 		StringBuilder stringBuilder = new StringBuilder();
 		Tokenizer interpolationTokenizer;
 		List<Source> interpolatedExpressions;
@@ -50,17 +49,19 @@ namespace Stinky.Compiler.Source.Tokenization
 		bool justUninterpolated;
 		bool escaped;
 		
-		public StringLiteralTokenizer(Location location, RootTokenizer rootTokenizer)
+		public StringLiteralTokenizer(RootTokenizer rootTokenizer)
 			: base(rootTokenizer)
 		{
-			this.location = location;
-			this.startColumn = location.Column;
 			rootTokenizer.OnToken(
 				parser => parser.ParseStringLiteral(() => stringBuilder.ToString(), GetStringLiteralRegion()));
 		}
 		
 		public override Tokenizer Tokenize(Character character)
 		{
+			if(location == null) {
+				location = character.Location;
+				startColumn = location.Value.Column;
+			}
 			if(justUninterpolated) {
 				startColumn = character.Location.Column;
 				interpolationTokenizer = null;
@@ -68,6 +69,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			}
 			if(interpolationTokenizer != null) {
 				interpolationTokenizer = interpolationTokenizer.Tokenize(character);
+				endColumn = character.Location.Column;
 				return this;
 			} else if(potentiallyInterpolated) {
 				if(character.Char == '{') {
@@ -106,9 +108,9 @@ namespace Stinky.Compiler.Source.Tokenization
 				return this;
 			case '}':
 				potentiallyUninterpolated = true;
-				endColumn = oldEndColumn;
 				return this;
 			case '"':
+				endColumn = oldEndColumn;
 				if(interpolatedExpressions != null) {
 					ConsumeStringLiteral();
 				}
@@ -156,7 +158,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				RootTokenizer.OnToken(
 					p => p.ParseInterpolatedStringLiteral(
 						() => interpolatedExpressions,
-						new Region(location, endColumn - location.Column + 1)));
+						new Region(location.Value, endColumn - location.Value.Column + 1)));
 			}
 
 			ConsumeStringLiteral();
@@ -175,7 +177,8 @@ namespace Stinky.Compiler.Source.Tokenization
 
 		Region GetStringLiteralRegion()
 		{
-			return new Region(new Location(location.Source, location.Line, startColumn), endColumn - startColumn + 1);
+			return new Region(
+				new Location(location.Value.Source, location.Value.Line, startColumn), endColumn - startColumn + 1);
 		}
 
 		void ConsumeStringLiteral()
@@ -200,7 +203,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			}
 
 			if(potentiallyInterpolated || (interpolationTokenizer != null && !potentiallyUninterpolated)) {
-				OnError(location, TokenizationError.UnknownError);
+				OnError(location.Value, TokenizationError.UnknownError);
 			} else {
 				base.OnDone();
 			}

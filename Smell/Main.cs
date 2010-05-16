@@ -38,7 +38,7 @@ namespace Smell
 			var context = new CompilationContext();
 			var driver = new Driver((s, i) => { }, context);
 			var column = 0;
-			foreach(var c in @"""{1+1 + "" is the lonliest number, {name}!""} < she said it""") {
+			foreach(var c in @"""{foo}""") {
 				driver.Tokenize(new Character(c, new Location(null, 0, column)));
 				column++;
 			}

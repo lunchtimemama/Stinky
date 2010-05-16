@@ -108,7 +108,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				//OnToken(parser => parser.ParseAmpersand(location));
 				break;
 			case '"':
-				return new StringLiteralTokenizer(location, this);
+				return new StringLiteralTokenizer(this);
 			default:
 				if((@char >= 'A' && @char <= 'z') || @char == '_') {
 					return new AlphanumericTokenizer(location, this).Tokenize(character);

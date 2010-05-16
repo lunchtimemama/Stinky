@@ -126,23 +126,29 @@ namespace Stinky.Compiler.Tests
 		{
 			AssertCompilation("foo:bar", Definition(Reference("foo"), Reference("bar", 4), 3));
 		}
+
+		[Test]
+		public void TestEmptyStringLiteral()
+		{
+			AssertCompilation(@"""""", String("", 1, 0));
+		}
 		
 		[Test]
 		public void TestStringLiteral()
 		{
-			AssertCompilation(@"""foo""", String("foo", 0, 5));
+			AssertCompilation(@"""foo""", String("foo", 1, 3));
 		}
 		
 		[Test]
 		public void TestEscapedStringLiteral()
 		{
-			AssertCompilation(@"""\""\n\t\\""", String("\"\n\t\\", 0, 10));
+			AssertCompilation(@"""\""\n\t\\""", String("\"\n\t\\", 1, 8));
 		}
 		
 		[Test]
 		public void TestUninterpolatedStringLiteral()
 		{
-			AssertCompilation(@"""foo {{bar}} bat""", String(@"foo {bar} bat", 0, 17));
+			AssertCompilation(@"""foo {{bar}} bat""", String(@"foo {bar} bat", 1, 15));
 		}
 		
 //		[Test, ExpectedException(typeof(TokenizationException))]
@@ -172,28 +178,28 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestSimpleInterpolatedStringLiteral()
 		{
-			AssertCompilation(@"""{foo}""", InterpolatedString(0, 7, Reference("foo", 2)));
+			AssertCompilation(@"""{foo}""", InterpolatedString(1, 5, Reference("foo", 2)));
 		}
 		
 		[Test]
 		public void TestInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar} bat""",
-				InterpolatedString(0, 15, String("foo ", 0, 5), Reference("bar", 6), String(" bat", 10, 5)));
+				InterpolatedString(1, 13, String("foo ", 1, 4), Reference("bar", 6), String(" bat", 10, 4)));
 		}
 		
 		[Test]
 		public void TestTerminalInterpolatedStringLiteral()
 		{
-			AssertCompilation(@"""foo {bar}""", InterpolatedString(0, 11, String("foo ", 0, 5), Reference("bar", 6)));
+			AssertCompilation(@"""foo {bar}""", InterpolatedString(1, 9, String("foo ", 1, 4), Reference("bar", 6)));
 		}
 		
 		[Test]
 		public void TestComplexInterpolatedStringLiteral()
 		{
-			AssertCompilation(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""", InterpolatedString(0, 34,
-				String(@"{foo}: ", 0, 10),
-				Plus(Plus(Reference("bar", 11), Number(42, 17), 15), String("%", 22, 3), 20),
+			AssertCompilation(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""", InterpolatedString(1, 32,
+				String(@"{foo}: ", 1, 9),
+				Plus(Plus(Reference("bar", 11), Number(42, 17), 15), String("%", 23, 1), 20),
 				String(", ", 26, 2),
 				Reference("bat", 29)
 			));
@@ -202,29 +208,29 @@ namespace Stinky.Compiler.Tests
 		[Test]
 		public void TestNestedInterpolatedStringLiterals()
 		{
-			AssertCompilation(@"""{""{foo}""}""", InterpolatedString(0, 11, InterpolatedString(2, 7, Reference("foo", 4))));
+			AssertCompilation(@"""{""{foo}""}""", InterpolatedString(1, 9, InterpolatedString(3, 5, Reference("foo", 4))));
 		}
 		
 		[Test]
 		public void TestNestedInterpolatedStringLiteralsWithTrailingString()
 		{
 			AssertCompilation(@"""{""{foo}""} bar""",
-				InterpolatedString(0, 15, InterpolatedString(2, 7, Reference("foo", 4)), String(" bar", 10, 5)));
+				InterpolatedString(1, 13, InterpolatedString(3, 5, Reference("foo", 4)), String(" bar", 10, 4)));
 		}
 		
 		[Test]
 		public void TestComplexNestedInterpolatedStringLiterals()
 		{
 			AssertCompilation(@"""{1+1 + "" is the lonliest number, {name}!""} < she said it""",
-				InterpolatedString(0, 58,
+				InterpolatedString(1, 56,
 					Plus(
 						Plus(Number(1, 2), Number(1, 4), 3),
-						InterpolatedString(8, 34,
-							String(" is the lonliest number, ", 8, 26),
+						InterpolatedString(9, 32,
+							String(" is the lonliest number, ", 9, 25),
 							Reference("name", 35),
-							String("!", 40, 2)),
+							String("!", 40, 1)),
 						6),
-					String(" < she said it", 43, 15)));
+					String(" < she said it", 43, 14)));
 		}
 
 		static void AssertCompilation(string code, Source source)

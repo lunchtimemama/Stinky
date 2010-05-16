@@ -43,11 +43,11 @@ namespace Stinky.Compiler.Source.Highlighting
 		public IncrementalSourceHighlighter(Highlighter highlighter)
 		{
 			highlightingParser = new HighlightingParser(highlighter);
-			tokenizer = new RootTokenizer(
+			var context = new CompilationContext();
+			tokenizer = context.CreateTokenizer(
 				token => highlightingParser.Token = token,
 				() => highlightingParser.OnDone(),
-				() => {},
-				null
+				() => {}
 			);
 		}
 
