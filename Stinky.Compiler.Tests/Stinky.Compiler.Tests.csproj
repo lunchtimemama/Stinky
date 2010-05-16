@@ -48,6 +48,7 @@
     <Compile Include="Stinky.Compiler.Tests\SourceDecomposer.cs" />
     <Compile Include="Stinky.Compiler.Tests\SourceTests.cs" />
     <Compile Include="Stinky.Compiler.Tests\Sources.cs" />
+    <Compile Include="Stinky.Compiler.Tests\HighlightingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Stinky.Compiler\Stinky.Compiler.csproj">

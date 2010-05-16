@@ -42,67 +42,67 @@ namespace Stinky.Compiler.Tests
 	public class ParserTests : Sources
 	{
 		[Test]
-		public void TestReference()
+		public void ParseReference()
 		{
 			AssertCompilation("foo", Reference("foo"));
 		}
 		
 		[Test]
-		public void TestNumberLiteralZero()
+		public void ParseLiteralZero()
 		{
 			AssertCompilation("0", Number(0));
 		}
 		
 		[Test]
-		public void TestNumberLiteralOne()
+		public void ParseNumberLiteralOne()
 		{
 			AssertCompilation("1", Number(1));
 		}
 		
 		[Test]
-		public void TestNumberLiteralOnePointFive()
+		public void ParseNumberLiteralOnePointFive()
 		{
 			AssertCompilation("1.5", Number(1.5));
 		}
 		
 		[Test]
-		public void TestPlusOperator()
+		public void ParsePlusOperator()
 		{
 			AssertCompilation("1+2", Plus(Number(1, 0), Number(2, 2), 1));
 		}
 		
 		[Test]
-		public void TestTwoPlusOperators()
+		public void ParseTwoPlusOperators()
 		{
 			AssertCompilation("1+2+3", Plus(Plus(Number(1, 0), Number(2, 2), 1), Number(3, 4), 3));
 		}
 		
 		[Test]
-		public void TestPlusOperatorWithWhitespace()
+		public void ParsePlusOperatorWithWhitespace()
 		{
 			AssertCompilation("1 + 2", Plus(Number(1, 0), Number(2, 4), 2));
 		}
 		
 		[Test]
-		public void TestMinusOperator()
+		public void ParseMinusOperator()
 		{
 			AssertCompilation("1-2", Minus(Number(1, 0), Number(2, 2), 1));
 		}
 		
 		[Test]
-		public void TestForwardSlashOperator()
+		public void ParseForwardSlashOperator()
 		{
 			AssertCompilation("1/2", ForwardSlash(Number(1, 0), Number(2, 2), 1));
 		}
 		
 		[Test]
-		public void TestAsteriskOperator()
+		public void ParseAsteriskOperator()
 		{
 			AssertCompilation("1*2", Asterisk(Number(1, 0), Number(2, 2), 1));
 		}
 		
 		[Test]
-		public void TestArithmeticOrderOfOperations()
+		public void ParseArithmeticOrderOfOperations()
 		{
 			AssertCompilation("1*2+3/4", Plus(
 				Asterisk(Number(1, 0), Number(2, 2), 1),
@@ -110,7 +110,7 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
-		public void TestDefinition()
+		public void ParseDefinition()
 		{
 			AssertCompilation("foo:42", Definition(Reference("foo"), Number(42, 4), 3));
 		}
@@ -122,31 +122,31 @@ namespace Stinky.Compiler.Tests
 //		}
 		
 		[Test]
-		public void TestReferenceDefinition()
+		public void ParseReferenceDefinition()
 		{
 			AssertCompilation("foo:bar", Definition(Reference("foo"), Reference("bar", 4), 3));
 		}
 
 		[Test]
-		public void TestEmptyStringLiteral()
+		public void ParseEmptyStringLiteral()
 		{
 			AssertCompilation(@"""""", String("", 1, 0));
 		}
 		
 		[Test]
-		public void TestStringLiteral()
+		public void ParseStringLiteral()
 		{
 			AssertCompilation(@"""foo""", String("foo", 1, 3));
 		}
 		
 		[Test]
-		public void TestEscapedStringLiteral()
+		public void ParseEscapedStringLiteral()
 		{
 			AssertCompilation(@"""\""\n\t\\""", String("\"\n\t\\", 1, 8));
 		}
 		
 		[Test]
-		public void TestUninterpolatedStringLiteral()
+		public void ParseUninterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {{bar}} bat""", String(@"foo {bar} bat", 1, 15));
 		}
@@ -176,26 +176,26 @@ namespace Stinky.Compiler.Tests
 //		}
 		
 		[Test]
-		public void TestSimpleInterpolatedStringLiteral()
+		public void ParseSimpleInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""{foo}""", InterpolatedString(1, 5, Reference("foo", 2)));
 		}
 		
 		[Test]
-		public void TestInterpolatedStringLiteral()
+		public void ParseInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar} bat""",
 				InterpolatedString(1, 13, String("foo ", 1, 4), Reference("bar", 6), String(" bat", 10, 4)));
 		}
 		
 		[Test]
-		public void TestTerminalInterpolatedStringLiteral()
+		public void ParseTerminalInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""foo {bar}""", InterpolatedString(1, 9, String("foo ", 1, 4), Reference("bar", 6)));
 		}
 		
 		[Test]
-		public void TestComplexInterpolatedStringLiteral()
+		public void ParseComplexInterpolatedStringLiteral()
 		{
 			AssertCompilation(@"""{{foo}}: {bar + 42 + ""%""}, {bat}""", InterpolatedString(1, 32,
 				String(@"{foo}: ", 1, 9),
@@ -206,20 +206,20 @@ namespace Stinky.Compiler.Tests
 		}
 		
 		[Test]
-		public void TestNestedInterpolatedStringLiterals()
+		public void ParseNestedInterpolatedStringLiterals()
 		{
 			AssertCompilation(@"""{""{foo}""}""", InterpolatedString(1, 9, InterpolatedString(3, 5, Reference("foo", 4))));
 		}
 		
 		[Test]
-		public void TestNestedInterpolatedStringLiteralsWithTrailingString()
+		public void ParseNestedInterpolatedStringLiteralsWithTrailingString()
 		{
 			AssertCompilation(@"""{""{foo}""} bar""",
 				InterpolatedString(1, 13, InterpolatedString(3, 5, Reference("foo", 4)), String(" bar", 10, 4)));
 		}
 		
 		[Test]
-		public void TestComplexNestedInterpolatedStringLiterals()
+		public void ParseComplexNestedInterpolatedStringLiterals()
 		{
 			AssertCompilation(@"""{1+1 + "" is the lonliest number, {name}!""} < she said it""",
 				InterpolatedString(1, 56,
