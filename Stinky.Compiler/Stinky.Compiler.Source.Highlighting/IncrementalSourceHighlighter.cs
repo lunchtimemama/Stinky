@@ -38,7 +38,7 @@ namespace Stinky.Compiler.Source.Highlighting
 	public class IncrementalSourceHighlighter
 	{
 		readonly HighlightingParser highlightingParser;
-		readonly Tokenizer tokenizer;
+		Tokenizer tokenizer;
 
 		public IncrementalSourceHighlighter(Highlighter highlighter)
 		{
@@ -53,7 +53,7 @@ namespace Stinky.Compiler.Source.Highlighting
 
 		public void Tokenize(Character character)
 		{
-			tokenizer.Tokenize(character);
+			tokenizer = tokenizer.Tokenize(character);
 			highlightingParser.Consumer(character.Location);
 		}
 
@@ -86,7 +86,7 @@ namespace Stinky.Compiler.Source.Highlighting
 
 			protected override Parser ParseRegion(Region region)
 			{
-				Consumer = location => { parser.OnDone(); };
+				Consumer = location => parser.OnDone();
 				return this;
 			}
 

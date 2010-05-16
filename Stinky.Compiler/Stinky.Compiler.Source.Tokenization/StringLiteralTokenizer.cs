@@ -52,8 +52,6 @@ namespace Stinky.Compiler.Source.Tokenization
 		public StringLiteralTokenizer(RootTokenizer rootTokenizer)
 			: base(rootTokenizer)
 		{
-			rootTokenizer.OnToken(
-				parser => parser.ParseStringLiteral(() => stringBuilder.ToString(), GetStringLiteralRegion()));
 		}
 		
 		public override Tokenizer Tokenize(Character character)
@@ -61,6 +59,8 @@ namespace Stinky.Compiler.Source.Tokenization
 			if(location == null) {
 				location = character.Location;
 				startColumn = location.Value.Column;
+				RootTokenizer.OnToken(
+					parser => parser.ParseStringLiteral(() => stringBuilder.ToString(), GetStringLiteralRegion()));
 			}
 			if(justUninterpolated) {
 				startColumn = character.Location.Column;

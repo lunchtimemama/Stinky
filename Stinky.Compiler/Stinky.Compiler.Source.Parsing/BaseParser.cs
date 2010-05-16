@@ -158,7 +158,7 @@ namespace Stinky.Compiler.Source.Parsing
 				return nextParser(NextParser);
 			} else {
 				ErrorConsumer(error);
-				return null;
+				return this;
 			}
 		}
 
