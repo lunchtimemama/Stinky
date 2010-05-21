@@ -40,7 +40,6 @@ namespace Stinky.Compiler.Source.Tokenization
 	{
 		Location? location;
 		StringBuilder stringBuilder = new StringBuilder();
-		Tokenizer interpolationTokenizer;
 		List<Source> interpolatedExpressions;
 		int startColumn;
 		int endColumn;
@@ -64,22 +63,19 @@ namespace Stinky.Compiler.Source.Tokenization
 			}
 			if(justUninterpolated) {
 				startColumn = character.Location.Column;
-				interpolationTokenizer = null;
 				justUninterpolated = false;
 			}
-			if(interpolationTokenizer != null) {
-				interpolationTokenizer = interpolationTokenizer.Tokenize(character);
-				endColumn = character.Location.Column;
-				return this;
-			} else if(potentiallyInterpolated) {
+			if(potentiallyInterpolated) {
+				Tokenizer tokenizer;
 				if(character.Char == '{') {
 					stringBuilder.Append('{');
+					tokenizer = this;
 				} else {
-					OnFirstInterpolatedCharacter(character);
+					tokenizer = OnFirstInterpolatedCharacter(character);
 				}
 				potentiallyInterpolated = false;
 				endColumn = character.Location.Column; // TODO get rid of this?
-				return this;
+				return tokenizer;
 			} else if(potentiallyUninterpolated) {
 				if(character.Char == '}') {
 					stringBuilder.Append('}');
@@ -151,7 +147,7 @@ namespace Stinky.Compiler.Source.Tokenization
 			}
 		}
 
-		void OnFirstInterpolatedCharacter(Character character)
+		Tokenizer OnFirstInterpolatedCharacter(Character character)
 		{
 			if(interpolatedExpressions == null) {
 				interpolatedExpressions = new List<Source>();
@@ -168,7 +164,7 @@ namespace Stinky.Compiler.Source.Tokenization
 				expression => interpolatedExpressions.Add(expression)); // FIXME this error lambda
 
 			Token token = null;
-			interpolationTokenizer = context.CreateTokenizer(
+			return context.CreateTokenizer(
 				t => token = t,
 				() => parser = justUninterpolated ? parser : token(parser),
 				() => parser.OnDone(),
@@ -193,16 +189,11 @@ namespace Stinky.Compiler.Source.Tokenization
 		
 		public override void OnDone()
 		{
-			// TODO make sure there is a closing quote mark
-			if(interpolationTokenizer != null) {
-				interpolationTokenizer.OnDone();
-			}
-
 			if(interpolatedExpressions != null) {
 				ConsumeStringLiteral();
 			}
 
-			if(potentiallyInterpolated || (interpolationTokenizer != null && !potentiallyUninterpolated)) {
+			if(potentiallyInterpolated || !potentiallyUninterpolated) {
 				OnError(location.Value, TokenizationError.UnknownError);
 			} else {
 				base.OnDone();
@@ -222,19 +213,21 @@ namespace Stinky.Compiler.Source.Tokenization
 				get { return interpolationTokenizer.RootTokenizer.CompilationContext; }
 			}
 
-			public override void HandleTokenError(CompilationError<TokenizationError> error)
+			public override Tokenizer HandleTokenError(Tokenizer tokenizer, CompilationError<TokenizationError> error)
 			{
 				if(error.Error == TokenizationError.UnexpectedRightCurlyBracket) {
+					interpolationTokenizer.endColumn = error.Location.Column;
 					interpolationTokenizer.justUninterpolated = true;
-					interpolationTokenizer.interpolationTokenizer.OnDone();
+					tokenizer.OnDone();
+					return interpolationTokenizer;
 				} else {
-					ParentContext.HandleTokenError(error);
+					return ParentContext.HandleTokenError(tokenizer, error);
 				}
 			}
 
-			public override void HandleParseError(CompilationError<ParseError> error)
+			public override Parser HandleParseError(Parser parser, CompilationError<ParseError> error)
 			{
-				ParentContext.HandleParseError(error);
+				return ParentContext.HandleParseError(parser, error);
 			}
 
 			public override void HandleSyntaxError(CompilationError<SyntaxError> error)

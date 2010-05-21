@@ -75,38 +75,32 @@ namespace Stinky.Compiler.Source.Tokenization
 			Location location = character.Location;
 			switch(@char) {
 			case '+':
-				OnTokenReady(parser => parser.ParsePlus(location));
-				break;
+				return OnTokenReady(parser => parser.ParsePlus(location));
 			case '-':
-				OnTokenReady(parser => parser.ParseMinus(location));
-				break;
+				return OnTokenReady(parser => parser.ParseMinus(location));
 			case '/':
-				OnTokenReady(parser => parser.ParseForwardSlash(location));
-				break;
+				return OnTokenReady(parser => parser.ParseForwardSlash(location));
 			case '*':
-				OnTokenReady(parser => parser.ParseAsterisk(location));
-				break;
+				return OnTokenReady(parser => parser.ParseAsterisk(location));
 			case '}':
-				OnError(location, TokenizationError.UnexpectedRightCurlyBracket);
-				break;
+				return OnError(this, location, TokenizationError.UnexpectedRightCurlyBracket);
 			case '(':
 				//OnToken(parser => parser.ParseOpenParentheses(location));
-				break;
+				return this;
 			case ')':
 				//OnToken(parser => parser.ParseCloseParentheses(location));
-				break;
+				return this;
 			case '.':
 				//tokenizer = new DotTokenizer(this, location);
-				break;
+				return this;
 			case ',':
 				//OnToken(parser => parser.ParseComma(location));
-				break;
+				return this;
 			case ':':
-				OnTokenReady(parser => parser.ParseColon(location));
-				break;
+				return OnTokenReady(parser => parser.ParseColon(location));
 			case '&':
 				//OnToken(parser => parser.ParseAmpersand(location));
-				break;
+				return this;
 			case '"':
 				return new StringLiteralTokenizer(this);
 			default:
@@ -115,14 +109,12 @@ namespace Stinky.Compiler.Source.Tokenization
 				} else if(@char >= '0' && @char <= '9') {
 					return new NumberLiteralTokenizer(location, this).Tokenize(character);
 				} else if(@char != ' ') {
-					OnError(location, TokenizationError.UnknownError);
-					break;
+					return OnError(this, location, TokenizationError.UnknownError);
 				} else {
 					// TODO handle this
-					break;
+					return this;
 				}
 			}
-			return this;
 		}
 
 		public override void OnDone()
@@ -130,10 +122,11 @@ namespace Stinky.Compiler.Source.Tokenization
 			lineReady();
 		}
 		
-		void OnTokenReady(Token token)
+		Tokenizer OnTokenReady(Token token)
 		{
 			tokenConsumer(token);
 			tokenReady();
+			return this;
 		}
 
 		public void OnToken(Token token)
@@ -146,19 +139,19 @@ namespace Stinky.Compiler.Source.Tokenization
 			tokenReady();
 		}
 		
-		public void OnError(CompilationError<ParseError> error)
+		public Parser OnError(Parser parser, CompilationError<ParseError> error)
 		{
-			compilationContext.HandleParseError(error);
+			return compilationContext.HandleParseError(parser, error);
 		}
 		
-		public void OnError(Location location, TokenizationError error)
+		public Tokenizer OnError(Tokenizer tokenizer, Location location, TokenizationError error)
 		{
-			OnError(new CompilationError<TokenizationError>(location, error));
+			return OnError(tokenizer, new CompilationError<TokenizationError>(location, error));
 		}
 		
-		public void OnError(CompilationError<TokenizationError> error)
+		public Tokenizer OnError(Tokenizer tokenizer, CompilationError<TokenizationError> error)
 		{
-			compilationContext.HandleTokenError(error);
+			return compilationContext.HandleTokenError(tokenizer, error);
 		}
 	}
 }

@@ -32,9 +32,29 @@ namespace Stinky.Compiler.Source.Highlighting
 	{
 		public readonly Highlighter highlighter;
 
+		Region lastRegion;
+
 		public SourceHighlighter(Highlighter highlighter)
 		{
 			this.highlighter = highlighter;
+		}
+
+		public override void VisitReference(string identifier, Region region)
+		{
+			var highlightedRegion = region;
+			if(region.Location == lastRegion.Location) {
+				var delta = region.Length - lastRegion.Length;
+				if(delta > 0) {
+					highlightedRegion = new Region(
+						new Location(
+							region.Location.Source,
+							region.Location.Line,
+							region.Location.Column + delta),
+						delta);
+				}
+			}
+			highlighter.HighlightOther(highlightedRegion);
+			lastRegion = region;
 		}
 	}
 }

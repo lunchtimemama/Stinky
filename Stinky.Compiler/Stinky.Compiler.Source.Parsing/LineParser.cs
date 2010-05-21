@@ -29,10 +29,11 @@ using System;
 namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
+	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 	
 	public class LineParser : RootParser
 	{
-		public LineParser(Action<Source> sourceConsumer, Action<CompilationError<ParseError>> parseErrorConsumer)
+		public LineParser(Action<Source> sourceConsumer, ParseErrorConsumer parseErrorConsumer)
 			: base(sourceConsumer, parseErrorConsumer)
 		{
 		}

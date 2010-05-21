@@ -31,20 +31,21 @@ namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
 	// FIXME why does gmcs barf when we change Action<SourceVisitor> to Source?
-	using ExpressionParserProvider = Func<Action<SourceVisitor>, Action<Action<SourceVisitor>>, Action<CompilationError<ParseError>>, BaseParser, Parser>;
+	using ExpressionParserProvider = Func<Action<SourceVisitor>, Action<Action<SourceVisitor>>, Func<Parser, CompilationError<ParseError>, Parser>, BaseParser, Parser>;
+	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 
 	public class RootParser : BaseParser
 	{
 		readonly ExpressionParserProvider expressionParserProvider;
 		
-		public RootParser(Action<Source> sourceConsumer, Action<CompilationError<ParseError>> parseErrorConsumer)
+		public RootParser(Action<Source> sourceConsumer, ParseErrorConsumer parseErrorConsumer)
 			: this((s, c, ec, p) => new ExpressionParser(s, c, ec, p), sourceConsumer, parseErrorConsumer)
 		{
 		}
 		
 		public RootParser(ExpressionParserProvider expressionParserProvider,
 		                  Action<Source> sourceConsumer,
-		                  Action<CompilationError<ParseError>> parseErrorConsumer)
+		                  ParseErrorConsumer parseErrorConsumer)
 			: base(sourceConsumer, parseErrorConsumer)
 		{
 			if(expressionParserProvider == null) {

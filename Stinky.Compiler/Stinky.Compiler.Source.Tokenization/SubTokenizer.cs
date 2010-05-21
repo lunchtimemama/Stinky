@@ -53,14 +53,14 @@ namespace Stinky.Compiler.Source.Tokenization
 			RootTokenizer.OnDone();
 		}
 		
-		protected void OnError(Location location, TokenizationError error)
+		protected Tokenizer OnError(Location location, TokenizationError error)
 		{
-			RootTokenizer.OnError(location, error);
+			return RootTokenizer.OnError(this, location, error);
 		}
 		
-		protected void OnError(CompilationError<TokenizationError> error)
+		protected Tokenizer OnError(CompilationError<TokenizationError> error)
 		{
-			RootTokenizer.OnError(error);
+			return RootTokenizer.OnError(this, error);
 		}
 
 		protected CompilationContext CompilationContext {

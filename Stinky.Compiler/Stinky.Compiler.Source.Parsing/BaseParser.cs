@@ -30,20 +30,21 @@ using System.Collections.Generic;
 namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
+	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 
 	public class BaseParser : Parser
 	{
 		protected readonly Action<Source> Consumer;
-		protected readonly Action<CompilationError<ParseError>> ErrorConsumer;
+		protected readonly ParseErrorConsumer ErrorConsumer;
 		protected readonly BaseParser NextParser;
 		
-		public BaseParser(Action<Source> sourceConsumer, Action<CompilationError<ParseError>> parseErrorConsumer)
+		public BaseParser(Action<Source> sourceConsumer, ParseErrorConsumer parseErrorConsumer)
 			: this(sourceConsumer, parseErrorConsumer, null)
 		{
 		}
 		
 		public BaseParser(Action<Source> sourceConsumer,
-						  Action<CompilationError<ParseError>> parseErrorConsumer,
+						  ParseErrorConsumer parseErrorConsumer,
 						  BaseParser nextParser)
 		{
 			if(sourceConsumer == null) {
@@ -157,8 +158,7 @@ namespace Stinky.Compiler.Source.Parsing
 			if(NextParser != null) {
 				return nextParser(NextParser);
 			} else {
-				ErrorConsumer(error);
-				return this;
+				return ErrorConsumer(this, error);
 			}
 		}
 

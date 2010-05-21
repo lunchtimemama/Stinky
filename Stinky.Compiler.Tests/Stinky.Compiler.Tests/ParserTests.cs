@@ -233,7 +233,7 @@ namespace Stinky.Compiler.Tests
 					String(" < she said it", 43, 14)));
 		}
 
-		static void AssertCompilation(string code, Source source)
+		static void AssertCompilation(IEnumerable<char> code, Source source)
 		{
 			Source parsedSource = null;
 			Token token = null;

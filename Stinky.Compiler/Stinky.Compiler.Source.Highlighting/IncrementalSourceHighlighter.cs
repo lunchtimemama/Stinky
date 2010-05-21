@@ -69,7 +69,7 @@ namespace Stinky.Compiler.Source.Highlighting
 			{
 				this.highlighter = highlighter;
 				this.sourceHightlighter = new SourceHighlighter(highlighter);
-				parser = new LineParser(source => source(sourceHightlighter), error => {});
+				parser = new LineParser(source => { Console.WriteLine(source); source(sourceHightlighter); }, (p, e) => p);
 			}
 
 			public override Parser ParseStringLiteral(Func<string> @string, Region region)
@@ -93,12 +93,14 @@ namespace Stinky.Compiler.Source.Highlighting
 			public override void OnDone ()
 			{
 				parser = token(parser);
+				Consumer = location => highlighter.HighlightOther(new Region(location, 1));
 			}
 
 			public Token Token {
 				set {
 					token = value;
 					token(this);
+					parser = token(parser);
 				}
 			}
 		}

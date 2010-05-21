@@ -55,15 +55,17 @@ namespace Stinky.Compiler
 		public virtual Parser CreateParser(Action<Action<SourceVisitor>> sourceConsumer)
 		{
 			// FIXME take a Context?
-			return new LineParser(sourceConsumer, e => HandleParseError(e));
+			return new LineParser(sourceConsumer, (p, e) => HandleParseError(p, e));
 		}
 
-		public virtual void HandleTokenError(CompilationError<TokenizationError> error)
+		public virtual Tokenizer HandleTokenError(Tokenizer tokenizer, CompilationError<TokenizationError> error)
 		{
+			return tokenizer;
 		}
 
-		public virtual void HandleParseError(CompilationError<ParseError> error)
+		public virtual Parser HandleParseError(Parser parser, CompilationError<ParseError> error)
 		{
+			return parser;
 		}
 
 		public virtual void HandleSyntaxError(CompilationError<SyntaxError> error)

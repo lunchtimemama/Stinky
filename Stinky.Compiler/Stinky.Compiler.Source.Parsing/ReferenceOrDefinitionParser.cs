@@ -29,6 +29,7 @@ using System;
 namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
+	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 	
 	public class ReferenceOrDefinitionParser : ExpressionParser
 	{
@@ -37,7 +38,7 @@ namespace Stinky.Compiler.Source.Parsing
 		public ReferenceOrDefinitionParser(string identifier,
 										   Region region,
 										   Action<Source> sourceConsumer,
-										   Action<CompilationError<ParseError>> parseErrorConsumer,
+										   ParseErrorConsumer parseErrorConsumer,
 										   BaseParser nextParser)
 			: base(Reference(identifier, region), sourceConsumer, parseErrorConsumer, nextParser)
 		{

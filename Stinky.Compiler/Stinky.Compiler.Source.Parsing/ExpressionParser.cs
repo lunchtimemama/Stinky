@@ -29,6 +29,7 @@ using System;
 namespace Stinky.Compiler.Source.Parsing
 {
 	using Source = Action<SourceVisitor>;
+	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 
 	public class ExpressionParser :BaseParser
 	{
@@ -38,7 +39,7 @@ namespace Stinky.Compiler.Source.Parsing
 		
 		public ExpressionParser(Source expression,
 								Action<Source> sourceConsumer,
-								Action<CompilationError<ParseError>> parseErrorConsumer,
+								ParseErrorConsumer parseErrorConsumer,
 								BaseParser nextParser)
 			: this(expression, null, 0, sourceConsumer, parseErrorConsumer, nextParser)
 		{
@@ -48,7 +49,7 @@ namespace Stinky.Compiler.Source.Parsing
 		                        Func<Source, Source> @operator,
 		                        int operatorPriority,
 		                        Action<Source> sourceConsumer,
-		                        Action<CompilationError<ParseError>> parseErrorConsumer,
+		                        ParseErrorConsumer parseErrorConsumer,
 		                        BaseParser nextParser)
 			: base(sourceConsumer, parseErrorConsumer, nextParser)
 		{
