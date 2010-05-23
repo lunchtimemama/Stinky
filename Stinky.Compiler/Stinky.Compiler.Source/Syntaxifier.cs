@@ -43,9 +43,7 @@ namespace Stinky.Compiler.Source
 		{
 			if(consumer == null) {
 				throw new ArgumentNullException("consumer");
-			}
-
-			if(errorConsumer == null) {
+			} else if(errorConsumer == null) {
 				throw new ArgumentNullException("errorConsumer");
 			}
 

@@ -52,7 +52,6 @@
     <Compile Include="Stinky.Compiler.Source\Character.cs" />
     <Compile Include="Stinky.Compiler.Source.Highlighting\IncrementalSourceHighlighter.cs" />
     <Compile Include="Stinky.Compiler.Source.Highlighting\Highlighter.cs" />
-    <Compile Include="Stinky.Compiler.Source.Highlighting\SourceHighlighter.cs" />
     <Compile Include="Stinky.Compiler\CompilationContext.cs" />
     <Compile Include="Stinky.Compiler.Source.Parsing\Parser.cs" />
     <Compile Include="Stinky.Compiler.Source.Parsing\ReferenceOrDefinitionParser.cs" />
@@ -69,6 +68,7 @@
     <Compile Include="Stinky.Compiler.Source.Parsing\ParseError.cs" />
     <Compile Include="Stinky.Compiler.Source.Tokenization\TokenizationError.cs" />
     <Compile Include="Stinky.Compiler.Source.Parsing\BaseParser.cs" />
+    <Compile Include="Stinky.Compiler.Source.Highlighting\IncrementalHighlighter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

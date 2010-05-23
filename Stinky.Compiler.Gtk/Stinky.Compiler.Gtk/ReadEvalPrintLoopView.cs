@@ -39,7 +39,7 @@ namespace Stinky.Compiler.Gtk
 	{
 		readonly Action<string> evaluator;
 
-		IncrementalSourceHighlighter sourceHighlighter;
+		IncrementalHighlighter sourceHighlighter;
 		
 		TextMark promptStart;
 		int column;
@@ -58,7 +58,7 @@ namespace Stinky.Compiler.Gtk
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
 
-			this.sourceHighlighter = new IncrementalSourceHighlighter(new GtkHighlighter(Buffer));
+			this.sourceHighlighter = new IncrementalHighlighter(new GtkHighlighter(Buffer));
 		}
 		
 		protected override bool OnKeyPressEvent(EventKey evnt)
@@ -98,7 +98,7 @@ namespace Stinky.Compiler.Gtk
 			Buffer.InsertWithTagsByName(ref startIter, "> ", "prompt");
 			promptStart = Buffer.CreateMark(null, startIter, true);
 			Buffer.PlaceCursor(startIter);
-			this.sourceHighlighter = new IncrementalSourceHighlighter(new GtkHighlighter(Buffer));
+			this.sourceHighlighter = new IncrementalHighlighter(new GtkHighlighter(Buffer));
 			column = 0;
 		}
 	}

@@ -1,5 +1,5 @@
 // 
-// Highlighter.cs
+// IncrementalSourceHighlighter.cs
 //  
 // Author:
 //       Scott Thomas <lunchtimemama@gmail.com>
@@ -25,84 +25,28 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-
-using Stinky.Compiler.Source.Parsing;
-using Stinky.Compiler.Source.Tokenization;
 
 namespace Stinky.Compiler.Source.Highlighting
 {
-	using Source = Action<SourceVisitor>;
-	using Token = Func<Parser, Parser>;
-
-	public class IncrementalSourceHighlighter
+	public class IncrementalSourceHighlighter : SourceVisitor
 	{
-		readonly HighlightingParser highlightingParser;
-		Tokenizer tokenizer;
+		readonly Highlighter highlighter;
+		Action<Location> consumer;
 
 		public IncrementalSourceHighlighter(Highlighter highlighter)
 		{
-			highlightingParser = new HighlightingParser(highlighter);
-			var context = new CompilationContext();
-			tokenizer = context.CreateTokenizer(
-				token => highlightingParser.Token = token,
-				() => highlightingParser.OnDone(),
-				() => {}
-			);
+			this.highlighter = highlighter;
 		}
 
-		public void Tokenize(Character character)
+		protected override void VisitLocation(Location location)
 		{
-			tokenizer = tokenizer.Tokenize(character);
-			highlightingParser.Consumer(character.Location);
+			consumer = l => highlighter.HighlightOther(new Region(l, 1));
 		}
 
-		class HighlightingParser : Parser
+		public void OnLocation(Location location)
 		{
-			readonly Highlighter highlighter;
-			readonly SourceHighlighter sourceHightlighter;
-			public Action<Location> Consumer;
-			Parser parser;
-			Token token;
-
-			public HighlightingParser(Highlighter highlighter)
-			{
-				this.highlighter = highlighter;
-				this.sourceHightlighter = new SourceHighlighter(highlighter);
-				parser = new LineParser(source => { Console.WriteLine(source); source(sourceHightlighter); }, (p, e) => p);
-			}
-
-			public override Parser ParseStringLiteral(Func<string> @string, Region region)
-			{
-				Consumer = location => highlighter.HighlightStringLiteral(new Region(location, 1));
-				return this;
-			}
-
-			public override Parser ParseNumberLiteral(Func<double> number, Region region)
-			{
-				Consumer = location => highlighter.HighlightNumberLiteral(new Region(location, 1));
-				return this;
-			}
-
-			protected override Parser ParseRegion(Region region)
-			{
-				Consumer = location => parser.OnDone();
-				return this;
-			}
-
-			public override void OnDone ()
-			{
-				parser = token(parser);
-				Consumer = location => highlighter.HighlightOther(new Region(location, 1));
-			}
-
-			public Token Token {
-				set {
-					token = value;
-					token(this);
-					parser = token(parser);
-				}
-			}
+			consumer(location);
 		}
 	}
 }
+
