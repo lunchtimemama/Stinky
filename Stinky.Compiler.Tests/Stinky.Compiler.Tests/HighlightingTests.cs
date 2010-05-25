@@ -69,7 +69,7 @@ namespace Stinky.Compiler.Tests
 
 		static void AssertHighlights(IEnumerable<char> code, params Highlight[] highlights)
 		{
-			AssertHighlights(code, highlights);
+			AssertHighlights(code, (IEnumerable<Highlight>)highlights);
 		}
 
 		static void AssertHighlights(IEnumerable<char> code, IEnumerable<Highlight> highlights)
