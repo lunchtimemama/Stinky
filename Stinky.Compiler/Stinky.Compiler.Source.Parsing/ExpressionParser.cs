@@ -31,7 +31,7 @@ namespace Stinky.Compiler.Source.Parsing
 	using Source = Action<SourceVisitor>;
 	using ParseErrorConsumer = Func<Parser, CompilationError<ParseError>, Parser>;
 
-	public class ExpressionParser :BaseParser
+	public class ExpressionParser : BaseParser
 	{
 		readonly Source expression;
 		readonly Func<Source, Source> @operator;
